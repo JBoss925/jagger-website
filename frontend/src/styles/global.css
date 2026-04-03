@@ -20,7 +20,7 @@
   --section-scroll-offset: 132px;
   --header-mask-height: 124px;
   --content-readability-opacity: 0.74;
-  --content-readability-width: min(1320px, calc(100vw - 32px));
+  --content-readability-width: min(1280px, calc(100vw - 72px));
 }
 
 
@@ -80,7 +80,6 @@ a {
   border: 1px solid var(--line);
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(14, 24, 40, 0.92), rgba(7, 13, 24, 0.94));
-  box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
 
@@ -132,14 +131,15 @@ a {
 .page-shell::after {
   content: "";
   position: fixed;
-  top: 0;
-  bottom: 0;
+  top: -32vh;
+  bottom: -32vh;
   left: 50%;
   width: var(--content-readability-width);
   transform: translateX(-50%);
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.04) 8%, rgba(0, 0, 0, 0.12) 16%, rgba(0, 0, 0, 0.26) 24%, rgba(0, 0, 0, 0.52) 34%, rgba(0, 0, 0, var(--content-readability-opacity)) 50%, rgba(0, 0, 0, 0.52) 66%, rgba(0, 0, 0, 0.26) 76%, rgba(0, 0, 0, 0.12) 84%, rgba(0, 0, 0, 0.04) 92%, rgba(0, 0, 0, 0) 100%);
+  background: rgba(0, 0, 0, var(--content-readability-opacity));
+  filter: blur(96px);
 }
 
 .page-shell .site-nav,
@@ -219,7 +219,6 @@ a {
 .glass-card {
   background: linear-gradient(180deg, rgba(18, 33, 53, 0.78), rgba(9, 16, 28, 0.88));
   border: 1px solid var(--line);
-  box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
 
@@ -728,7 +727,7 @@ button:hover {
   :root {
     --section-scroll-offset: 196px;
     --header-mask-height: 176px;
-    --content-readability-width: min(100vw - 12px, 1040px);
+    --content-readability-width: min(100vw - 28px, 980px);
   }
 
   .route-loading {
