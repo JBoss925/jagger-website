@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExperienceCard from "../../components/ExperienceCard";
 import ProjectCard from "../../components/ProjectCard";
@@ -21,8 +21,9 @@ function HomePage() {
   const useStaticScene = prefersReducedMotion || isCompactViewport;
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
+  const hasHandledInitialHash = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!location.hash) {
       return;
     }
@@ -32,11 +33,30 @@ function HomePage() {
       return;
     }
 
-    requestAnimationFrame(() => {
+    const shouldAnimateScroll =
+      hasHandledInitialHash.current && !prefersReducedMotion;
+
+    hasHandledInitialHash.current = true;
+
+    if (!shouldAnimateScroll) {
+      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+
       element.scrollIntoView({
-        behavior: prefersReducedMotion ? "auto" : "smooth",
+        behavior: "auto",
         block: "start"
       });
+
+      requestAnimationFrame(() => {
+        document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      });
+
+      return;
+    }
+
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
     });
   }, [location.hash, prefersReducedMotion]);
 

@@ -23,4 +23,24 @@ describe("HomePage", () => {
       screen.getAllByRole("link", { name: /Resume/i })[0]
     ).toHaveAttribute("href", "/files/resume.pdf");
   });
+
+  it("uses an immediate scroll on initial hash loads", () => {
+    const scrollIntoView = vi.fn();
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    render(
+      <MemoryRouter initialEntries={["/#projects"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "auto",
+      block: "start"
+    });
+
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  });
 });
