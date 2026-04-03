@@ -25,6 +25,7 @@ function HomePage() {
 
   useLayoutEffect(() => {
     if (!location.hash) {
+      hasHandledInitialHash.current = true;
       return;
     }
 
