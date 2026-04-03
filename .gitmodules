@@ -1,0 +1,6 @@
+[submodule "old_website"]
+	path = old_website
+	url = https://github.com/JBoss925/JBoss925.github.io.git
+[submodule "jaggerscript"]
+	path = jaggerscript
+	url = https://github.com/JBoss925/JaggerScript
