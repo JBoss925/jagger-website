@@ -17,6 +17,7 @@
   --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 16px;
+  --section-scroll-offset: 132px;
 }
 
 * {
@@ -200,6 +201,7 @@ button:hover {
 .hero-panel {
   min-height: calc(100vh - 160px);
   display: grid;
+  scroll-margin-top: var(--section-scroll-offset);
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   gap: 22px;
   align-items: stretch;
@@ -341,6 +343,7 @@ button:hover {
 .content-section {
   display: grid;
   gap: 24px;
+  scroll-margin-top: var(--section-scroll-offset);
 }
 
 .section-heading h2 {
@@ -589,6 +592,10 @@ button:hover {
 }
 
 @media (max-width: 960px) {
+  :root {
+    --section-scroll-offset: 196px;
+  }
+
   .content-shell {
     width: min(100vw - 28px, 1000px);
     padding-top: 164px;
