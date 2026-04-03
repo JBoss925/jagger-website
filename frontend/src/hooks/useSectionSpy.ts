@@ -1,36 +1,72 @@
 import { useEffect, useState } from "react";
 
+const ACTIVE_SECTION_OFFSET = 0.35;
+
 export function useSectionSpy(sectionIds: string[], fallbackId: string) {
   const [activeSection, setActiveSection] = useState(fallbackId);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visibleEntry?.target.id) {
-          setActiveSection(visibleEntry.target.id);
-        }
-      },
-      {
-        threshold: [0.2, 0.5, 0.75],
-        rootMargin: "-20% 0px -20% 0px"
-      }
-    );
-
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => Boolean(element));
 
-    elements.forEach((element) => observer.observe(element));
+    if (elements.length === 0) {
+      return;
+    }
+
+    let frame = 0;
+
+    const updateActiveSection = () => {
+      const probeLine = window.innerHeight * ACTIVE_SECTION_OFFSET;
+      let nextActiveSection = fallbackId;
+
+      for (const element of elements) {
+        const { top } = element.getBoundingClientRect();
+
+        if (top <= probeLine) {
+          nextActiveSection = element.id;
+        } else {
+          break;
+        }
+      }
+
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2
+      ) {
+        nextActiveSection = elements[elements.length - 1].id;
+      }
+
+      setActiveSection((currentSection) =>
+        currentSection === nextActiveSection ? currentSection : nextActiveSection
+      );
+    };
+
+    const scheduleUpdate = () => {
+      if (frame) {
+        return;
+      }
+
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        updateActiveSection();
+      });
+    };
+
+    updateActiveSection();
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
-      elements.forEach((element) => observer.unobserve(element));
-      observer.disconnect();
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [sectionIds]);
+  }, [fallbackId, sectionIds]);
 
   return activeSection;
 }
