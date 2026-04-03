@@ -43,4 +43,26 @@ describe("HomePage", () => {
 
     HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
   });
+
+  it("does not trigger an extra programmatic jump on an initial hero hash load", () => {
+    const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
+    const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+
+    window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    render(
+      <MemoryRouter initialEntries={["/#hero"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    expect(scrollTo).not.toHaveBeenCalled();
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  });
 });

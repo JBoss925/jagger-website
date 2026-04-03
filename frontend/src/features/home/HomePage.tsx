@@ -29,7 +29,8 @@ function HomePage() {
       return;
     }
 
-    const element = document.getElementById(location.hash.slice(1));
+    const targetId = location.hash.slice(1);
+    const element = document.getElementById(targetId);
     if (!element) {
       return;
     }
@@ -40,6 +41,10 @@ function HomePage() {
     hasHandledInitialHash.current = true;
 
     if (!shouldAnimateScroll) {
+      if (targetId === "hero") {
+        return;
+      }
+
       const previousScrollBehavior = document.documentElement.style.scrollBehavior;
       document.documentElement.style.scrollBehavior = "auto";
 
@@ -52,6 +57,11 @@ function HomePage() {
         document.documentElement.style.scrollBehavior = previousScrollBehavior;
       });
 
+      return;
+    }
+
+    if (targetId === "hero") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
