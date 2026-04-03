@@ -1,0 +1,73 @@
+export type SceneSection = {
+  id: string;
+  label: string;
+  eyebrow: string;
+  title: string;
+  summary: string;
+  position: [number, number, number];
+  camera: [number, number, number];
+  target: [number, number, number];
+  accent: string;
+};
+
+export type ExperienceEntry = {
+  company: string;
+  role: string;
+  timeframe: string;
+  location: string;
+  summary: string;
+  highlights: string[];
+  tags: string[];
+};
+
+export type ProjectEntry = {
+  slug: string;
+  title: string;
+  description: string;
+  impact: string;
+  stack: string[];
+  image: string;
+  links: {
+    label: string;
+    href: string;
+  }[];
+};
+
+export type SkillCluster = {
+  title: string;
+  summary: string;
+  items: string[];
+};
+
+export type JaggerScriptExample = {
+  id: string;
+  title: string;
+  description: string;
+  source: string;
+};
+
+export type ProfileContent = {
+  name: string;
+  title: string;
+  location: string;
+  email: string;
+  heroSummary: string;
+  heroBullets: string[];
+  metrics: {
+    label: string;
+    value: string;
+  }[];
+  links: {
+    label: string;
+    href: string;
+  }[];
+  sceneSections: SceneSection[];
+  experience: ExperienceEntry[];
+  projects: ProjectEntry[];
+  skillClusters: SkillCluster[];
+  jaggerscriptIntro: {
+    headline: string;
+    summary: string;
+    bullets: string[];
+  };
+};
