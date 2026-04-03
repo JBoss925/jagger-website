@@ -9,6 +9,7 @@ import { profileContent, headshotAsset } from "../../content/profile";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useSectionSpy } from "../../hooks/useSectionSpy";
+import { usePageReveal } from "../../hooks/usePageReveal";
 import SceneBackdrop from "./SceneBackdrop";
 
 const sectionOrder = profileContent.sceneSections.map((section) => section.id);
@@ -19,6 +20,7 @@ function HomePage() {
   const isCompactViewport = useMediaQuery("(max-width: 960px)");
   const useStaticScene = prefersReducedMotion || isCompactViewport;
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
+  const isPageReady = usePageReveal();
 
   useEffect(() => {
     if (!location.hash) {
@@ -39,7 +41,7 @@ function HomePage() {
   }, [location.hash, prefersReducedMotion]);
 
   return (
-    <div className="page-shell">
+    <div className={isPageReady ? "page-shell page-shell--ready" : "page-shell page-shell--entering"}>
       <SceneBackdrop
         sections={profileContent.sceneSections}
         activeSectionId={activeSectionId}

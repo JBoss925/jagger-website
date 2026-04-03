@@ -6,11 +6,22 @@ const JaggerScriptPage = lazy(
   () => import("../features/jaggerscript/JaggerScriptPage")
 );
 
+function RouteLoading() {
+  return (
+    <div className="route-loading" role="status" aria-live="polite">
+      <div className="route-loading__spinner" aria-hidden="true" />
+      <div className="route-loading__copy">
+        <span className="route-loading__eyebrow">Boot sequence</span>
+        <strong>Calibrating the system map...</strong>
+        <p>Loading scene data, preparing navigation, and bringing the resume surface online.</p>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
-    <Suspense
-      fallback={<div className="route-loading">Calibrating the system map...</div>}
-    >
+    <Suspense fallback={<RouteLoading />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/jaggerscript" element={<JaggerScriptPage />} />

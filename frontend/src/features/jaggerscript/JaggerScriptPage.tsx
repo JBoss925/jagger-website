@@ -1,6 +1,7 @@
 import Editor, { type Monaco } from "@monaco-editor/react";
 import { startTransition, useDeferredValue, useMemo, useState } from "react";
 import SiteNavigation from "../../components/SiteNavigation";
+import { usePageReveal } from "../../hooks/usePageReveal";
 import { defaultExampleId, jaggerscriptExamples } from "../../content/jaggerscriptExamples";
 import { profileContent } from "../../content/profile";
 import { loadExample, run } from "../../lib/jaggerscript/bridge";
@@ -26,6 +27,7 @@ function defineEditorTheme(monaco: Monaco) {
 }
 
 function JaggerScriptPage() {
+  const isPageReady = usePageReveal();
   const initialExample = useMemo(() => loadExample(defaultExampleId), []);
   const [selectedExampleId, setSelectedExampleId] = useState(initialExample.id);
   const [source, setSource] = useState(initialExample.source);
@@ -52,7 +54,7 @@ function JaggerScriptPage() {
   };
 
   return (
-    <div className="page-shell ide-page">
+    <div className={isPageReady ? "page-shell page-shell--ready ide-page" : "page-shell page-shell--entering ide-page"}>
       <div className="scene-static" aria-hidden="true">
         <div className="scene-static__gradient" />
         <div className="scene-static__grid" />
