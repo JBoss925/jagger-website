@@ -19,6 +19,8 @@
   --radius-md: 16px;
   --section-scroll-offset: 132px;
   --header-mask-height: 124px;
+  --content-readability-opacity: 0.74;
+  --content-readability-width: min(1320px, calc(100vw - 32px));
 }
 
 
@@ -127,6 +129,19 @@ a {
   background: linear-gradient(180deg, rgba(4, 7, 18, 1) 0%, rgba(4, 7, 18, 0.98) 58%, rgba(4, 7, 18, 0.88) 76%, rgba(4, 7, 18, 0) 100%);
 }
 
+.page-shell::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--content-readability-width);
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.04) 8%, rgba(0, 0, 0, 0.12) 16%, rgba(0, 0, 0, 0.26) 24%, rgba(0, 0, 0, 0.52) 34%, rgba(0, 0, 0, var(--content-readability-opacity)) 50%, rgba(0, 0, 0, 0.52) 66%, rgba(0, 0, 0, 0.26) 76%, rgba(0, 0, 0, 0.12) 84%, rgba(0, 0, 0, 0.04) 92%, rgba(0, 0, 0, 0) 100%);
+}
+
 .page-shell .site-nav,
 .page-shell .content-shell,
 .page-shell .scene-canvas,
@@ -194,6 +209,7 @@ a {
   margin: 0 auto;
   padding: 116px 0 80px;
 }
+
 
 .home-shell {
   display: grid;
@@ -712,6 +728,7 @@ button:hover {
   :root {
     --section-scroll-offset: 196px;
     --header-mask-height: 176px;
+    --content-readability-width: min(100vw - 12px, 1040px);
   }
 
   .route-loading {
@@ -726,6 +743,7 @@ button:hover {
     width: min(100vw - 28px, 1000px);
     padding-top: 164px;
   }
+
 
   .site-nav {
     inset: 12px 14px auto;
