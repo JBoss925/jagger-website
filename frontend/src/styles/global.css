@@ -18,7 +18,9 @@
   --radius-lg: 22px;
   --radius-md: 16px;
   --section-scroll-offset: 132px;
+  --header-mask-height: 124px;
 }
+
 
 * {
   box-sizing: border-box;
@@ -70,6 +72,16 @@ a {
   overflow: clip;
 }
 
+.page-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--header-mask-height);
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 7, 18, 1) 0%, rgba(4, 7, 18, 0.98) 58%, rgba(4, 7, 18, 0.88) 76%, rgba(4, 7, 18, 0) 100%);
+}
+
 .content-shell {
   position: relative;
   z-index: 2;
@@ -101,7 +113,7 @@ a {
   padding: 14px 18px;
   border: 1px solid var(--line);
   border-radius: 22px;
-  background: rgba(5, 10, 18, 0.78);
+  background: rgba(5, 10, 18, 0.88);
   backdrop-filter: blur(18px);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
 }
@@ -594,6 +606,7 @@ button:hover {
 @media (max-width: 960px) {
   :root {
     --section-scroll-offset: 196px;
+    --header-mask-height: 176px;
   }
 
   .content-shell {
