@@ -1,10 +1,11 @@
 import Editor, { type Monaco } from "@monaco-editor/react";
-import { startTransition, useDeferredValue, useMemo, useState } from "react";
+import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import SiteNavigation from "../../components/SiteNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import { defaultExampleId, jaggerscriptExamples } from "../../content/jaggerscriptExamples";
 import { profileContent } from "../../content/profile";
 import { loadExample, run } from "../../lib/jaggerscript/bridge";
+import { getJaggerScriptSyntaxMarkers } from "../../lib/jaggerscript/diagnostics";
 import { monarchJaggerScriptTokenizer } from "../../lib/jaggerscript/monarchJaggerScriptTokenizer";
 
 function configureJaggerScriptMonaco(monaco: Monaco) {
@@ -43,6 +44,7 @@ function configureJaggerScriptMonaco(monaco: Monaco) {
 }
 
 function JaggerScriptPage() {
+  const markerOwner = "jaggerscript-syntax";
   const isPageReady = usePageReveal();
   const initialExample = useMemo(() => loadExample(defaultExampleId), []);
   const [selectedExampleId, setSelectedExampleId] = useState(initialExample.id);
@@ -50,6 +52,8 @@ function JaggerScriptPage() {
   const [output, setOutput] = useState<string[]>([
     "Load an example, edit the program, and run it to inspect the runtime."
   ]);
+  const editorMonacoRef = useRef<Monaco | null>(null);
+  const editorModelRef = useRef<Parameters<NonNullable<Monaco["editor"]["setModelMarkers"]>>[1] | null>(null);
 
   const selectedExample = loadExample(selectedExampleId);
   const deferredOutput = useDeferredValue(output.join("\n"));
@@ -69,6 +73,39 @@ function JaggerScriptPage() {
     handleLoadExample(selectedExampleId);
   };
 
+  useEffect(() => {
+    if (!editorMonacoRef.current || !editorModelRef.current) {
+      return;
+    }
+
+    const handle = window.setTimeout(() => {
+      const monaco = editorMonacoRef.current;
+      const model = editorModelRef.current;
+
+      if (!monaco || !model) {
+        return;
+      }
+
+      const markers = getJaggerScriptSyntaxMarkers(source, monaco.MarkerSeverity.Error);
+      monaco.editor.setModelMarkers(model, markerOwner, markers);
+    }, 150);
+
+    return () => window.clearTimeout(handle);
+  }, [markerOwner, source]);
+
+  const handleEditorMount = (
+    editor: { getModel: () => Parameters<NonNullable<Monaco["editor"]["setModelMarkers"]>>[1] | null },
+    monaco: Monaco
+  ) => {
+    editorMonacoRef.current = monaco;
+    editorModelRef.current = editor.getModel();
+
+    if (editorModelRef.current) {
+      const markers = getJaggerScriptSyntaxMarkers(source, monaco.MarkerSeverity.Error);
+      monaco.editor.setModelMarkers(editorModelRef.current, markerOwner, markers);
+    }
+  };
+
   return (
     <div className={isPageReady ? "page-shell page-shell--ready ide-page" : "page-shell page-shell--entering ide-page"}>
       <div className="scene-static" aria-hidden="true">
@@ -83,14 +120,11 @@ function JaggerScriptPage() {
             <span className="section-heading__eyebrow">Interactive language project</span>
             <h1>JaggerScript Playground</h1>
             <p>{profileContent.jaggerscriptIntro.summary}</p>
-          </div>
-          <div className="ide-hero__actions">
-            <button type="button" className="cta-button" onClick={handleRun}>
-              Run program
-            </button>
-            <button type="button" className="cta-button cta-button--secondary" onClick={handleReset}>
-              Reset example
-            </button>
+            <ul className="ide-copy-list">
+              {profileContent.jaggerscriptIntro.bullets.slice(0, 2).map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -100,7 +134,10 @@ function JaggerScriptPage() {
               <span className="section-heading__eyebrow">Examples</span>
               <h2>{selectedExample.title}</h2>
             </div>
-            <p>{selectedExample.description}</p>
+            <div className="ide-example-strip__summary">
+              <p>{selectedExample.description}</p>
+              <p>{profileContent.jaggerscriptIntro.bullets[2]}</p>
+            </div>
           </div>
           <div className="example-list" role="list">
             {jaggerscriptExamples.map((example) => (
@@ -128,17 +165,24 @@ function JaggerScriptPage() {
                 <h3>Source</h3>
                 <span>Editable browser interpreter input</span>
               </div>
-              <div className="chip-row">
-                {profileContent.jaggerscriptIntro.bullets.slice(0, 2).map((bullet) => (
-                  <span key={bullet} className="chip chip--muted">
-                    {bullet}
+              <div className="ide-panel__actions">
+                <button type="button" className="cta-button cta-button--secondary" onClick={handleReset}>
+                  Reset example
+                </button>
+                <button type="button" className="ide-run-button" onClick={handleRun}>
+                  <span className="ide-run-button__icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" focusable="false">
+                      <path d="M4 3.5v9l8-4.5-8-4.5Z" fill="currentColor" />
+                    </svg>
                   </span>
-                ))}
+                  <span>Run</span>
+                </button>
               </div>
             </header>
             <div className="ide-editor ide-editor--wide">
               <Editor
                 beforeMount={configureJaggerScriptMonaco}
+                onMount={handleEditorMount}
                 defaultLanguage="JaggerScript"
                 language="JaggerScript"
                 theme="atlas-night"

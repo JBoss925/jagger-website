@@ -31,9 +31,9 @@ describe("JaggerScriptPage", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: /FizzBuzz/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Run program/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Run$/i }));
 
     expect(screen.getByText(/All elements:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Interpreter output/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Console/i })).toBeInTheDocument();
   });
 });

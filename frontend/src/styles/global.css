@@ -643,6 +643,18 @@ button:hover {
   max-width: 52rem;
 }
 
+.ide-copy-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text-dim);
+}
+
+.ide-copy-list li {
+  line-height: 1.6;
+}
+
 .ide-hero__actions {
   display: grid;
   gap: 12px;
@@ -663,6 +675,16 @@ button:hover {
   line-height: 1.6;
 }
 
+.ide-example-strip {
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.ide-example-strip__summary {
+  display: grid;
+  gap: 10px;
+}
+
 .example-list {
   display: grid;
   gap: 12px;
@@ -673,6 +695,7 @@ button:hover {
   display: grid;
   gap: 8px;
   min-height: 132px;
+  border-radius: 28px;
   text-align: left;
   cursor: pointer;
   color: var(--text);
@@ -690,17 +713,27 @@ button:hover {
 
 .ide-panels--playground {
   grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.72fr);
-  align-items: start;
+  align-items: stretch;
 }
 
 .ide-panel {
+  grid-template-rows: auto minmax(0, 1fr);
   align-content: start;
+  height: 100%;
 }
 
 .ide-panel__header {
   display: grid;
   gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
+}
+
+.ide-panel__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: end;
 }
 
 .ide-panel__header h3,
@@ -708,17 +741,55 @@ button:hover {
   margin: 0;
 }
 
-.ide-panel__header .chip-row {
-  justify-content: flex-start;
-}
-
-.ide-panel__header span {
+.ide-panel__header > div > span {
   color: var(--text-dim);
   line-height: 1.5;
 }
 
+.ide-run-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.8rem 1.1rem;
+  border: 1px solid rgba(255, 184, 76, 0.42);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 184, 76, 0.96), rgba(255, 120, 56, 0.96));
+  color: #13233d;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 10px 24px rgba(255, 140, 56, 0.2);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.ide-run-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(255, 140, 56, 0.26);
+  filter: saturate(1.06);
+}
+
+.ide-run-button:focus-visible {
+  outline: 2px solid rgba(255, 224, 168, 0.9);
+  outline-offset: 3px;
+}
+
+.ide-run-button__icon {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+}
+
+.ide-run-button__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
 .ide-editor {
   min-height: 62vh;
+  height: 100%;
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(87, 208, 255, 0.14);
@@ -734,7 +805,8 @@ button:hover {
 
 .console-output {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   padding: 20px;
   border-radius: 18px;
   border: 1px solid rgba(247, 169, 91, 0.18);
@@ -822,6 +894,15 @@ button:hover {
   .ide-panel__header,
   .experience-card__header {
     justify-items: stretch;
+  }
+
+  .ide-run-button {
+    justify-self: stretch;
+  }
+
+  .ide-panel__actions {
+    display: grid;
+    justify-self: stretch;
   }
 
   .ide-hero__actions .cta-button {
