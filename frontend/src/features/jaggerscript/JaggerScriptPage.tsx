@@ -5,8 +5,20 @@ import { usePageReveal } from "../../hooks/usePageReveal";
 import { defaultExampleId, jaggerscriptExamples } from "../../content/jaggerscriptExamples";
 import { profileContent } from "../../content/profile";
 import { loadExample, run } from "../../lib/jaggerscript/bridge";
+import { monarchJaggerScriptTokenizer } from "../../lib/jaggerscript/monarchJaggerScriptTokenizer";
 
-function defineEditorTheme(monaco: Monaco) {
+function configureJaggerScriptMonaco(monaco: Monaco) {
+  const languageId = "JaggerScript";
+
+  if (
+    !monaco.languages
+      .getLanguages()
+      .some((language: { id: string }) => language.id === languageId)
+  ) {
+    monaco.languages.register({ id: languageId });
+  }
+
+  monaco.languages.setMonarchTokensProvider(languageId, monarchJaggerScriptTokenizer);
   monaco.editor.defineTheme("atlas-night", {
     base: "vs-dark",
     inherit: true,
@@ -14,7 +26,11 @@ function defineEditorTheme(monaco: Monaco) {
       { token: "comment", foreground: "6f8ca7" },
       { token: "keyword", foreground: "7fd7ff" },
       { token: "string", foreground: "9be0b6" },
-      { token: "number", foreground: "f7c67d" }
+      { token: "number", foreground: "f7c67d" },
+      { token: "console", foreground: "d8a7c9" },
+      { token: "funcName", foreground: "45d8be" },
+      { token: "operator", foreground: "ede7a4" },
+      { token: "type.identifier", foreground: "93b7ff" }
     ],
     colors: {
       "editor.background": "#07101c",
@@ -63,102 +79,91 @@ function JaggerScriptPage() {
 
       <main className="content-shell ide-shell">
         <section className="ide-hero glass-card">
-          <div>
+          <div className="ide-hero__intro">
             <span className="section-heading__eyebrow">Interactive language project</span>
             <h1>JaggerScript Playground</h1>
             <p>{profileContent.jaggerscriptIntro.summary}</p>
           </div>
-          <div className="chip-row">
-            {profileContent.jaggerscriptIntro.bullets.map((bullet) => (
-              <span key={bullet} className="chip chip--muted">
-                {bullet}
-              </span>
+          <div className="ide-hero__actions">
+            <button type="button" className="cta-button" onClick={handleRun}>
+              Run program
+            </button>
+            <button type="button" className="cta-button cta-button--secondary" onClick={handleReset}>
+              Reset example
+            </button>
+          </div>
+        </section>
+
+        <section className="glass-card ide-example-strip">
+          <div className="ide-example-strip__header">
+            <div>
+              <span className="section-heading__eyebrow">Examples</span>
+              <h2>{selectedExample.title}</h2>
+            </div>
+            <p>{selectedExample.description}</p>
+          </div>
+          <div className="example-list" role="list">
+            {jaggerscriptExamples.map((example) => (
+              <button
+                key={example.id}
+                type="button"
+                className={
+                  example.id === selectedExampleId
+                    ? "example-card is-active"
+                    : "example-card"
+                }
+                onClick={() => handleLoadExample(example.id)}
+              >
+                <strong>{example.title}</strong>
+                <span>{example.description}</span>
+              </button>
             ))}
           </div>
         </section>
 
-        <section className="ide-layout">
-          <aside className="glass-card ide-sidebar">
-            <div className="ide-sidebar__section">
-              <h2>Examples</h2>
-              <p>
-                Each example comes directly from the language repo so the playground stays tied to the real runtime surface.
-              </p>
-            </div>
-            <div className="example-list" role="list">
-              {jaggerscriptExamples.map((example) => (
-                <button
-                  key={example.id}
-                  type="button"
-                  className={
-                    example.id === selectedExampleId
-                      ? "example-card is-active"
-                      : "example-card"
-                  }
-                  onClick={() => handleLoadExample(example.id)}
-                >
-                  <strong>{example.title}</strong>
-                  <span>{example.description}</span>
-                </button>
-              ))}
-            </div>
-            <div className="ide-sidebar__section">
-              <h2>What it shows</h2>
-              <p>{profileContent.jaggerscriptIntro.headline}</p>
-            </div>
-          </aside>
-
-          <div className="ide-workspace">
-            <div className="glass-card ide-toolbar">
+        <section className="ide-panels ide-panels--playground">
+          <article className="glass-card ide-panel ide-panel--editor">
+            <header className="ide-panel__header">
               <div>
-                <span className="section-heading__eyebrow">Current example</span>
-                <h2>{selectedExample.title}</h2>
-                <p>{selectedExample.description}</p>
+                <h3>Source</h3>
+                <span>Editable browser interpreter input</span>
               </div>
-              <div className="ide-toolbar__actions">
-                <button type="button" className="cta-button" onClick={handleRun}>
-                  Run program
-                </button>
-                <button type="button" className="cta-button cta-button--secondary" onClick={handleReset}>
-                  Reset example
-                </button>
+              <div className="chip-row">
+                {profileContent.jaggerscriptIntro.bullets.slice(0, 2).map((bullet) => (
+                  <span key={bullet} className="chip chip--muted">
+                    {bullet}
+                  </span>
+                ))}
               </div>
+            </header>
+            <div className="ide-editor ide-editor--wide">
+              <Editor
+                beforeMount={configureJaggerScriptMonaco}
+                defaultLanguage="JaggerScript"
+                language="JaggerScript"
+                theme="atlas-night"
+                value={source}
+                onChange={(value) => setSource(value ?? "")}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 15,
+                  scrollBeyondLastLine: false,
+                  lineNumbersMinChars: 3,
+                  wordWrap: "on"
+                }}
+              />
             </div>
+          </article>
 
-            <div className="ide-panels">
-              <article className="glass-card ide-panel">
-                <header className="ide-panel__header">
-                  <h3>Source</h3>
-                  <span>Editable browser interpreter input</span>
-                </header>
-                <div className="ide-editor">
-                  <Editor
-                    beforeMount={defineEditorTheme}
-                    defaultLanguage="typescript"
-                    language="typescript"
-                    theme="atlas-night"
-                    value={source}
-                    onChange={(value) => setSource(value ?? "")}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      scrollBeyondLastLine: false,
-                      lineNumbersMinChars: 3,
-                      wordWrap: "on"
-                    }}
-                  />
-                </div>
-              </article>
-
-              <article className="glass-card ide-panel ide-panel--console">
-                <header className="ide-panel__header">
-                  <h3>Console</h3>
-                  <span>Interpreter output</span>
-                </header>
-                <pre className="console-output">{deferredOutput}</pre>
-              </article>
-            </div>
-          </div>
+          <article className="glass-card ide-panel ide-panel--console">
+            <header className="ide-panel__header">
+              <div>
+                <h3>Console</h3>
+                <span>Interpreter output</span>
+              </div>
+            </header>
+            <pre className="console-output">{deferredOutput}</pre>
+          </article>
         </section>
       </main>
     </div>
