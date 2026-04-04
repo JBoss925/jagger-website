@@ -19,7 +19,7 @@
   --radius-md: 16px;
   --section-scroll-offset: 132px;
   --header-mask-height: 124px;
-  --content-readability-opacity: 0.74;
+  --content-readability-opacity: 0.67;
   --content-readability-width: min(1280px, calc(100vw - 72px));
 }
 
