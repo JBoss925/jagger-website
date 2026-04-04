@@ -339,8 +339,6 @@ button:hover {
   align-items: stretch;
 }
 
-.hero-panel__copy,
-.hero-panel__aside,
 .content-section,
 .ide-hero,
 .ide-workspace,
@@ -357,8 +355,6 @@ button:hover {
   border-radius: var(--radius-xl);
 }
 
-.hero-panel__copy,
-.hero-panel__aside,
 .content-section,
 .ide-hero,
 .ide-workspace,
@@ -373,6 +369,16 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
+  padding: 10px 0;
+}
+
+.hero-panel__aside {
+  display: grid;
+  align-content: center;
+  gap: 22px;
+  min-width: 0;
+  padding: 10px 0;
 }
 
 .hero-panel__eyebrow,
@@ -391,12 +397,14 @@ button:hover {
   margin: 10px 0 12px;
   font-size: clamp(3rem, 8vw, 6rem);
   line-height: 0.95;
+  text-shadow: 0 10px 36px rgba(0, 0, 0, 0.38);
 }
 
 .hero-panel__title {
   font-size: clamp(1.2rem, 2vw, 1.7rem);
   color: var(--text);
   max-width: 34rem;
+  margin: 0;
 }
 
 .hero-panel__summary,
@@ -411,6 +419,11 @@ button:hover {
   line-height: 1.7;
 }
 
+.hero-panel__summary {
+  max-width: 40rem;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
 .detail-list {
   margin: 0;
   padding-left: 1.2rem;
@@ -422,12 +435,19 @@ button:hover {
 .detail-list--hero {
   margin-top: 14px;
   max-width: 40rem;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 .hero-panel__portrait-wrap {
-  padding: 16px;
+  width: min(100%, 470px);
+  margin-left: auto;
+  padding: 12px;
   border-radius: 24px;
-  background: radial-gradient(circle at top, rgba(87, 208, 255, 0.2), rgba(87, 208, 255, 0) 60%);
+  border: 1px solid rgba(126, 173, 228, 0.12);
+  background:
+    radial-gradient(circle at top, rgba(87, 208, 255, 0.18), rgba(87, 208, 255, 0) 60%),
+    linear-gradient(180deg, rgba(11, 20, 34, 0.3), rgba(11, 20, 34, 0.08));
+  backdrop-filter: blur(10px);
 }
 
 .hero-panel__portrait {
@@ -445,7 +465,7 @@ button:hover {
 }
 
 .metric-grid {
-  margin-top: 22px;
+  margin-top: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1016,12 +1036,21 @@ button:hover {
   }
 
   .hero-panel__copy,
-  .hero-panel__aside,
   .content-section,
   .ide-hero,
   .ide-workspace,
   .contact-card {
     padding: 22px;
+  }
+
+  .hero-panel__copy,
+  .hero-panel__aside {
+    padding: 0;
+  }
+
+  .hero-panel__portrait-wrap {
+    width: 100%;
+    margin-left: 0;
   }
 
   .ide-workspace__body {

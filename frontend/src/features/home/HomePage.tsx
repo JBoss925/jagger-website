@@ -85,7 +85,7 @@ function HomePage() {
 
       <main className="content-shell home-shell">
         <section id="hero" className="hero-panel">
-          <div className="hero-panel__copy glass-card">
+          <div className="hero-panel__copy">
             <span className="hero-panel__eyebrow">{profileContent.sceneSections[0].eyebrow}</span>
             <h1>{profileContent.name}</h1>
             <p className="hero-panel__title">{profileContent.title}</p>
@@ -105,7 +105,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="hero-panel__aside glass-card">
+          <div className="hero-panel__aside">
             <div className="hero-panel__portrait-wrap">
               <img src={headshotAsset} alt="Jagger Brulato portrait" className="hero-panel__portrait" />
             </div>
