@@ -122,27 +122,27 @@ function HomePage() {
 
         <SectionShell
           id="impact"
-          eyebrow="Positioning"
-          title="A hiring manager should leave this site understanding exactly how I add leverage."
-          summary="The goal is not to list every tool I have touched. It is to make the through-line obvious: I lead, I ship, and I enjoy technically demanding work."
+          eyebrow="Focus"
+          title="The work I’m most drawn to usually creates leverage somewhere."
+          summary="That can mean product features, platform work, developer tooling, or just making a system easier for the next person to work in."
         >
           <div className="impact-grid">
             <article className="glass-card feature-card">
-              <h3>Lead with full-stack ownership</h3>
+              <h3>Own the whole path</h3>
               <p>
-                I like taking responsibility for the whole path from user-facing experience to backend mechanics and operational reality.
+                I like being able to follow a problem from the interface all the way down to the backend and operational details.
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Bring systems instincts to product work</h3>
+              <h3>Bring systems thinking into product work</h3>
               <p>
-                Distributed systems, platform work, and runtime tooling sharpen how I think about reliability, interfaces, and scale.
+                A lot of what I’ve learned from systems and platform work shows up in how I build product software too.
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Build for other engineers too</h3>
+              <h3>Build things other engineers use</h3>
               <p>
-                Some of my best work increases clarity for teammates, whether that means tooling, dashboards, onboarding, or better abstractions.
+                Some of the most satisfying work for me is tooling, visibility, onboarding, and internal abstractions.
               </p>
             </article>
           </div>
@@ -151,8 +151,8 @@ function HomePage() {
         <SectionShell
           id="experience"
           eyebrow="Experience"
-          title="Execution across product engineering, platform work, and technical leadership."
-          summary="These roles are the clearest signals of how I operate: hands-on, technically ambitious, and oriented toward team leverage."
+          title="This is the fastest way to get a feel for the kinds of work I’ve done."
+          summary="It spans product engineering, platform work, and leading teams while still staying close to the code."
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -163,9 +163,9 @@ function HomePage() {
 
         <SectionShell
           id="projects"
-          eyebrow="Selected work"
-          title="Projects that make the technical range concrete."
-          summary="I want the portfolio section to reinforce the resume, not feel disconnected from it. These are the projects that best support that story."
+          eyebrow="Projects"
+          title="These projects fill in the rest of the picture."
+          summary="They’re the ones that say the most about what I like building when nobody is assigning it to me."
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
@@ -176,9 +176,9 @@ function HomePage() {
 
         <SectionShell
           id="craft"
-          eyebrow="Craft and stack"
-          title="Breadth matters, but the real signal is how the pieces connect."
-          summary="I care about combining architecture, implementation, and communication in a way that helps teams move faster without lowering the technical bar."
+          eyebrow="How I work"
+          title="The stack matters less to me than how the pieces connect."
+          summary="I care a lot about good boundaries, good defaults, and making software easier to work in over time."
         >
           <div className="skill-grid">
             {profileContent.skillClusters.map((cluster) => (
@@ -189,15 +189,15 @@ function HomePage() {
 
         <SectionShell
           id="contact"
-          eyebrow="Next step"
-          title="If this feels aligned with the kind of engineer you want on a team, let’s talk."
-          summary="I’m especially interested in roles where technical ownership, product judgment, and platform thinking all matter at once."
+          eyebrow="Contact"
+          title="If this looks like the kind of background you need, reach out."
+          summary="I’m especially interested in work where product thinking and technical ownership both matter."
         >
           <div className="glass-card contact-card">
             <div>
               <h3>Reach out</h3>
               <p>
-                The fastest path is email, but the resume, GitHub, and LinkedIn are all linked here if you want the fuller picture.
+                Email is easiest, but the resume, GitHub, and LinkedIn are here too if you want to look around first.
               </p>
             </div>
             <div className="contact-links">

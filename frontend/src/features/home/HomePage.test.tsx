@@ -14,7 +14,7 @@ describe("HomePage", () => {
       screen.getByRole("heading", { name: /Jagger Brulato/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /Projects that make the technical range concrete/i })
+      screen.getByRole("heading", { name: /These projects fill in the rest of the picture/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /^JaggerScript$/i })

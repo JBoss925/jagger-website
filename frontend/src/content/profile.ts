@@ -9,21 +9,21 @@ export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
-  title: "Full-Stack Engineer building platforms, distributed systems, and language tools.",
+  title: "Full-stack engineer working across product, platform, and language tooling.",
   location: "United States",
   email: "jaggerbrulato@gmail.com",
   heroSummary:
-    "I build ambitious software across product surfaces and core infrastructure, with a bias toward hard technical problems, crisp execution, and developer empathy.",
+    "I like working on software that crosses boundaries: product work, backend systems, internal tooling, and the weird projects that force you to understand how things actually work.",
   heroBullets: [
-    "Platform-minded engineer focused on systems that help teams ship faster and more confidently.",
-    "Comfortable moving from architecture and backend services to polished frontend experiences and developer tooling.",
-    "Builder of custom language tooling, browser runtimes, and product-quality demos that make technical depth legible."
+    "Most of my work has been some mix of product delivery, platform thinking, and developer-facing tooling.",
+    "I’m happiest when I get to move between the UI, the backend, and the operational side of the system.",
+    "JaggerScript is the clearest side-project example of that: language design, runtime work, and a browser experience around it."
   ],
   metrics: [
-    { label: "Primary lens", value: "Full-stack leadership" },
-    { label: "Technical depth", value: "Distributed systems + PL" },
-    { label: "What I optimize", value: "Shipping velocity and clarity" },
-    { label: "Signature project", value: "JaggerScript" }
+    { label: "Main lane", value: "Full-stack" },
+    { label: "Also drawn to", value: "Platform + systems" },
+    { label: "Favorite work", value: "Developer tooling" },
+    { label: "Project to open", value: "JaggerScript" }
   ],
   links: [
     { label: "Email", href: "mailto:jaggerbrulato@gmail.com" },
@@ -35,10 +35,10 @@ export const profileContent: ProfileContent = {
     {
       id: "hero",
       label: "Intro",
-      eyebrow: "Systems Atlas",
-      title: "A product-minded engineer with systems instincts.",
+      eyebrow: "Intro",
+      title: "I’m a full-stack engineer who likes technically demanding work.",
       summary:
-        "The opening frame establishes breadth: platform work, distributed systems, and language tooling in one cohesive story.",
+        "This is the short version: the work I enjoy tends to sit somewhere between product engineering, platform work, and developer tooling.",
       position: [-8, 3, -1],
       camera: [-1, 1.8, 14],
       target: [-4, 1.4, 0],
@@ -46,11 +46,11 @@ export const profileContent: ProfileContent = {
     },
     {
       id: "impact",
-      label: "Impact",
-      eyebrow: "Why Me",
-      title: "I like technical work that creates leverage for other engineers.",
+      label: "Focus",
+      eyebrow: "Focus",
+      title: "A lot of the work I care about is really leverage work.",
       summary:
-        "The through-line is enablement: stronger platforms, better runtime visibility, and cleaner paths from idea to shipped product.",
+        "Sometimes that means product features. Sometimes it means internal tools, visibility, cleaner abstractions, or a better path for the next engineer touching the code.",
       position: [-2, 0, 1],
       camera: [2, 1.2, 12],
       target: [0, 0.2, 0],
@@ -59,10 +59,10 @@ export const profileContent: ProfileContent = {
     {
       id: "experience",
       label: "Experience",
-      eyebrow: "Execution",
-      title: "Leadership, ownership, and hands-on delivery across the stack.",
+      eyebrow: "Experience",
+      title: "Most of my experience has been hands-on across different parts of the stack.",
       summary:
-        "The experience arc highlights platform engineering, large-scale software environments, technical leadership, and shipping across multiple surfaces.",
+        "These roles are the best quick read on how I work and what kinds of environments I’ve worked in.",
       position: [4, 1.8, -2],
       camera: [5.5, 2.1, 11],
       target: [4.2, 1, -1.5],
@@ -71,10 +71,10 @@ export const profileContent: ProfileContent = {
     {
       id: "projects",
       label: "Projects",
-      eyebrow: "Proof",
-      title: "Distinctive projects that show range without feeling scattered.",
+      eyebrow: "Projects",
+      title: "These are the projects I’d point someone to first.",
       summary:
-        "The project set reinforces the story: language tooling, simulation, gameplay systems, and backend utilities with real engineering texture.",
+        "They’re the best examples of the kinds of problems I like spending time on outside of work too.",
       position: [7, -1.6, 0],
       camera: [6.5, 0.6, 12.5],
       target: [6.2, -0.8, 0],
@@ -83,10 +83,10 @@ export const profileContent: ProfileContent = {
     {
       id: "craft",
       label: "Craft",
-      eyebrow: "Stack",
-      title: "I care about architecture, team effectiveness, and developer experience at the same time.",
+      eyebrow: "How I work",
+      title: "I care a lot about how the technical pieces fit together.",
       summary:
-        "This section makes the leadership story concrete through tools, habits, and technical domains rather than generic self-descriptions.",
+        "The through-line for me is usually product sense, engineering judgment, and making the system easier to work in over time.",
       position: [1, -3.4, -1],
       camera: [1.8, -1.1, 12.8],
       target: [1.5, -2, -0.5],
@@ -94,11 +94,11 @@ export const profileContent: ProfileContent = {
     },
     {
       id: "contact",
-      label: "Close",
-      eyebrow: "Next Step",
-      title: "If the role values technical ownership, I’d love to talk.",
+      label: "Contact",
+      eyebrow: "Contact",
+      title: "If this lines up with the kind of work you need done, reach out.",
       summary:
-        "The ending should feel clear and confident: here is the work, here is the resume, and here is how to reach me.",
+        "Email is the easiest way to get in touch, and the rest is here if you want to look through it first.",
       position: [-5, -2.4, 1],
       camera: [-3.6, -0.4, 13],
       target: [-3.6, -1.2, 0],
@@ -112,11 +112,11 @@ export const profileContent: ProfileContent = {
       timeframe: "Most recent role",
       location: "",
       summary:
-        "Built internal platform capabilities that helped engineering teams serve clients more efficiently and reason about live systems with better operational context.",
+        "Worked on internal platform capabilities and tooling for engineering teams.",
       highlights: [
-        "Supported a streamlined internal application platform for engineering teams.",
-        "Worked on visibility into cost, availability, and live process health through internal dashboards.",
-        "Reinforced a platform-as-a-service mindset around reliability, architecture, and developer efficiency."
+        "Worked on internal application platform work used by engineering teams.",
+        "Built better visibility into cost, availability, and process health.",
+        "Spent a lot of time in the space between platform reliability and day-to-day developer experience."
       ],
       tags: ["Platform engineering", "Internal tools", "Observability", "Developer enablement"]
     },
@@ -126,11 +126,11 @@ export const profileContent: ProfileContent = {
       timeframe: "Full-time",
       location: "",
       summary:
-        "Contributed as a full-time software engineer in a high-scale production environment where quality, collaboration, and engineering rigor mattered.",
+        "Worked as a software engineer in a large production environment.",
       highlights: [
-        "Worked in a production setting that demanded clean execution and strong engineering fundamentals.",
-        "Sharpened instincts around scale, reliability, and collaborative software delivery.",
-        "Added credibility to the story of shipping in large, mature engineering organizations."
+        "Got experience shipping in an environment with real scale and mature engineering processes.",
+        "Spent time around the kinds of reliability and quality expectations that come with that.",
+        "Worked in a place where collaboration and clean execution mattered."
       ],
       tags: ["Production systems", "Scale", "Collaboration", "Quality"]
     },
@@ -140,11 +140,11 @@ export const profileContent: ProfileContent = {
       timeframe: "University leadership",
       location: "Cornell University",
       summary:
-        "Led developers across platforms while staying hands-on with full-stack implementation, technical decision-making, onboarding, and delivery.",
+        "Led student developers while still staying hands-on with implementation and technical direction.",
       highlights: [
-        "Oversaw application development across multiple platforms and maintenance paths.",
-        "Managed technical direction for the Cue subteam across web, Android, iOS, Windows, and backend services.",
-        "Taught, onboarded, and unblocked other developers while shipping features directly."
+        "Worked across web, Android, iOS, Windows, and backend services.",
+        "Handled technical direction for the Cue subteam.",
+        "Did a lot of onboarding, unblocking, and feature work at the same time."
       ],
       tags: ["Leadership", "Full-stack", "Mentorship", "Product delivery"]
     },
@@ -154,11 +154,11 @@ export const profileContent: ProfileContent = {
       timeframe: "Summer internship",
       location: "Merchandising systems",
       summary:
-        "Worked on Lowe’s Central Price Master, touching frontend, backend microservices, and DevOps workflows in a modern enterprise stack.",
+        "Worked on Lowe’s Central Price Master across frontend, backend services, and DevOps tooling.",
       highlights: [
-        "Implemented frontend work in Angular and TypeScript.",
-        "Built backend microservice APIs in Spring Boot and Java.",
-        "Worked with GCP, Docker, Jenkins, Jira, and Bitbucket as part of the delivery flow."
+        "Built frontend features in Angular and TypeScript.",
+        "Worked on backend APIs in Spring Boot and Java.",
+        "Used the surrounding delivery stack: GCP, Docker, Jenkins, Jira, and Bitbucket."
       ],
       tags: ["Angular", "Spring Boot", "Java", "DevOps"]
     },
@@ -168,11 +168,11 @@ export const profileContent: ProfileContent = {
       timeframe: "Mobile engineering internship",
       location: "Cross-platform mobile",
       summary:
-        "Built cross-platform mobile solutions in C# and Xamarin for clients with operationally meaningful use cases like inventory, driver tracking, and scheduling.",
+        "Built cross-platform mobile software in C# and Xamarin for client projects.",
       highlights: [
-        "Used C# and Xamarin before Microsoft’s broader Visual Studio integration.",
-        "Helped support simultaneous cross-platform mobile development.",
-        "Worked on practical, real-world client applications rather than toy internal demos."
+        "Worked on client applications for things like inventory, driver tracking, and scheduling.",
+        "Built in a cross-platform mobile stack before that workflow became more common.",
+        "Got early experience shipping software tied to real operational use cases."
       ],
       tags: ["C#", "Xamarin", "Mobile", "Client delivery"]
     }
@@ -182,9 +182,9 @@ export const profileContent: ProfileContent = {
       slug: "jaggerscript",
       title: "JaggerScript",
       description:
-        "A strongly typed, object-oriented scripting language with a browser-based interpreter and playground.",
+        "A small object-oriented language with its own parser, interpreter, and browser playground.",
       impact:
-        "The project makes the deeper engineering story visible: parser design, intermediate representations, runtime behavior, and a developer-facing execution surface.",
+        "This is probably the most complete example of the kind of side project I like building.",
       stack: ["TypeScript", "PEG parser", "Interpreter", "Browser tooling"],
       image: jaggerscriptPreview,
       links: [
@@ -196,9 +196,9 @@ export const profileContent: ProfileContent = {
       slug: "domes",
       title: "Domes",
       description:
-        "An online multiplayer board game inspired by Santorini, built as an interactive systems-heavy side project.",
+        "An online multiplayer board game inspired by Santorini.",
       impact:
-        "Useful as a signal that I enjoy stateful product experiences and the engineering work that makes real-time interaction coherent.",
+        "I built it because I like stateful interactive systems, especially when the product side and the technical side are tightly coupled.",
       stack: ["Realtime gameplay", "Web app", "State management"],
       image: domesPreview,
       links: [
@@ -209,9 +209,9 @@ export const profileContent: ProfileContent = {
       slug: "genetic-ts",
       title: "Genetic Algorithms in TypeScript",
       description:
-        "A demo and learning library that teaches an AI to throw a ball at a target using a custom genetic algorithm implementation.",
+        "A TypeScript demo around genetic algorithms and simulation.",
       impact:
-        "Shows the ability to make algorithmic ideas approachable through interaction instead of burying them in abstract code alone.",
+        "The point here was to make an algorithmic idea easier to play with and understand.",
       stack: ["TypeScript", "Simulation", "ML concepts", "Visualization"],
       image: geneticPreview,
       links: [
@@ -226,9 +226,9 @@ export const profileContent: ProfileContent = {
       slug: "materialize",
       title: "materialize()",
       description:
-        "A recursive Firestore utility that resolves reference-heavy data into client-ready structures with bounded depth.",
+        "A Firestore utility for resolving reference-heavy data into something easier to consume.",
       impact:
-        "A compact example of writing backend abstractions that make product teams faster without adding conceptual overhead for consumers.",
+        "It’s a small example, but it shows the kind of backend utility work I enjoy writing.",
       stack: ["TypeScript", "Firestore", "Backend utilities", "Data shaping"],
       image: materializePreview,
       links: [
@@ -241,9 +241,9 @@ export const profileContent: ProfileContent = {
   ],
   skillClusters: [
     {
-      title: "Leadership and team leverage",
+      title: "Working with a team",
       summary:
-        "I’m most valuable when I can pair execution with structure, helping teams ship while clarifying the technical path forward.",
+        "I tend to end up in roles where I’m writing code, helping make decisions, and unblocking other people at the same time.",
       items: [
         "Technical leadership",
         "Developer onboarding",
@@ -255,7 +255,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Systems and platform work",
       summary:
-        "The backend and platform side of my work tends to center on reliability, architecture visibility, and operational clarity.",
+        "A lot of the backend work I enjoy ends up around reliability, observability, and internal architecture.",
       items: [
         "Distributed systems",
         "Platform engineering",
@@ -265,9 +265,9 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      title: "Product and implementation range",
+      title: "Range",
       summary:
-        "I’m comfortable moving from polished interfaces to service layers, developer tools, and runtime internals without losing the product narrative.",
+        "I like not being boxed into one layer of the stack.",
       items: [
         "Frontend engineering",
         "Backend APIs",
@@ -278,13 +278,13 @@ export const profileContent: ProfileContent = {
     }
   ],
   jaggerscriptIntro: {
-    headline: "A language project that feels like an actual product experience.",
+    headline: "A language project I built all the way through.",
     summary:
-      "JaggerScript is a browser-runnable interpreter for a strongly typed, OO-style scripting language. It is both a technical artifact and a communication tool: a way to show parser work, execution semantics, and runtime behavior in a form other people can actually explore.",
+      "JaggerScript is a browser-runnable interpreter for a small strongly typed scripting language. I built it because I wanted a project that forced me to own the parser, runtime, and the experience around it.",
     bullets: [
-      "Parser, compiler stage, and interpreter live inside the repo rather than being faked for presentation.",
-      "Examples come directly from the language test programs, so the playground reflects the real runtime surface.",
-      "The browser route is meant to feel like a compact IDE, not just a code block with a run button."
+      "The parser, compiler stage, and interpreter are all real parts of the project.",
+      "The examples come from the language repo itself.",
+      "I wanted the browser route to feel more like a tool than a code sample."
     ]
   }
 };
