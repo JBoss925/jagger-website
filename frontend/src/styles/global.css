@@ -360,6 +360,7 @@ button:hover {
 .hero-panel__aside,
 .content-section,
 .ide-hero,
+.ide-example-strip,
 .ide-sidebar,
 .ide-toolbar,
 .ide-panel,
@@ -623,30 +624,55 @@ button:hover {
   gap: 24px;
 }
 
-.ide-layout {
+.ide-hero,
+.ide-example-strip,
+.ide-panels,
+.ide-panel {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 20px;
+  gap: 18px;
 }
 
-.ide-sidebar {
-  display: grid;
-  gap: 20px;
-  align-content: start;
+.ide-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
 }
 
-.ide-sidebar__section {
-  flex-direction: column;
+.ide-hero__intro {
+  display: grid;
+  gap: 12px;
+  max-width: 52rem;
+}
+
+.ide-hero__actions {
+  display: grid;
+  gap: 12px;
+  justify-items: end;
+  align-self: center;
+}
+
+.ide-example-strip__header {
+  display: grid;
+  gap: 12px 24px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  align-items: start;
+}
+
+.ide-example-strip__header p {
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.6;
 }
 
 .example-list {
   display: grid;
   gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
 .example-card {
   display: grid;
   gap: 8px;
+  min-height: 132px;
   text-align: left;
   cursor: pointer;
   color: var(--text);
@@ -662,23 +688,33 @@ button:hover {
   background: rgba(87, 208, 255, 0.12);
 }
 
-.ide-workspace,
-.ide-panels {
-  display: grid;
-  gap: 18px;
-}
-
-.ide-panels {
-  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+.ide-panels--playground {
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.72fr);
+  align-items: start;
 }
 
 .ide-panel {
+  align-content: start;
+}
+
+.ide-panel__header {
   display: grid;
-  gap: 14px;
+  gap: 12px;
+  align-items: start;
+}
+
+.ide-panel__header h3,
+.ide-example-strip__header h2 {
+  margin: 0;
+}
+
+.ide-panel__header .chip-row {
+  justify-content: flex-start;
 }
 
 .ide-panel__header span {
   color: var(--text-dim);
+  line-height: 1.5;
 }
 
 .ide-editor {
@@ -688,8 +724,12 @@ button:hover {
   border: 1px solid rgba(87, 208, 255, 0.14);
 }
 
+.ide-editor--wide {
+  min-height: 76vh;
+}
+
 .ide-panel--console {
-  min-height: 62vh;
+  min-height: 76vh;
 }
 
 .console-output {
@@ -717,8 +757,10 @@ button:hover {
   .impact-grid,
   .project-grid,
   .skill-grid,
-  .ide-layout,
-  .ide-panels {
+  .ide-panels,
+  .ide-panels--playground,
+  .ide-hero,
+  .ide-example-strip__header {
     grid-template-columns: 1fr;
   }
 }
@@ -770,17 +812,20 @@ button:hover {
   .hero-panel__aside,
   .content-section,
   .ide-hero,
-  .ide-sidebar,
-  .ide-toolbar,
+  .ide-example-strip,
   .ide-panel,
   .contact-card {
     padding: 22px;
   }
 
-  .ide-toolbar,
+  .ide-hero__actions,
   .ide-panel__header,
   .experience-card__header {
-    flex-direction: column;
+    justify-items: stretch;
+  }
+
+  .ide-hero__actions .cta-button {
+    width: 100%;
   }
 
   .experience-card__meta {
