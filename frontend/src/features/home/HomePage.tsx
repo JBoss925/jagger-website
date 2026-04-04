@@ -22,6 +22,31 @@ function HomePage() {
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
   const hasHandledInitialHash = useRef(false);
+  const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
+  const nextSectionId =
+    activeSectionIndex >= 0 && activeSectionIndex < sectionOrder.length - 1
+      ? sectionOrder[activeSectionIndex + 1]
+      : "hero";
+  const isAtLastSection = activeSectionIndex === sectionOrder.length - 1;
+
+  function scrollToSection(targetId: string) {
+    if (targetId === "hero") {
+      window.history.replaceState(null, "", "/#hero");
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      return;
+    }
+
+    const element = document.getElementById(targetId);
+    if (!element) {
+      return;
+    }
+
+    window.history.replaceState(null, "", `/#${targetId}`);
+    element.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
+  }
 
   useLayoutEffect(() => {
     if (!location.hash) {
@@ -210,6 +235,42 @@ function HomePage() {
           </div>
         </SectionShell>
       </main>
+
+      <button
+        type="button"
+        className={
+          isAtLastSection
+            ? "section-advance section-advance--return"
+            : "section-advance"
+        }
+        aria-label={
+          isAtLastSection
+            ? "Return to top of page"
+            : `Go to ${profileContent.sceneSections[activeSectionIndex + 1]?.label ?? "next section"}`
+        }
+        title={
+          isAtLastSection
+            ? "Back to top"
+            : `Next: ${profileContent.sceneSections[activeSectionIndex + 1]?.label ?? "Next section"}`
+        }
+        onClick={() => scrollToSection(nextSectionId)}
+      >
+        <span className="section-advance__label" aria-hidden={!isAtLastSection}>
+          Back to top
+        </span>
+        <span className="section-advance__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="presentation">
+            <path
+              d="M12 6v12M12 18l-5-5M12 18l5-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </button>
     </div>
   );
 }

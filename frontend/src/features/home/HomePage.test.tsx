@@ -22,6 +22,9 @@ describe("HomePage", () => {
     expect(
       screen.getAllByRole("link", { name: /Resume/i })[0]
     ).toHaveAttribute("href", "/files/resume.pdf");
+    expect(
+      screen.getByRole("button", { name: /Go to|Return to top/i })
+    ).toBeInTheDocument();
   });
 
   it("uses an immediate scroll on initial hash loads", () => {
