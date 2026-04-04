@@ -39,16 +39,6 @@ function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
             {section.label}
           </a>
         ))}
-        <Link
-          to="/jaggerscript"
-          className={
-            location.pathname === "/jaggerscript"
-              ? "site-nav__link is-active"
-              : "site-nav__link"
-          }
-        >
-          JaggerScript
-        </Link>
       </nav>
 
       <div className="site-nav__actions">
@@ -56,7 +46,7 @@ function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
           Resume
         </a>
         <Link className="site-nav__button" to="/jaggerscript">
-          Open Playground
+          Open JaggerScript Playground
         </Link>
       </div>
     </header>
