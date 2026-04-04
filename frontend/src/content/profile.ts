@@ -22,7 +22,7 @@ export const profileContent: ProfileContent = {
   metrics: [
     { label: "Main lane", value: "Full-stack" },
     { label: "Also drawn to", value: "Platform + systems" },
-    { label: "Favorite work", value: "Developer tooling" },
+    { label: "Favorite work", value: "Distributed systems" },
     { label: "Project to open", value: "JaggerScript" }
   ],
   links: [
