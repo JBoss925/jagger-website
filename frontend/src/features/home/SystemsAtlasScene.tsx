@@ -28,6 +28,16 @@ type PlanetSurfaceVariant = {
   seed: number;
 };
 
+type RocketOrbitVariant = {
+  radius: number;
+  tiltX: number;
+  tiltZ: number;
+  speed: number;
+  phaseOffset: number;
+  direction: 1 | -1;
+  lift: number;
+};
+
 const nodeVariants = [
   {
     scale: 1.22,
@@ -155,6 +165,15 @@ const planetSurfaceVariants: PlanetSurfaceVariant[] = [
     rotationSpeed: 0.03,
     seed: 67
   }
+];
+
+const rocketOrbitVariants: RocketOrbitVariant[] = [
+  { radius: 2.2, tiltX: 0.28, tiltZ: -0.22, speed: 0.74, phaseOffset: 0.2, direction: 1, lift: 0.18 },
+  { radius: 1.75, tiltX: -0.16, tiltZ: 0.2, speed: 0.82, phaseOffset: 1.1, direction: -1, lift: 0.1 },
+  { radius: 2.7, tiltX: 0.18, tiltZ: 0.14, speed: 0.62, phaseOffset: 2.3, direction: 1, lift: 0.2 },
+  { radius: 1.5, tiltX: -0.24, tiltZ: -0.18, speed: 0.9, phaseOffset: 0.8, direction: -1, lift: 0.08 },
+  { radius: 2.05, tiltX: 0.2, tiltZ: 0.26, speed: 0.76, phaseOffset: 2.9, direction: 1, lift: 0.14 },
+  { radius: 2.1, tiltX: -0.2, tiltZ: 0.12, speed: 0.7, phaseOffset: 1.9, direction: -1, lift: 0.16 }
 ];
 
 const circularSpriteTextureCache = new Map<string, THREE.CanvasTexture>();
@@ -653,6 +672,30 @@ function createPlanetTextures(variant: PlanetSurfaceVariant) {
   return textures;
 }
 
+function getOrbitPosition(center: THREE.Vector3, orbit: RocketOrbitVariant, angle: number) {
+  const local = new THREE.Vector3(
+    Math.cos(angle) * orbit.radius,
+    Math.sin(angle * 1.4) * orbit.lift,
+    Math.sin(angle) * orbit.radius
+  );
+
+  local.applyEuler(new THREE.Euler(orbit.tiltX, 0, orbit.tiltZ));
+  return local.add(center);
+}
+
+function getTransferPoint(
+  from: THREE.Vector3,
+  to: THREE.Vector3,
+  midpointLift: number,
+  progress: number
+) {
+  const control = from.clone().lerp(to, 0.5);
+  control.y += midpointLift;
+  const first = from.clone().lerp(control, progress);
+  const second = control.clone().lerp(to, progress);
+  return first.lerp(second, progress);
+}
+
 function StaticStarfield({
   count,
   spread,
@@ -931,6 +974,161 @@ function AtlasRig({ activeSection, reducedMotion }: { activeSection: SceneSectio
   return null;
 }
 
+function SceneRocket({
+  sections,
+  activeSectionId
+}: {
+  sections: SceneSection[];
+  activeSectionId: string;
+}) {
+  const rocketRef = useRef<THREE.Group>(null);
+  const exhaustRef = useRef<THREE.Group>(null);
+  const activeIndex = sections.findIndex((section) => section.id === activeSectionId);
+  const currentIndexRef = useRef(activeIndex >= 0 ? activeIndex : 0);
+  const orbitAngleRef = useRef(rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length].phaseOffset);
+  const transferRef = useRef<{
+    from: THREE.Vector3;
+    to: THREE.Vector3;
+    startedAt: number;
+    duration: number;
+    targetIndex: number;
+    targetAngle: number;
+  } | null>(null);
+  const forwardRef = useRef(new THREE.Vector3(1, 0, 0));
+
+  useFrame((state, delta) => {
+    const rocket = rocketRef.current;
+    if (!rocket) {
+      return;
+    }
+
+    const previousIndex = currentIndexRef.current;
+    const nextIndex = activeIndex >= 0 ? activeIndex : previousIndex;
+    const previousCenter = new THREE.Vector3(...sections[previousIndex].position);
+    const previousOrbit = rocketOrbitVariants[previousIndex % rocketOrbitVariants.length];
+
+    if (nextIndex !== previousIndex && !transferRef.current) {
+      const currentAngle = orbitAngleRef.current;
+      const currentPosition = getOrbitPosition(previousCenter, previousOrbit, currentAngle);
+      const targetCenter = new THREE.Vector3(...sections[nextIndex].position);
+      const targetOrbit = rocketOrbitVariants[nextIndex % rocketOrbitVariants.length];
+      const targetAngle = targetOrbit.phaseOffset + (Math.PI * 0.6) * targetOrbit.direction;
+
+      transferRef.current = {
+        from: currentPosition,
+        to: getOrbitPosition(targetCenter, targetOrbit, targetAngle),
+        startedAt: state.clock.elapsedTime,
+        duration: 1.05,
+        targetIndex: nextIndex,
+        targetAngle
+      };
+    }
+
+    let nextPosition: THREE.Vector3;
+    let lookTarget: THREE.Vector3;
+
+    if (transferRef.current) {
+      const { from, to, startedAt, duration, targetIndex, targetAngle } = transferRef.current;
+      const progress = THREE.MathUtils.clamp((state.clock.elapsedTime - startedAt) / duration, 0, 1);
+      nextPosition = getTransferPoint(from, to, 1.1, progress);
+      lookTarget = getTransferPoint(from, to, 1.1, Math.min(progress + 0.08, 1));
+
+      if (progress >= 1) {
+        currentIndexRef.current = targetIndex;
+        orbitAngleRef.current = targetAngle;
+        transferRef.current = null;
+      }
+    } else {
+      const orbit = rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length];
+      const center = new THREE.Vector3(...sections[currentIndexRef.current].position);
+      orbitAngleRef.current += delta * orbit.speed * orbit.direction;
+      nextPosition = getOrbitPosition(center, orbit, orbitAngleRef.current);
+      lookTarget = getOrbitPosition(center, orbit, orbitAngleRef.current + 0.08 * orbit.direction);
+    }
+
+    rocket.position.copy(nextPosition);
+    const direction = lookTarget.clone().sub(nextPosition).normalize();
+    const nextQuaternion = new THREE.Quaternion().setFromUnitVectors(forwardRef.current, direction);
+    rocket.quaternion.slerp(nextQuaternion, 1 - Math.exp(-delta * 8));
+
+    if (exhaustRef.current) {
+      const transfering = Boolean(transferRef.current);
+      const pulse = transfering
+        ? 1.08 + Math.sin(state.clock.elapsedTime * 18) * 0.12
+        : 0.82 + Math.sin(state.clock.elapsedTime * 8) * 0.04;
+      exhaustRef.current.scale.setScalar(pulse);
+
+      exhaustRef.current.children.forEach((child, index) => {
+        if (!(child instanceof THREE.Mesh)) {
+          return;
+        }
+
+        const material = child.material as THREE.MeshBasicMaterial;
+        if (index === 0) {
+          material.opacity = transfering ? 0.72 : 0.48;
+        } else if (index === 1) {
+          material.opacity = transfering ? 0.96 : 0.76;
+        } else {
+          material.opacity = transfering ? 0.22 : 0.12;
+        }
+      });
+    }
+  });
+
+  return (
+    <group ref={rocketRef}>
+      <group>
+        <mesh position={[0.04, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.085, 0.095, 0.42, 18]} />
+          <meshStandardMaterial color="#fff1e2" emissive="#f7a95b" emissiveIntensity={0.14} roughness={0.38} metalness={0.18} />
+        </mesh>
+        <mesh position={[0.33, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+          <coneGeometry args={[0.095, 0.18, 18]} />
+          <meshStandardMaterial color="#e45f51" emissive="#e45f51" emissiveIntensity={0.14} roughness={0.32} metalness={0.1} />
+        </mesh>
+        <mesh position={[-0.18, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+          <coneGeometry args={[0.07, 0.12, 14]} />
+          <meshStandardMaterial color="#b5cbe8" roughness={0.42} metalness={0.2} />
+        </mesh>
+        <mesh position={[0.1, 0.038, 0.038]}>
+          <sphereGeometry args={[0.06, 14, 14]} />
+          <meshStandardMaterial color="#89d8ff" emissive="#57d0ff" emissiveIntensity={0.36} roughness={0.18} metalness={0.24} />
+        </mesh>
+        <mesh position={[-0.08, 0, 0.12]}>
+          <boxGeometry args={[0.11, 0.03, 0.08]} />
+          <meshStandardMaterial color="#e45f51" roughness={0.46} metalness={0.1} />
+        </mesh>
+        <mesh position={[-0.08, 0, -0.12]}>
+          <boxGeometry args={[0.11, 0.03, 0.08]} />
+          <meshStandardMaterial color="#e45f51" roughness={0.46} metalness={0.1} />
+        </mesh>
+        <mesh position={[-0.08, 0.12, 0]}>
+          <boxGeometry args={[0.11, 0.08, 0.03]} />
+          <meshStandardMaterial color="#e45f51" roughness={0.46} metalness={0.1} />
+        </mesh>
+        <mesh position={[-0.08, -0.12, 0]}>
+          <boxGeometry args={[0.11, 0.08, 0.03]} />
+          <meshStandardMaterial color="#e45f51" roughness={0.46} metalness={0.1} />
+        </mesh>
+        <group ref={exhaustRef} position={[-0.31, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <mesh>
+            <coneGeometry args={[0.068, 0.18, 16]} />
+            <meshBasicMaterial color="#ff9b47" transparent opacity={0.62} depthWrite={false} />
+          </mesh>
+          <mesh position={[0, 0.024, 0]}>
+            <coneGeometry args={[0.04, 0.14, 14]} />
+            <meshBasicMaterial color="#ffd87f" transparent opacity={0.88} depthWrite={false} />
+          </mesh>
+          <mesh position={[0, -0.022, 0]} scale={[0.72, 0.82, 0.72]}>
+            <sphereGeometry args={[0.075, 12, 12]} />
+            <meshBasicMaterial color="#ff8a36" transparent opacity={0.18} depthWrite={false} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
 function AtlasNode({
   section,
   active,
@@ -1064,6 +1262,7 @@ function SystemsAtlasScene({ sections, activeSectionId, reducedMotion }: Systems
           surfaceVariant={planetSurfaceVariants[index % planetSurfaceVariants.length]}
         />
       ))}
+      <SceneRocket sections={sections} activeSectionId={activeSectionId} />
       <AtlasRig activeSection={activeSection} reducedMotion={reducedMotion} />
     </>
   );

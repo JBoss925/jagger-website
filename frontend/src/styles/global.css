@@ -727,6 +727,11 @@ button:hover {
 .scene-static__grid,
 .scene-static__glow {
   position: absolute;
+}
+
+.scene-static__gradient,
+.scene-static__grid,
+.scene-static__glow {
   inset: 0;
 }
 
