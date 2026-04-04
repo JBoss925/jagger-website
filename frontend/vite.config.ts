@@ -10,6 +10,7 @@ const utilShim = path.resolve(frontendRoot, "src/lib/jaggerscript/utilShim.ts");
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: [
       { find: /^util$/, replacement: utilShim },
       { find: "@", replacement: path.resolve(frontendRoot, "src") }

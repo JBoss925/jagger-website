@@ -209,17 +209,17 @@ export const profileContent: ProfileContent = {
       slug: "genetic-ts",
       title: "Genetic Algorithms in TypeScript",
       description:
-        "A TypeScript demo around genetic algorithms and simulation.",
+        "A rebuilt interactive simulation where a genetic algorithm learns the launch velocity needed to hit a target.",
       impact:
-        "The point here was to make an algorithmic idea easier to play with and understand.",
-      stack: ["TypeScript", "Simulation", "ML concepts", "Visualization"],
+        "I wanted this to feel like a real tool: tweak the physics, reroll the target, and watch the population adapt in real time.",
+      stack: ["TypeScript", "matter-js", "Genetic algorithms", "Interactive simulation"],
       image: geneticPreview,
       links: [
         {
-          label: "GitHub",
-          href: "https://github.com/cornell-dti/Devsesh-GeneticTSAlgorithms"
+          label: "Open Demo",
+          href: "/genetic-ts"
         },
-        { label: "Legacy Demo", href: "https://jagger.netlify.app/genetic/" }
+        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
     {

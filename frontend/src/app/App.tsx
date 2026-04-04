@@ -5,6 +5,9 @@ const HomePage = lazy(() => import("../features/home/HomePage"));
 const JaggerScriptPage = lazy(
   () => import("../features/jaggerscript/JaggerScriptPage")
 );
+const GeneticTsRoute = lazy(
+  () => import("../features/genetic-ts/GeneticTsRoute")
+);
 
 function RouteLoading() {
   return (
@@ -25,6 +28,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/jaggerscript" element={<JaggerScriptPage />} />
+        <Route path="/genetic-ts" element={<GeneticTsRoute />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

@@ -4,3 +4,6 @@
 [submodule "jaggerscript"]
 	path = jaggerscript
 	url = https://github.com/JBoss925/JaggerScript
+[submodule "genetic_ts"]
+	path = genetic_ts
+	url = https://github.com/JBoss925/GeneticTS
