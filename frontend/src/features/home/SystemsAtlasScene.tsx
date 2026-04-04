@@ -10,6 +10,24 @@ type SystemsAtlasSceneProps = {
   reducedMotion: boolean;
 };
 
+type PlanetSurfaceKind =
+  | "gas_giant"
+  | "earth_like"
+  | "desert_rocky"
+  | "ice_world"
+  | "storm_world"
+  | "volcanic";
+
+type PlanetSurfaceVariant = {
+  kind: PlanetSurfaceKind;
+  palette: string[];
+  ringColor: string;
+  inactiveTint: string;
+  emissiveColor: string;
+  rotationSpeed: number;
+  seed: number;
+};
+
 const nodeVariants = [
   {
     scale: 1.22,
@@ -81,6 +99,425 @@ const nodeVariants = [
     extraRings: []
   }
 ];
+
+const planetSurfaceVariants: PlanetSurfaceVariant[] = [
+  {
+    kind: "gas_giant",
+    palette: ["#d8c8ac", "#b78f63", "#8d5d44", "#f2ddb9"],
+    ringColor: "#d5c4a0",
+    inactiveTint: "#d4d7e1",
+    emissiveColor: "#9dc4ff",
+    rotationSpeed: 0.035,
+    seed: 11
+  },
+  {
+    kind: "earth_like",
+    palette: ["#2b5d86", "#3e85b6", "#3f7a4d", "#85bc6d", "#eef6ff"],
+    ringColor: "#c8d9f2",
+    inactiveTint: "#d9e4ef",
+    emissiveColor: "#8de7c1",
+    rotationSpeed: 0.04,
+    seed: 23
+  },
+  {
+    kind: "storm_world",
+    palette: ["#2b415c", "#4d6587", "#7e91ad", "#ced8e7", "#c48c61"],
+    ringColor: "#d8d4c7",
+    inactiveTint: "#d8dde7",
+    emissiveColor: "#f7a95b",
+    rotationSpeed: 0.028,
+    seed: 37
+  },
+  {
+    kind: "desert_rocky",
+    palette: ["#735038", "#a8764d", "#d9b17a", "#553828", "#ead2aa"],
+    ringColor: "#d9c3a1",
+    inactiveTint: "#d9d4cd",
+    emissiveColor: "#f7a95b",
+    rotationSpeed: 0.032,
+    seed: 41
+  },
+  {
+    kind: "ice_world",
+    palette: ["#c8e8ff", "#eaf7ff", "#8fb7d1", "#6d8ea8", "#f4fbff"],
+    ringColor: "#e7f5ff",
+    inactiveTint: "#e4ecf5",
+    emissiveColor: "#57d0ff",
+    rotationSpeed: 0.024,
+    seed: 53
+  },
+  {
+    kind: "volcanic",
+    palette: ["#17151c", "#2b2528", "#4f2f1f", "#b64f23", "#ff8c3d"],
+    ringColor: "#c99a70",
+    inactiveTint: "#d2ced3",
+    emissiveColor: "#ff8c3d",
+    rotationSpeed: 0.03,
+    seed: 67
+  }
+];
+
+const circularSpriteTextureCache = new Map<string, THREE.CanvasTexture>();
+const planetTextureCache = new Map<string, { map: THREE.CanvasTexture; emissiveMap: THREE.CanvasTexture }>();
+
+function createSeededRandom(seed: number) {
+  let state = seed % 2147483647;
+  if (state <= 0) {
+    state += 2147483646;
+  }
+
+  return () => {
+    state = (state * 16807) % 2147483647;
+    return (state - 1) / 2147483646;
+  };
+}
+
+function getCircularSpriteTexture(key: string, midAlpha: number) {
+  const cached = circularSpriteTextureCache.get(key);
+  if (cached) {
+    return cached;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Failed to create circular sprite texture context.");
+  }
+
+  const gradient = context.createRadialGradient(32, 32, 2, 32, 32, 32);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.3, "rgba(255,255,255,0.95)");
+  gradient.addColorStop(0.68, `rgba(255,255,255,${midAlpha})`);
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 64, 64);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  circularSpriteTextureCache.set(key, texture);
+  return texture;
+}
+
+function fillCanvas(context: CanvasRenderingContext2D, color: string, size: number) {
+  context.fillStyle = color;
+  context.fillRect(0, 0, size, size);
+}
+
+function drawSoftBlob(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radiusX: number,
+  radiusY: number,
+  color: string,
+  opacity: number
+) {
+  context.save();
+  context.globalAlpha = opacity;
+  context.fillStyle = color;
+  context.beginPath();
+  context.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+}
+
+function drawGasGiant(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
+  const gradient = context.createLinearGradient(0, 0, 0, size);
+  gradient.addColorStop(0, variant.palette[3]);
+  gradient.addColorStop(0.28, variant.palette[0]);
+  gradient.addColorStop(0.58, variant.palette[1]);
+  gradient.addColorStop(1, variant.palette[2]);
+  fillCanvas(context, "#000000", size);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 14; index += 1) {
+    const bandY = (index / 14) * size;
+    const bandHeight = size * (0.05 + rng() * 0.04);
+    const bandColor = variant.palette[index % variant.palette.length];
+    context.fillStyle = bandColor;
+    context.globalAlpha = 0.32 + rng() * 0.22;
+    context.beginPath();
+    context.moveTo(0, bandY);
+    for (let step = 0; step <= 24; step += 1) {
+      const x = (step / 24) * size;
+      const wave = Math.sin(step * 0.5 + index + rng() * 0.4) * bandHeight * 0.45;
+      context.lineTo(x, bandY + wave);
+    }
+    context.lineTo(size, bandY + bandHeight);
+    context.lineTo(0, bandY + bandHeight);
+    context.closePath();
+    context.fill();
+  }
+
+  context.globalAlpha = 0.9;
+  drawSoftBlob(context, size * 0.68, size * 0.58, size * 0.13, size * 0.08, "#d78c5c", 0.38);
+}
+
+function drawEarthLike(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
+  fillCanvas(context, variant.palette[0], size);
+  context.globalAlpha = 1;
+
+  for (let index = 0; index < 8; index += 1) {
+    context.fillStyle = index % 2 === 0 ? variant.palette[2] : variant.palette[3];
+    context.beginPath();
+    const centerX = size * (0.15 + rng() * 0.7);
+    const centerY = size * (0.18 + rng() * 0.64);
+    context.moveTo(centerX, centerY);
+    for (let point = 0; point < 9; point += 1) {
+      const angle = (point / 9) * Math.PI * 2;
+      const radius = size * (0.05 + rng() * 0.08);
+      context.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius * (0.6 + rng() * 0.8));
+    }
+    context.closePath();
+    context.fill();
+  }
+
+  context.fillStyle = variant.palette[4];
+  context.globalAlpha = 0.55;
+  context.fillRect(0, 0, size, size * 0.08);
+  context.fillRect(0, size * 0.92, size, size * 0.08);
+
+  context.strokeStyle = "rgba(255,255,255,0.42)";
+  context.lineWidth = size * 0.028;
+  context.lineCap = "round";
+  for (let index = 0; index < 5; index += 1) {
+    context.beginPath();
+    context.moveTo(size * rng() * 0.3, size * (0.18 + index * 0.15));
+    context.bezierCurveTo(
+      size * (0.28 + rng() * 0.12),
+      size * (0.12 + index * 0.16),
+      size * (0.6 + rng() * 0.18),
+      size * (0.24 + index * 0.12),
+      size * (0.7 + rng() * 0.24),
+      size * (0.2 + index * 0.14)
+    );
+    context.stroke();
+  }
+  context.globalAlpha = 1;
+}
+
+function drawDesertRocky(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
+  const gradient = context.createLinearGradient(0, 0, size, size);
+  gradient.addColorStop(0, variant.palette[2]);
+  gradient.addColorStop(0.55, variant.palette[1]);
+  gradient.addColorStop(1, variant.palette[0]);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 160; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.01 + rng() * 0.025),
+      size * (0.01 + rng() * 0.025),
+      index % 4 === 0 ? variant.palette[3] : variant.palette[4],
+      0.08 + rng() * 0.12
+    );
+  }
+
+  context.strokeStyle = "rgba(255,231,188,0.22)";
+  context.lineWidth = size * 0.014;
+  for (let index = 0; index < 12; index += 1) {
+    context.beginPath();
+    context.moveTo(size * rng(), size * rng());
+    context.lineTo(size * rng(), size * rng());
+    context.stroke();
+  }
+
+  for (let index = 0; index < 8; index += 1) {
+    context.strokeStyle = "rgba(66,42,24,0.24)";
+    context.lineWidth = size * 0.012;
+    context.beginPath();
+    context.arc(size * rng(), size * rng(), size * (0.03 + rng() * 0.04), 0, Math.PI * 2);
+    context.stroke();
+  }
+}
+
+function drawIceWorld(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
+  const gradient = context.createLinearGradient(0, 0, size, size);
+  gradient.addColorStop(0, variant.palette[4]);
+  gradient.addColorStop(0.45, variant.palette[0]);
+  gradient.addColorStop(1, variant.palette[2]);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  context.strokeStyle = "rgba(255,255,255,0.28)";
+  context.lineWidth = size * 0.01;
+  for (let index = 0; index < 16; index += 1) {
+    context.beginPath();
+    context.moveTo(size * rng(), size * rng());
+    context.lineTo(size * rng(), size * rng());
+    context.stroke();
+  }
+
+  for (let index = 0; index < 18; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.04 + rng() * 0.06),
+      size * (0.015 + rng() * 0.03),
+      variant.palette[index % 2 === 0 ? 1 : 3],
+      0.1 + rng() * 0.1
+    );
+  }
+}
+
+function drawStormWorld(
+  context: CanvasRenderingContext2D,
+  emissiveContext: CanvasRenderingContext2D,
+  size: number,
+  variant: PlanetSurfaceVariant,
+  rng: () => number
+) {
+  const gradient = context.createLinearGradient(0, 0, 0, size);
+  gradient.addColorStop(0, variant.palette[3]);
+  gradient.addColorStop(0.5, variant.palette[1]);
+  gradient.addColorStop(1, variant.palette[0]);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 12; index += 1) {
+    context.strokeStyle = `${variant.palette[index % 4]}88`;
+    context.lineWidth = size * (0.02 + rng() * 0.02);
+    context.beginPath();
+    context.moveTo(0, size * (index / 12));
+    for (let step = 0; step <= 18; step += 1) {
+      const x = (step / 18) * size;
+      const y = size * (index / 12) + Math.sin(step * 0.8 + index) * size * 0.03;
+      context.lineTo(x, y);
+    }
+    context.stroke();
+  }
+
+  drawSoftBlob(context, size * 0.65, size * 0.54, size * 0.12, size * 0.09, variant.palette[4], 0.46);
+  drawSoftBlob(emissiveContext, size * 0.65, size * 0.54, size * 0.08, size * 0.055, "#ffb166", 0.38);
+}
+
+function drawVolcanic(
+  context: CanvasRenderingContext2D,
+  emissiveContext: CanvasRenderingContext2D,
+  size: number,
+  variant: PlanetSurfaceVariant,
+  rng: () => number
+) {
+  fillCanvas(context, variant.palette[0], size);
+
+  for (let index = 0; index < 80; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.02 + rng() * 0.05),
+      size * (0.02 + rng() * 0.05),
+      variant.palette[index % 2 === 0 ? 1 : 2],
+      0.12 + rng() * 0.14
+    );
+  }
+
+  context.strokeStyle = "rgba(255,140,61,0.18)";
+  emissiveContext.strokeStyle = "rgba(255,140,61,0.95)";
+  for (let index = 0; index < 10; index += 1) {
+    const startX = size * rng();
+    const startY = size * rng();
+    const endX = size * rng();
+    const endY = size * rng();
+    context.lineWidth = size * 0.015;
+    emissiveContext.lineWidth = size * 0.008;
+    context.beginPath();
+    emissiveContext.beginPath();
+    context.moveTo(startX, startY);
+    emissiveContext.moveTo(startX, startY);
+    context.bezierCurveTo(
+      size * rng(),
+      size * rng(),
+      size * rng(),
+      size * rng(),
+      endX,
+      endY
+    );
+    emissiveContext.bezierCurveTo(
+      size * rng(),
+      size * rng(),
+      size * rng(),
+      size * rng(),
+      endX,
+      endY
+    );
+    context.stroke();
+    emissiveContext.stroke();
+  }
+}
+
+function createPlanetTextures(variant: PlanetSurfaceVariant) {
+  const cacheKey = `${variant.kind}-${variant.seed}`;
+  const cached = planetTextureCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const size = 768;
+  const colorCanvas = document.createElement("canvas");
+  colorCanvas.width = size;
+  colorCanvas.height = size;
+  const emissiveCanvas = document.createElement("canvas");
+  emissiveCanvas.width = size;
+  emissiveCanvas.height = size;
+
+  const context = colorCanvas.getContext("2d");
+  const emissiveContext = emissiveCanvas.getContext("2d");
+  if (!context || !emissiveContext) {
+    throw new Error("Failed to create planet texture contexts.");
+  }
+
+  const rng = createSeededRandom(variant.seed);
+  fillCanvas(emissiveContext, "#000000", size);
+
+  switch (variant.kind) {
+    case "gas_giant":
+      drawGasGiant(context, size, variant, rng);
+      break;
+    case "earth_like":
+      drawEarthLike(context, size, variant, rng);
+      break;
+    case "desert_rocky":
+      drawDesertRocky(context, size, variant, rng);
+      break;
+    case "ice_world":
+      drawIceWorld(context, size, variant, rng);
+      break;
+    case "storm_world":
+      drawStormWorld(context, emissiveContext, size, variant, rng);
+      break;
+    case "volcanic":
+      drawVolcanic(context, emissiveContext, size, variant, rng);
+      break;
+  }
+
+  const map = new THREE.CanvasTexture(colorCanvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.wrapS = THREE.RepeatWrapping;
+  map.wrapT = THREE.ClampToEdgeWrapping;
+  map.anisotropy = 8;
+  map.needsUpdate = true;
+
+  const emissiveMap = new THREE.CanvasTexture(emissiveCanvas);
+  emissiveMap.colorSpace = THREE.SRGBColorSpace;
+  emissiveMap.wrapS = THREE.RepeatWrapping;
+  emissiveMap.wrapT = THREE.ClampToEdgeWrapping;
+  emissiveMap.anisotropy = 8;
+  emissiveMap.needsUpdate = true;
+
+  const textures = { map, emissiveMap };
+  planetTextureCache.set(cacheKey, textures);
+  return textures;
+}
 
 function StaticStarfield({
   count,
@@ -363,25 +800,30 @@ function AtlasRig({ activeSection, reducedMotion }: { activeSection: SceneSectio
 function AtlasNode({
   section,
   active,
-  variant
+  variant,
+  surfaceVariant
 }: {
   section: SceneSection;
   active: boolean;
   variant: (typeof nodeVariants)[number];
+  surfaceVariant: PlanetSurfaceVariant;
 }) {
   const baseRadius = 0.56 * variant.scale;
   const ringRadius = 0.95 * variant.ringScale;
   const nodeScale = active ? 1.38 : 1;
-  const ringColor = useMemo(() => {
-    const color = new THREE.Color(section.accent);
-    color.offsetHSL(0.035, -0.12, 0.2);
-    return `#${color.getHexString()}`;
-  }, [section.accent]);
+  const { map, emissiveMap } = useMemo(() => createPlanetTextures(surfaceVariant), [surfaceVariant]);
+  const ringColor = surfaceVariant.ringColor;
+  const planetRef = useRef<THREE.Mesh>(null);
   const primaryRingRef = useRef<THREE.Mesh>(null);
   const extraRingRefs = useRef<Array<THREE.Mesh | null>>([]);
 
   useFrame((state) => {
     const elapsed = state.clock.elapsedTime;
+
+    if (planetRef.current) {
+      planetRef.current.rotation.y = elapsed * surfaceVariant.rotationSpeed + section.position[0] * 0.08;
+      planetRef.current.rotation.z = Math.sin(elapsed * 0.08 + section.position[2]) * 0.05;
+    }
 
     if (primaryRingRef.current) {
       primaryRingRef.current.rotation.x =
@@ -409,14 +851,16 @@ function AtlasNode({
 
   return (
     <group position={section.position} scale={nodeScale}>
-      <mesh>
+      <mesh ref={planetRef}>
         <icosahedronGeometry args={[baseRadius, 4]} />
         <meshStandardMaterial
-          color={active ? section.accent : "#90a4c7"}
-          emissive={active ? section.accent : "#22334f"}
-          emissiveIntensity={active ? 0.9 : 0.3}
-          roughness={0.22}
-          metalness={0.5}
+          map={map}
+          color={active ? "#ffffff" : surfaceVariant.inactiveTint}
+          emissive={surfaceVariant.emissiveColor}
+          emissiveMap={emissiveMap}
+          emissiveIntensity={active ? 0.4 : 0.14}
+          roughness={0.72}
+          metalness={0.08}
         />
       </mesh>
       <mesh ref={primaryRingRef} rotation={variant.ringRotation}>
@@ -483,6 +927,7 @@ function SystemsAtlasScene({ sections, activeSectionId, reducedMotion }: Systems
           section={section}
           active={section.id === activeSection.id}
           variant={nodeVariants[index % nodeVariants.length]}
+          surfaceVariant={planetSurfaceVariants[index % planetSurfaceVariants.length]}
         />
       ))}
       <AtlasRig activeSection={activeSection} reducedMotion={reducedMotion} />
