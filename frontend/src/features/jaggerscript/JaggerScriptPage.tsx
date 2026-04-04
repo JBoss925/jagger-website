@@ -49,9 +49,7 @@ function JaggerScriptPage() {
   const initialExample = useMemo(() => loadExample(defaultExampleId), []);
   const [selectedExampleId, setSelectedExampleId] = useState(initialExample.id);
   const [source, setSource] = useState(initialExample.source);
-  const [output, setOutput] = useState<string[]>([
-    "Load an example, edit the program, and run it to inspect the runtime."
-  ]);
+  const [output, setOutput] = useState<string[]>([`Loaded ${initialExample.title}.`]);
   const editorMonacoRef = useRef<Monaco | null>(null);
   const editorModelRef = useRef<Parameters<NonNullable<Monaco["editor"]["setModelMarkers"]>>[1] | null>(null);
   const exampleRailRef = useRef<HTMLDivElement | null>(null);
@@ -171,30 +169,18 @@ function JaggerScriptPage() {
       <SiteNavigation sections={profileContent.sceneSections} />
 
       <main className="content-shell ide-shell">
-        <section className="ide-hero glass-card">
-          <div className="ide-hero__intro">
-            <span className="section-heading__eyebrow">Interactive language project</span>
-            <h1>JaggerScript Playground</h1>
-            <p>{profileContent.jaggerscriptIntro.summary}</p>
-            <ul className="ide-copy-list">
-              {profileContent.jaggerscriptIntro.bullets.slice(0, 2).map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
         <section className="glass-card ide-workspace">
           <header className="ide-workspace__header">
             <div>
-              <span className="section-heading__eyebrow">Examples</span>
-              <h2>{selectedExample.title}</h2>
-            </div>
-            <div className="ide-workspace__summary">
-              <p>{selectedExample.description}</p>
-              <p>{profileContent.jaggerscriptIntro.bullets[2]}</p>
+              <span className="section-heading__eyebrow">JaggerScript Playground</span>
+              <h1 className="ide-workspace__title">JaggerScript</h1>
+              <p>A browser runner for a small strongly typed scripting language with a real parser and interpreter.</p>
             </div>
           </header>
+
+          <div className="ide-workspace__example-meta">
+            <span className="section-heading__eyebrow">Examples</span>
+          </div>
 
           <div className="ide-example-rail">
             <button

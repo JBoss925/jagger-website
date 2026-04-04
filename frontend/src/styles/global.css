@@ -828,7 +828,6 @@ button:hover {
   gap: 24px;
 }
 
-.ide-hero,
 .ide-workspace,
 .ide-workspace__body,
 .ide-panels,
@@ -837,40 +836,10 @@ button:hover {
   gap: 18px;
 }
 
-.ide-hero {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-}
-
-.ide-hero__intro {
-  display: grid;
-  gap: 12px;
-  max-width: 52rem;
-}
-
-.ide-copy-list {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding-left: 1.1rem;
-  color: var(--text-dim);
-}
-
-.ide-copy-list li {
-  line-height: 1.6;
-}
-
-.ide-hero__actions {
-  display: grid;
-  gap: 12px;
-  justify-items: end;
-  align-self: center;
-}
-
 .ide-workspace__header {
   display: grid;
-  gap: 12px 24px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   min-width: 0;
 }
@@ -881,10 +850,15 @@ button:hover {
   line-height: 1.6;
 }
 
-.ide-workspace__summary {
+.ide-workspace__title {
+  margin: 8px 0 12px;
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  line-height: 0.94;
+}
+
+.ide-workspace__example-meta {
   display: grid;
-  gap: 10px;
-  min-width: 0;
+  gap: 0;
 }
 
 .ide-example-rail {
@@ -1224,14 +1198,12 @@ button:hover {
     grid-template-columns: 1fr;
   }
 
-  .hero-panel h1,
-  .ide-hero h1 {
+  .hero-panel h1 {
     font-size: clamp(2.7rem, 18vw, 4.2rem);
   }
 
   .hero-panel__copy,
   .content-section,
-  .ide-hero,
   .ide-workspace,
   .contact-card {
     padding: 22px;
@@ -1255,7 +1227,6 @@ button:hover {
     padding: 0;
   }
 
-  .ide-hero__actions,
   .ide-panel__header,
   .experience-card__header {
     justify-items: stretch;
@@ -1270,8 +1241,9 @@ button:hover {
     justify-self: stretch;
   }
 
-  .ide-hero__actions .cta-button {
-    width: 100%;
+  .ide-workspace__header,
+  .ide-workspace__example-meta {
+    grid-template-columns: 1fr;
   }
 
   .experience-card__meta {

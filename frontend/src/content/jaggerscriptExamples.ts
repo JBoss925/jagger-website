@@ -11,22 +11,10 @@ import type { JaggerScriptExample } from "../types/content";
 
 export const jaggerscriptExamples: JaggerScriptExample[] = [
   {
-    id: "doubly-linked-list",
-    title: "DoublyLinkedList",
-    description: "Classes, mutation, and console output.",
-    source: doublyLinkedListSource
-  },
-  {
     id: "fizz-buzz",
     title: "FizzBuzz",
     description: "Control flow, arithmetic, and logging.",
     source: fizzBuzzSource
-  },
-  {
-    id: "only-the-evens",
-    title: "OnlyTheEvens",
-    description: "Filter evens with simple iteration.",
-    source: onlyTheEvensSource
   },
   {
     id: "cube-root",
@@ -35,10 +23,22 @@ export const jaggerscriptExamples: JaggerScriptExample[] = [
     source: cubeRootSource
   },
   {
+    id: "doubly-linked-list",
+    title: "DoublyLinkedList",
+    description: "Classes, mutation, and console output.",
+    source: doublyLinkedListSource
+  },
+  {
     id: "double-break",
     title: "DoubleBreak",
     description: "Nested loops and early exits.",
     source: doubleBreakSource
+  },
+  {
+    id: "only-the-evens",
+    title: "OnlyTheEvens",
+    description: "Filter evens with simple iteration.",
+    source: onlyTheEvensSource
   },
   {
     id: "nesting-dolls",
