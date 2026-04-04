@@ -41,6 +41,7 @@ type RocketOrbitVariant = {
 const nodeVariants = [
   {
     scale: 1.22,
+    hasPrimaryRing: true,
     ringScale: 1.18,
     ringWidth: 0.2,
     ringRotation: [Math.PI / 2.55, 0.18, -0.42] as [number, number, number],
@@ -48,20 +49,15 @@ const nodeVariants = [
   },
   {
     scale: 0.88,
+    hasPrimaryRing: false,
     ringScale: 1.02,
     ringWidth: 0.16,
     ringRotation: [Math.PI / 2.1, 0.5, 0.28] as [number, number, number],
-    extraRings: [
-      {
-        scale: 1.26,
-        width: 0.08,
-        rotation: [Math.PI / 2.24, -0.24, 0.52] as [number, number, number],
-        opacity: 0.18
-      }
-    ]
+    extraRings: []
   },
   {
     scale: 1.45,
+    hasPrimaryRing: true,
     ringScale: 1.34,
     ringWidth: 0.24,
     ringRotation: [Math.PI / 2.78, -0.34, 0.16] as [number, number, number],
@@ -76,6 +72,7 @@ const nodeVariants = [
   },
   {
     scale: 0.74,
+    hasPrimaryRing: true,
     ringScale: 0.9,
     ringWidth: 0.12,
     ringRotation: [Math.PI / 2.02, 0.12, 0.68] as [number, number, number],
@@ -83,26 +80,22 @@ const nodeVariants = [
   },
   {
     scale: 1.08,
+    hasPrimaryRing: true,
     ringScale: 1.08,
     ringWidth: 0.17,
-    ringRotation: [Math.PI / 2.42, -0.46, -0.2] as [number, number, number],
+    ringRotation: [Math.PI / 2.18, -0.08, -0.04] as [number, number, number],
     extraRings: [
       {
         scale: 1.3,
         width: 0.07,
         rotation: [Math.PI / 2.26, 0.38, 0.34] as [number, number, number],
         opacity: 0.16
-      },
-      {
-        scale: 1.46,
-        width: 0.05,
-        rotation: [Math.PI / 2.12, -0.14, -0.72] as [number, number, number],
-        opacity: 0.12
       }
     ]
   },
   {
     scale: 0.96,
+    hasPrimaryRing: true,
     ringScale: 1.12,
     ringWidth: 0.18,
     ringRotation: [Math.PI / 2.64, 0.28, -0.12] as [number, number, number],
@@ -1236,7 +1229,7 @@ function AtlasNode({
       planetRef.current.rotation.z = Math.sin(elapsed * 0.08 + section.position[2]) * 0.05;
     }
 
-    if (primaryRingRef.current) {
+    if (variant.hasPrimaryRing && primaryRingRef.current) {
       primaryRingRef.current.rotation.x =
         variant.ringRotation[0] + Math.sin(elapsed * 0.18 + section.position[0]) * 0.1;
       primaryRingRef.current.rotation.y =
@@ -1274,15 +1267,17 @@ function AtlasNode({
           metalness={0.08}
         />
       </mesh>
-      <mesh ref={primaryRingRef} rotation={variant.ringRotation}>
-        <ringGeometry args={[ringRadius - variant.ringWidth / 2, ringRadius + variant.ringWidth / 2, 128]} />
-        <meshBasicMaterial
-          color={ringColor}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={active ? 0.92 : 0.42}
-        />
-      </mesh>
+      {variant.hasPrimaryRing ? (
+        <mesh ref={primaryRingRef} rotation={variant.ringRotation}>
+          <ringGeometry args={[ringRadius - variant.ringWidth / 2, ringRadius + variant.ringWidth / 2, 128]} />
+          <meshBasicMaterial
+            color={ringColor}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={active ? 0.92 : 0.42}
+          />
+        </mesh>
+      ) : null}
       {variant.extraRings.map((ring, index) => (
         <mesh
           key={index}
