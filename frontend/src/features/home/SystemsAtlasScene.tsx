@@ -148,10 +148,10 @@ const planetSurfaceVariants: PlanetSurfaceVariant[] = [
   },
   {
     kind: "volcanic",
-    palette: ["#27242a", "#3c3435", "#67412d", "#c35a28", "#ff9442"],
-    ringColor: "#c99a70",
-    inactiveTint: "#d2ced3",
-    emissiveColor: "#ff8c3d",
+    palette: ["#6b2f1f", "#8d3d24", "#c75b2b", "#eb7a34", "#ffb15c"],
+    ringColor: "#dba06a",
+    inactiveTint: "#dfc6b3",
+    emissiveColor: "#ff9b47",
     rotationSpeed: 0.03,
     seed: 67
   }
@@ -226,14 +226,32 @@ function drawSoftBlob(
 }
 
 function drawGasGiant(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
-  const gradient = context.createLinearGradient(0, 0, 0, size);
-  gradient.addColorStop(0, variant.palette[3]);
-  gradient.addColorStop(0.28, variant.palette[0]);
-  gradient.addColorStop(0.58, variant.palette[1]);
-  gradient.addColorStop(1, variant.palette[2]);
-  fillCanvas(context, "#000000", size);
-  context.fillStyle = gradient;
+  const baseGradient = context.createRadialGradient(
+    size * 0.48,
+    size * 0.44,
+    size * 0.06,
+    size * 0.5,
+    size * 0.5,
+    size * 0.72
+  );
+  baseGradient.addColorStop(0, variant.palette[3]);
+  baseGradient.addColorStop(0.32, variant.palette[0]);
+  baseGradient.addColorStop(0.68, variant.palette[1]);
+  baseGradient.addColorStop(1, variant.palette[2]);
+  context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 18; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.08 + rng() * 0.1),
+      size * (0.03 + rng() * 0.05),
+      variant.palette[index % variant.palette.length],
+      0.05 + rng() * 0.08
+    );
+  }
 
   for (let index = 0; index < 14; index += 1) {
     const bandY = (index / 14) * size;
@@ -259,8 +277,32 @@ function drawGasGiant(context: CanvasRenderingContext2D, size: number, variant: 
 }
 
 function drawEarthLike(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
-  fillCanvas(context, variant.palette[0], size);
+  const oceanGradient = context.createRadialGradient(
+    size * 0.5,
+    size * 0.48,
+    size * 0.08,
+    size * 0.5,
+    size * 0.5,
+    size * 0.74
+  );
+  oceanGradient.addColorStop(0, variant.palette[1]);
+  oceanGradient.addColorStop(0.55, variant.palette[0]);
+  oceanGradient.addColorStop(1, "#214a6c");
+  context.fillStyle = oceanGradient;
+  context.fillRect(0, 0, size, size);
   context.globalAlpha = 1;
+
+  for (let index = 0; index < 22; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.05 + rng() * 0.08),
+      size * (0.03 + rng() * 0.05),
+      variant.palette[index % 2 === 0 ? 1 : 0],
+      0.03 + rng() * 0.05
+    );
+  }
 
   for (let index = 0; index < 8; index += 1) {
     context.fillStyle = index % 2 === 0 ? variant.palette[2] : variant.palette[3];
@@ -302,11 +344,18 @@ function drawEarthLike(context: CanvasRenderingContext2D, size: number, variant:
 }
 
 function drawDesertRocky(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
-  const gradient = context.createLinearGradient(0, 0, size, size);
-  gradient.addColorStop(0, variant.palette[2]);
-  gradient.addColorStop(0.55, variant.palette[1]);
-  gradient.addColorStop(1, variant.palette[0]);
-  context.fillStyle = gradient;
+  const baseGradient = context.createRadialGradient(
+    size * 0.5,
+    size * 0.5,
+    size * 0.08,
+    size * 0.5,
+    size * 0.5,
+    size * 0.76
+  );
+  baseGradient.addColorStop(0, variant.palette[2]);
+  baseGradient.addColorStop(0.5, variant.palette[1]);
+  baseGradient.addColorStop(1, variant.palette[0]);
+  context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
 
   for (let index = 0; index < 160; index += 1) {
@@ -340,13 +389,32 @@ function drawDesertRocky(context: CanvasRenderingContext2D, size: number, varian
 }
 
 function drawIceWorld(context: CanvasRenderingContext2D, size: number, variant: PlanetSurfaceVariant, rng: () => number) {
-  const gradient = context.createLinearGradient(0, 0, size, size);
-  gradient.addColorStop(0, variant.palette[4]);
-  gradient.addColorStop(0.35, variant.palette[0]);
-  gradient.addColorStop(0.75, variant.palette[2]);
-  gradient.addColorStop(1, variant.palette[3]);
-  context.fillStyle = gradient;
+  const baseGradient = context.createRadialGradient(
+    size * 0.46,
+    size * 0.42,
+    size * 0.08,
+    size * 0.5,
+    size * 0.5,
+    size * 0.72
+  );
+  baseGradient.addColorStop(0, variant.palette[4]);
+  baseGradient.addColorStop(0.45, variant.palette[0]);
+  baseGradient.addColorStop(0.82, variant.palette[2]);
+  baseGradient.addColorStop(1, variant.palette[3]);
+  context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 36; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.05 + rng() * 0.08),
+      size * (0.03 + rng() * 0.06),
+      variant.palette[index % 3 === 0 ? 0 : 2],
+      0.05 + rng() * 0.08
+    );
+  }
 
   context.strokeStyle = "rgba(255,255,255,0.22)";
   context.lineWidth = size * 0.012;
@@ -377,12 +445,31 @@ function drawStormWorld(
   variant: PlanetSurfaceVariant,
   rng: () => number
 ) {
-  const gradient = context.createLinearGradient(0, 0, 0, size);
-  gradient.addColorStop(0, variant.palette[3]);
-  gradient.addColorStop(0.5, variant.palette[1]);
-  gradient.addColorStop(1, variant.palette[0]);
-  context.fillStyle = gradient;
+  const baseGradient = context.createRadialGradient(
+    size * 0.48,
+    size * 0.46,
+    size * 0.08,
+    size * 0.5,
+    size * 0.5,
+    size * 0.72
+  );
+  baseGradient.addColorStop(0, variant.palette[3]);
+  baseGradient.addColorStop(0.42, variant.palette[1]);
+  baseGradient.addColorStop(1, variant.palette[0]);
+  context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 22; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.06 + rng() * 0.08),
+      size * (0.025 + rng() * 0.05),
+      variant.palette[index % 3],
+      0.05 + rng() * 0.08
+    );
+  }
 
   for (let index = 0; index < 12; index += 1) {
     context.strokeStyle = `${variant.palette[index % 4]}88`;
@@ -408,34 +495,54 @@ function drawVolcanic(
   variant: PlanetSurfaceVariant,
   rng: () => number
 ) {
-  const gradient = context.createLinearGradient(0, 0, size, size);
-  gradient.addColorStop(0, variant.palette[1]);
-  gradient.addColorStop(0.55, variant.palette[0]);
-  gradient.addColorStop(1, "#1d181c");
-  context.fillStyle = gradient;
+  const baseGradient = context.createRadialGradient(
+    size * 0.5,
+    size * 0.48,
+    size * 0.06,
+    size * 0.5,
+    size * 0.5,
+    size * 0.74
+  );
+  baseGradient.addColorStop(0, variant.palette[4]);
+  baseGradient.addColorStop(0.36, variant.palette[2]);
+  baseGradient.addColorStop(0.7, variant.palette[1]);
+  baseGradient.addColorStop(1, variant.palette[0]);
+  context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
 
-  for (let index = 0; index < 80; index += 1) {
+  for (let index = 0; index < 95; index += 1) {
     drawSoftBlob(
       context,
       rng() * size,
       rng() * size,
       size * (0.02 + rng() * 0.05),
       size * (0.02 + rng() * 0.05),
-      variant.palette[index % 2 === 0 ? 1 : 2],
-      0.18 + rng() * 0.18
+      variant.palette[index % 3 === 0 ? 1 : 3],
+      0.2 + rng() * 0.2
     );
   }
 
-  context.strokeStyle = "rgba(255,140,61,0.28)";
-  emissiveContext.strokeStyle = "rgba(255,140,61,0.96)";
-  for (let index = 0; index < 12; index += 1) {
+  for (let index = 0; index < 28; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.04 + rng() * 0.07),
+      size * (0.04 + rng() * 0.07),
+      variant.palette[index % 2 === 0 ? 2 : 4],
+      0.06 + rng() * 0.1
+    );
+  }
+
+  context.strokeStyle = "rgba(255,146,72,0.4)";
+  emissiveContext.strokeStyle = "rgba(255,156,79,0.98)";
+  for (let index = 0; index < 14; index += 1) {
     const startX = size * rng();
     const startY = size * rng();
     const endX = size * rng();
     const endY = size * rng();
-    context.lineWidth = size * 0.018;
-    emissiveContext.lineWidth = size * 0.01;
+    context.lineWidth = size * 0.022;
+    emissiveContext.lineWidth = size * 0.013;
     context.beginPath();
     emissiveContext.beginPath();
     context.moveTo(startX, startY);
@@ -458,6 +565,27 @@ function drawVolcanic(
     );
     context.stroke();
     emissiveContext.stroke();
+  }
+
+  for (let index = 0; index < 10; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.03 + rng() * 0.04),
+      size * (0.03 + rng() * 0.04),
+      variant.palette[4],
+      0.18 + rng() * 0.12
+    );
+    drawSoftBlob(
+      emissiveContext,
+      rng() * size,
+      rng() * size,
+      size * (0.018 + rng() * 0.028),
+      size * (0.018 + rng() * 0.028),
+      "#ffb35d",
+      0.24 + rng() * 0.12
+    );
   }
 }
 
