@@ -82,7 +82,21 @@ const nodeVariants = [
   }
 ];
 
-function StaticStarfield() {
+function StaticStarfield({
+  count,
+  spread,
+  height,
+  size,
+  opacity,
+  color
+}: {
+  count: number;
+  spread: number;
+  height: [number, number];
+  size: number;
+  opacity: number;
+  color: string;
+}) {
   const sprite = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 64;
@@ -109,16 +123,16 @@ function StaticStarfield() {
   const positions = useMemo(() => {
     const values: number[] = [];
 
-    for (let index = 0; index < 260; index += 1) {
+    for (let index = 0; index < count; index += 1) {
       values.push(
-        THREE.MathUtils.randFloatSpread(34),
-        THREE.MathUtils.randFloat(-6, 10),
-        THREE.MathUtils.randFloatSpread(34)
+        THREE.MathUtils.randFloatSpread(spread),
+        THREE.MathUtils.randFloat(height[0], height[1]),
+        THREE.MathUtils.randFloatSpread(spread)
       );
     }
 
     return new Float32Array(values);
-  }, []);
+  }, [count, height, spread]);
 
   if (!sprite) {
     return null;
@@ -135,11 +149,11 @@ function StaticStarfield() {
       <pointsMaterial
         map={sprite}
         alphaMap={sprite}
-        color="#b7d6ff"
-        size={0.08}
+        color={color}
+        size={size}
         sizeAttenuation
         transparent
-        opacity={0.94}
+        opacity={opacity}
         alphaTest={0.08}
         depthWrite={false}
       />
@@ -457,7 +471,8 @@ function SystemsAtlasScene({ sections, activeSectionId, reducedMotion }: Systems
       <pointLight position={[-6, 4, 8]} intensity={1.8} color="#57d0ff" />
       <pointLight position={[8, -1, 5]} intensity={1.2} color="#f7a95b" />
       <gridHelper args={[36, 36, "#14324a", "#09111f"]} position={[0, -4, 0]} />
-      <StaticStarfield />
+      <StaticStarfield count={620} spread={34} height={[-6, 10]} size={0.08} opacity={0.94} color="#b7d6ff" />
+      <StaticStarfield count={1840} spread={54} height={[-12, 18]} size={0.04} opacity={0.32} color="#88a8d6" />
       <CircularParticles count={220} bounds={[24, 14, 24]} size={0.2} opacity={0.72} color="#7bcfff" />
       <CircularParticles count={120} bounds={[20, 12, 20]} size={0.26} opacity={0.8} color="#c3dcff" speed={0.035} />
       <OrbitingDust sections={sections} />
