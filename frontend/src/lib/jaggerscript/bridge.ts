@@ -23,6 +23,33 @@ function formatValue(value: unknown): string {
   }
 }
 
+function decodeConsoleEscapes(value: string): string {
+  let decoded = "";
+
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    const next = value[index + 1];
+
+    if (character === "\\" && next) {
+      if (next === "n") {
+        decoded += "\n";
+        index += 1;
+        continue;
+      }
+
+      if (next === "\\") {
+        decoded += "\\";
+        index += 1;
+        continue;
+      }
+    }
+
+    decoded += character;
+  }
+
+  return decoded;
+}
+
 export function loadExample(id = defaultExampleId): JaggerScriptExample {
   return jaggerscriptExamples.find((example) => example.id === id) ?? jaggerscriptExamples[0];
 }
@@ -30,7 +57,7 @@ export function loadExample(id = defaultExampleId): JaggerScriptExample {
 export function run(source: string): string[] {
   const output: string[] = [];
   const capture = (...args: unknown[]) => {
-    output.push(args.map(formatValue).join(" "));
+    output.push(decodeConsoleEscapes(args.map(formatValue).join(" ")));
   };
 
   const originalLog = console.log;
