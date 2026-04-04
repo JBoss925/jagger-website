@@ -587,6 +587,28 @@ button:hover {
   border: 1px solid var(--line);
 }
 
+.metric-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+.metric-card--interactive {
+  display: block;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.metric-card--interactive:hover,
+.metric-card--interactive:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(87, 208, 255, 0.34);
+  background: rgba(15, 29, 49, 0.82);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+}
+
 .metric-card span {
   display: block;
   margin-bottom: 10px;
@@ -599,6 +621,46 @@ button:hover {
 .metric-card strong {
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.metric-card__link-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.metric-card__link-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.05rem;
+  height: 1.05rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  border: 1px solid rgba(87, 208, 255, 0.28);
+  color: #8ddfff;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.metric-card__link-indicator svg {
+  width: 0.82rem;
+  height: 0.82rem;
+  display: block;
+  transform: translate(0.4px, 0.15px);
+}
+
+.metric-card--interactive:hover .metric-card__link-indicator,
+.metric-card--interactive:focus-visible .metric-card__link-indicator {
+  border-color: rgba(87, 208, 255, 0.42);
+  background: rgba(87, 208, 255, 0.12);
+  color: #dff8ff;
+  transform: translateY(-1px);
 }
 
 .content-section {

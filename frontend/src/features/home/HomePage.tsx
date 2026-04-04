@@ -136,10 +136,31 @@ function HomePage() {
             </div>
             <div className="metric-grid">
               {profileContent.metrics.map((metric) => (
-                <article key={metric.label} className="metric-card">
-                  <span>{metric.label}</span>
-                  <strong>{metric.value}</strong>
-                </article>
+                metric.label === "Favorite Project" ? (
+                  <a key={metric.label} className="metric-card metric-card--interactive" href="/jaggerscript">
+                    <span>{metric.label}</span>
+                    <strong className="metric-card__link-value">
+                      {metric.value}
+                      <span aria-hidden="true" className="metric-card__link-indicator">
+                        <svg viewBox="0 0 16 16" focusable="false">
+                          <path
+                            d="M5 11L11 5M6 5h5v5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    </strong>
+                  </a>
+                ) : (
+                  <article key={metric.label} className="metric-card">
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </article>
+                )
               ))}
             </div>
           </div>

@@ -21,9 +21,9 @@ export const profileContent: ProfileContent = {
   ],
   metrics: [
     { label: "Main lane", value: "Full-stack" },
-    { label: "Also drawn to", value: "Platform + systems" },
+    { label: "Also drawn to", value: "Platform + PL" },
     { label: "Favorite work", value: "Distributed systems" },
-    { label: "Project to open", value: "JaggerScript" }
+    { label: "Favorite Project", value: "JaggerScript" }
   ],
   links: [
     { label: "Email", href: "mailto:jaggerbrulato@gmail.com" },
