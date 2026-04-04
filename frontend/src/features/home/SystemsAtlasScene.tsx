@@ -1128,10 +1128,14 @@ function SceneRocket({
 
     if (exhaustRef.current) {
       const transfering = Boolean(transferRef.current);
-      const pulse = transfering
-        ? 1.08 + Math.sin(state.clock.elapsedTime * 18) * 0.12
-        : 0.82 + Math.sin(state.clock.elapsedTime * 8) * 0.04;
-      exhaustRef.current.scale.setScalar(pulse);
+      const elapsed = state.clock.elapsedTime;
+      const widthPulse = transfering
+        ? 1.08 + Math.sin(elapsed * 28) * 0.14 + Math.sin(elapsed * 45) * 0.05
+        : 0.94 + Math.sin(elapsed * 16) * 0.12 + Math.sin(elapsed * 29) * 0.04;
+      const lengthPulse = transfering
+        ? 1.32 + Math.sin(elapsed * 28) * 0.28 + Math.sin(elapsed * 45) * 0.08
+        : 1.08 + Math.sin(elapsed * 16) * 0.2 + Math.sin(elapsed * 29) * 0.06;
+      exhaustRef.current.scale.set(widthPulse, lengthPulse, widthPulse);
 
       exhaustRef.current.children.forEach((child, index) => {
         if (!(child instanceof THREE.Mesh)) {
