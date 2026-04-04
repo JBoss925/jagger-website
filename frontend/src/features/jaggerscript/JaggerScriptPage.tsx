@@ -54,8 +54,11 @@ function JaggerScriptPage() {
   ]);
   const editorMonacoRef = useRef<Monaco | null>(null);
   const editorModelRef = useRef<Parameters<NonNullable<Monaco["editor"]["setModelMarkers"]>>[1] | null>(null);
+  const exampleRailRef = useRef<HTMLDivElement | null>(null);
+  const hasInitializedExampleRail = useRef(false);
 
   const selectedExample = loadExample(selectedExampleId);
+  const selectedExampleIndex = jaggerscriptExamples.findIndex((example) => example.id === selectedExampleId);
   const deferredOutput = useDeferredValue(output.join("\n"));
 
   const handleLoadExample = (exampleId: string) => {
@@ -72,6 +75,59 @@ function JaggerScriptPage() {
   const handleReset = () => {
     handleLoadExample(selectedExampleId);
   };
+
+  const scrollSelectedExampleIntoView = (behavior: ScrollBehavior) => {
+    const rail = exampleRailRef.current;
+
+    if (!rail) {
+      return;
+    }
+
+    const selectedCard = rail.querySelector<HTMLButtonElement>(
+      `[data-example-id="${selectedExampleId}"]`
+    );
+
+    if (!selectedCard) {
+      return;
+    }
+
+    const fadeInset = 48;
+    const railPadding = 18;
+    const targetLeft = Math.max(0, selectedCard.offsetLeft - fadeInset - railPadding);
+
+    if (typeof rail.scrollTo === "function") {
+      rail.scrollTo({ left: targetLeft, behavior });
+    } else {
+      rail.scrollLeft = targetLeft;
+    }
+  };
+
+  const handleSelectAdjacentExample = (direction: "previous" | "next") => {
+    if (selectedExampleIndex < 0) {
+      return;
+    }
+
+    const nextIndex =
+      direction === "previous"
+        ? Math.max(0, selectedExampleIndex - 1)
+        : Math.min(jaggerscriptExamples.length - 1, selectedExampleIndex + 1);
+
+    if (nextIndex === selectedExampleIndex) {
+      return;
+    }
+
+    handleLoadExample(jaggerscriptExamples[nextIndex].id);
+  };
+
+  useEffect(() => {
+    if (!hasInitializedExampleRail.current) {
+      hasInitializedExampleRail.current = true;
+      scrollSelectedExampleIntoView("auto");
+      return;
+    }
+
+    scrollSelectedExampleIntoView("smooth");
+  }, [selectedExampleId]);
 
   useEffect(() => {
     if (!editorMonacoRef.current || !editorModelRef.current) {
@@ -128,38 +184,68 @@ function JaggerScriptPage() {
           </div>
         </section>
 
-        <section className="glass-card ide-example-strip">
-          <div className="ide-example-strip__header">
+        <section className="glass-card ide-workspace">
+          <header className="ide-workspace__header">
             <div>
               <span className="section-heading__eyebrow">Examples</span>
               <h2>{selectedExample.title}</h2>
             </div>
-            <div className="ide-example-strip__summary">
+            <div className="ide-workspace__summary">
               <p>{selectedExample.description}</p>
               <p>{profileContent.jaggerscriptIntro.bullets[2]}</p>
             </div>
-          </div>
-          <div className="example-list" role="list">
-            {jaggerscriptExamples.map((example) => (
-              <button
-                key={example.id}
-                type="button"
-                className={
-                  example.id === selectedExampleId
-                    ? "example-card is-active"
-                    : "example-card"
-                }
-                onClick={() => handleLoadExample(example.id)}
-              >
-                <strong>{example.title}</strong>
-                <span>{example.description}</span>
-              </button>
-            ))}
-          </div>
-        </section>
+          </header>
 
-        <section className="ide-panels ide-panels--playground">
-          <article className="glass-card ide-panel ide-panel--editor">
+          <div className="ide-example-rail">
+            <button
+              type="button"
+              className="ide-example-rail__nav ide-example-rail__nav--previous"
+              aria-label="Previous example"
+              onClick={() => handleSelectAdjacentExample("previous")}
+              disabled={selectedExampleIndex <= 0}
+            >
+              <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                <path d="M10.5 3.5 6 8l4.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div
+              ref={exampleRailRef}
+              className="ide-example-rail__scroller"
+              role="list"
+              aria-label="Examples"
+            >
+              {jaggerscriptExamples.map((example) => (
+                <button
+                  key={example.id}
+                  data-example-id={example.id}
+                  type="button"
+                  className={
+                    example.id === selectedExampleId
+                      ? "example-card is-active"
+                      : "example-card"
+                  }
+                  onClick={() => handleLoadExample(example.id)}
+                >
+                  <strong>{example.title}</strong>
+                  <span>{example.description}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="ide-example-rail__nav ide-example-rail__nav--next"
+              aria-label="Next example"
+              onClick={() => handleSelectAdjacentExample("next")}
+              disabled={selectedExampleIndex >= jaggerscriptExamples.length - 1}
+            >
+              <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                <path d="M5.5 3.5 10 8l-4.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="ide-workspace__body">
+            <article className="ide-panel ide-panel--editor">
             <header className="ide-panel__header">
               <div>
                 <h3>Source</h3>
@@ -197,9 +283,9 @@ function JaggerScriptPage() {
                 }}
               />
             </div>
-          </article>
+            </article>
 
-          <article className="glass-card ide-panel ide-panel--console">
+            <article className="ide-panel ide-panel--console">
             <header className="ide-panel__header">
               <div>
                 <h3>Console</h3>
@@ -207,7 +293,8 @@ function JaggerScriptPage() {
               </div>
             </header>
             <pre className="console-output">{deferredOutput}</pre>
-          </article>
+            </article>
+          </div>
         </section>
       </main>
     </div>
