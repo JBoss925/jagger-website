@@ -683,17 +683,57 @@ function getOrbitPosition(center: THREE.Vector3, orbit: RocketOrbitVariant, angl
   return local.add(center);
 }
 
+function getOrbitTangent(center: THREE.Vector3, orbit: RocketOrbitVariant, angle: number) {
+  const sampleStep = 0.035 * orbit.direction;
+  const current = getOrbitPosition(center, orbit, angle);
+  const ahead = getOrbitPosition(center, orbit, angle + sampleStep);
+  return ahead.sub(current).normalize();
+}
+
+function getOrbitEntry(center: THREE.Vector3, orbit: RocketOrbitVariant, from: THREE.Vector3) {
+  const incomingDirection = center.clone().sub(from).normalize();
+  let bestAngle = orbit.phaseOffset;
+  let bestScore = -Infinity;
+
+  for (let index = 0; index < 48; index += 1) {
+    const angle = orbit.phaseOffset + (index / 48) * Math.PI * 2;
+    const point = getOrbitPosition(center, orbit, angle);
+    const tangent = getOrbitTangent(center, orbit, angle);
+    const radial = point.clone().sub(center).normalize();
+    const score =
+      tangent.dot(incomingDirection) * 0.72 +
+      radial.dot(incomingDirection.clone().negate()) * 0.28;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestAngle = angle;
+    }
+  }
+
+  return {
+    angle: bestAngle,
+    position: getOrbitPosition(center, orbit, bestAngle),
+    tangent: getOrbitTangent(center, orbit, bestAngle)
+  };
+}
+
 function getTransferPoint(
   from: THREE.Vector3,
   to: THREE.Vector3,
-  midpointLift: number,
+  startTangent: THREE.Vector3,
+  endTangent: THREE.Vector3,
   progress: number
 ) {
-  const control = from.clone().lerp(to, 0.5);
-  control.y += midpointLift;
-  const first = from.clone().lerp(control, progress);
-  const second = control.clone().lerp(to, progress);
-  return first.lerp(second, progress);
+  const distance = from.distanceTo(to);
+  const lift = Math.min(1.1, distance * 0.24);
+  const handleLength = Math.max(0.55, distance * 0.28);
+  const controlOne = from.clone().add(startTangent.clone().multiplyScalar(handleLength));
+  const controlTwo = to.clone().sub(endTangent.clone().multiplyScalar(handleLength));
+  controlOne.y += lift;
+  controlTwo.y += lift * 0.7;
+
+  const curve = new THREE.CubicBezierCurve3(from, controlOne, controlTwo, to);
+  return curve.getPoint(progress);
 }
 
 function StaticStarfield({
@@ -986,15 +1026,22 @@ function SceneRocket({
   const activeIndex = sections.findIndex((section) => section.id === activeSectionId);
   const currentIndexRef = useRef(activeIndex >= 0 ? activeIndex : 0);
   const orbitAngleRef = useRef(rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length].phaseOffset);
+  const orbitVelocityRef = useRef(
+    rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length].speed *
+      rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length].direction
+  );
   const transferRef = useRef<{
     from: THREE.Vector3;
     to: THREE.Vector3;
+    startTangent: THREE.Vector3;
+    endTangent: THREE.Vector3;
     startedAt: number;
     duration: number;
     targetIndex: number;
     targetAngle: number;
   } | null>(null);
   const forwardRef = useRef(new THREE.Vector3(1, 0, 0));
+  const initializedRef = useRef(false);
 
   useFrame((state, delta) => {
     const rocket = rocketRef.current;
@@ -1010,44 +1057,72 @@ function SceneRocket({
     if (nextIndex !== previousIndex && !transferRef.current) {
       const currentAngle = orbitAngleRef.current;
       const currentPosition = getOrbitPosition(previousCenter, previousOrbit, currentAngle);
+      const currentTangent = getOrbitTangent(previousCenter, previousOrbit, currentAngle);
       const targetCenter = new THREE.Vector3(...sections[nextIndex].position);
       const targetOrbit = rocketOrbitVariants[nextIndex % rocketOrbitVariants.length];
-      const targetAngle = targetOrbit.phaseOffset + (Math.PI * 0.6) * targetOrbit.direction;
+      const targetEntry = getOrbitEntry(targetCenter, targetOrbit, currentPosition);
 
       transferRef.current = {
         from: currentPosition,
-        to: getOrbitPosition(targetCenter, targetOrbit, targetAngle),
+        to: targetEntry.position,
+        startTangent: currentTangent,
+        endTangent: targetEntry.tangent,
         startedAt: state.clock.elapsedTime,
         duration: 1.05,
         targetIndex: nextIndex,
-        targetAngle
+        targetAngle: targetEntry.angle
       };
     }
 
     let nextPosition: THREE.Vector3;
     let lookTarget: THREE.Vector3;
+    let positionLerpFactor: number;
 
     if (transferRef.current) {
-      const { from, to, startedAt, duration, targetIndex, targetAngle } = transferRef.current;
-      const progress = THREE.MathUtils.clamp((state.clock.elapsedTime - startedAt) / duration, 0, 1);
-      nextPosition = getTransferPoint(from, to, 1.1, progress);
-      lookTarget = getTransferPoint(from, to, 1.1, Math.min(progress + 0.08, 1));
+      const { from, to, startTangent, endTangent, startedAt, duration, targetIndex, targetAngle } = transferRef.current;
+      const rawProgress = THREE.MathUtils.clamp((state.clock.elapsedTime - startedAt) / duration, 0, 1);
+      const progress = THREE.MathUtils.smootherstep(rawProgress, 0, 1);
+      nextPosition = getTransferPoint(from, to, startTangent, endTangent, progress);
+      lookTarget = getTransferPoint(from, to, startTangent, endTangent, Math.min(progress + 0.06, 1));
+      positionLerpFactor = 1 - Math.exp(-delta * 9);
 
-      if (progress >= 1) {
+      if (rawProgress >= 1) {
         currentIndexRef.current = targetIndex;
         orbitAngleRef.current = targetAngle;
+        const targetOrbit = rocketOrbitVariants[targetIndex % rocketOrbitVariants.length];
+        orbitVelocityRef.current = targetOrbit.speed * targetOrbit.direction * 0.72;
         transferRef.current = null;
       }
     } else {
       const orbit = rocketOrbitVariants[currentIndexRef.current % rocketOrbitVariants.length];
       const center = new THREE.Vector3(...sections[currentIndexRef.current].position);
-      orbitAngleRef.current += delta * orbit.speed * orbit.direction;
+      const targetVelocity = orbit.speed * orbit.direction;
+      orbitVelocityRef.current = THREE.MathUtils.lerp(
+        orbitVelocityRef.current,
+        targetVelocity,
+        1 - Math.exp(-delta * 4.5)
+      );
+      orbitAngleRef.current += delta * orbitVelocityRef.current;
       nextPosition = getOrbitPosition(center, orbit, orbitAngleRef.current);
-      lookTarget = getOrbitPosition(center, orbit, orbitAngleRef.current + 0.08 * orbit.direction);
+      lookTarget = getOrbitPosition(
+        center,
+        orbit,
+        orbitAngleRef.current + 0.08 * Math.sign(orbitVelocityRef.current || orbit.direction)
+      );
+      positionLerpFactor = 1 - Math.exp(-delta * 7);
     }
 
-    rocket.position.copy(nextPosition);
-    const direction = lookTarget.clone().sub(nextPosition).normalize();
+    if (!initializedRef.current) {
+      rocket.position.copy(nextPosition);
+      initializedRef.current = true;
+    } else {
+      rocket.position.lerp(nextPosition, positionLerpFactor);
+    }
+
+    const movementDirection = nextPosition.clone().sub(rocket.position);
+    const direction = (movementDirection.lengthSq() > 0.0001
+      ? movementDirection
+      : lookTarget.clone().sub(rocket.position)).normalize();
     const nextQuaternion = new THREE.Quaternion().setFromUnitVectors(forwardRef.current, direction);
     rocket.quaternion.slerp(nextQuaternion, 1 - Math.exp(-delta * 8));
 
