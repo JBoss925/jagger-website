@@ -120,14 +120,6 @@ function HomePage() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
-            <div className="hero-panel__actions">
-              <a className="cta-button" href="#experience">
-                See experience
-              </a>
-              <a className="cta-button cta-button--secondary" href="/jaggerscript">
-                Explore JaggerScript
-              </a>
-            </div>
           </div>
 
           <div className="hero-panel__aside">
