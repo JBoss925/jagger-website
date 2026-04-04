@@ -83,6 +83,29 @@ const nodeVariants = [
 ];
 
 function StaticStarfield() {
+  const sprite = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return null;
+    }
+
+    const gradient = context.createRadialGradient(32, 32, 2, 32, 32, 32);
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.3, "rgba(255,255,255,0.95)");
+    gradient.addColorStop(0.68, "rgba(255,255,255,0.24)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
   const positions = useMemo(() => {
     const values: number[] = [];
 
@@ -97,6 +120,10 @@ function StaticStarfield() {
     return new Float32Array(values);
   }, []);
 
+  if (!sprite) {
+    return null;
+  }
+
   return (
     <points>
       <bufferGeometry>
@@ -106,11 +133,14 @@ function StaticStarfield() {
         />
       </bufferGeometry>
       <pointsMaterial
+        map={sprite}
+        alphaMap={sprite}
         color="#b7d6ff"
         size={0.08}
         sizeAttenuation
         transparent
         opacity={0.94}
+        alphaTest={0.08}
         depthWrite={false}
       />
     </points>
