@@ -241,14 +241,18 @@ function OrbitingDust({ sections }: { sections: SceneSection[] }) {
       sections.flatMap((section, sectionIndex) => {
         const sectionVector = new THREE.Vector3(...section.position);
         const count = 12 + (sectionIndex % 3) * 4;
+        const orbitDirection = sectionIndex % 2 === 0 ? 1 : -1;
 
         return Array.from({ length: count }, (_, particleIndex) => {
           const radius = 1.8 + (particleIndex % 5) * 0.22 + sectionIndex * 0.04;
-          const speed = 0.12 + (particleIndex % 4) * 0.018;
+          const speedJitter = THREE.MathUtils.randFloat(-0.02, 0.02);
+          const speed = (0.12 + (particleIndex % 4) * 0.018 + speedJitter) * orbitDirection;
           const angleOffset = (particleIndex / count) * Math.PI * 2;
           const tilt = (sectionIndex - 2) * 0.12 + (particleIndex % 3) * 0.06;
           const verticalWave = 0.08 + (particleIndex % 4) * 0.03;
           const size = 0.022 + (particleIndex % 3) * 0.008;
+          const planeTiltX = THREE.MathUtils.degToRad((sectionIndex - 2) * 4 + ((particleIndex % 4) - 1.5) * 2);
+          const planeTiltZ = THREE.MathUtils.degToRad(((particleIndex % 5) - 2) * 2.5);
           const color = new THREE.Color(section.accent).offsetHSL(0.02, -0.08, 0.28);
 
           return {
@@ -259,6 +263,8 @@ function OrbitingDust({ sections }: { sections: SceneSection[] }) {
             tilt,
             verticalWave,
             size,
+            planeTiltX,
+            planeTiltZ,
             color: `#${color.getHexString()}`
           };
         });
@@ -276,10 +282,18 @@ function OrbitingDust({ sections }: { sections: SceneSection[] }) {
       }
 
       const angle = elapsed * spec.speed + spec.angleOffset;
+      const localPosition = new THREE.Vector3(
+        Math.cos(angle) * spec.radius,
+        Math.sin(angle * 1.7) * spec.verticalWave,
+        Math.sin(angle + spec.tilt) * spec.radius
+      );
+
+      localPosition.applyEuler(new THREE.Euler(spec.planeTiltX, 0, spec.planeTiltZ));
+
       particle.position.set(
-        spec.center.x + Math.cos(angle) * spec.radius,
-        spec.center.y + Math.sin(angle * 1.7) * spec.verticalWave,
-        spec.center.z + Math.sin(angle + spec.tilt) * spec.radius
+        spec.center.x + localPosition.x,
+        spec.center.y + localPosition.y,
+        spec.center.z + localPosition.z
       );
     });
   });
