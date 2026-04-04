@@ -172,7 +172,6 @@ function JaggerScriptPage() {
         <section className="glass-card ide-workspace">
           <header className="ide-workspace__header">
             <div>
-              <span className="section-heading__eyebrow">JaggerScript Playground</span>
               <h1 className="ide-workspace__title">JaggerScript</h1>
               <p>A browser runner for a small strongly typed scripting language with a real parser and interpreter.</p>
             </div>
