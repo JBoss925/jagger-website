@@ -1286,8 +1286,12 @@ button:hover {
 @media (max-width: 768px) {
   :root {
     --section-scroll-offset: 196px;
-    --header-mask-height: 176px;
+    --header-mask-height: 108px;
     --content-readability-width: min(100vw - 28px, 980px);
+  }
+
+  .page-shell:has(.site-nav.is-mobile-open)::before {
+    height: 360px;
   }
 
   .route-loading {
