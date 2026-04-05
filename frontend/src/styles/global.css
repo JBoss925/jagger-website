@@ -234,6 +234,7 @@ a {
   top: 16px;
   z-index: 5;
   display: grid;
+  grid-template-areas: "brand links actions";
   grid-template-columns: 1fr auto auto;
   gap: 20px;
   align-items: center;
@@ -247,15 +248,25 @@ a {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
 }
 
+.site-nav__brand {
+  grid-area: brand;
+}
+
 .site-nav__brand-link {
   display: inline-flex;
   gap: 12px;
   align-items: center;
+  flex-shrink: 0;
+  min-width: max-content;
 }
 
 .site-nav__brand-link strong,
 .site-nav__brand-link small {
   display: block;
+}
+
+.site-nav__brand-link > span:last-child {
+  flex-shrink: 0;
 }
 
 .site-nav__brand-link small {
@@ -264,6 +275,7 @@ a {
 
 .site-nav__brand-mark {
   display: grid;
+  flex: 0 0 42px;
   place-items: center;
   width: 42px;
   height: 42px;
@@ -287,7 +299,17 @@ a {
 }
 
 .site-nav__links {
+  grid-area: links;
   justify-content: center;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+.site-nav__actions {
+  grid-area: actions;
+  flex-wrap: nowrap;
+  min-width: max-content;
+  justify-self: end;
 }
 
 .site-nav__link {
@@ -1088,9 +1110,41 @@ button:hover {
   overflow: auto;
 }
 
+@media (max-width: 1320px) {
+  .site-nav {
+    grid-template-areas:
+      "brand actions"
+      "links links"
+      ;
+    grid-template-columns: 1fr auto;
+    justify-items: stretch;
+  }
+
+  .site-nav__links {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .site-nav__actions {
+    width: auto;
+    justify-self: end;
+    justify-content: flex-end;
+    align-self: center;
+  }
+
+  .site-nav__button {
+    width: auto;
+    padding: 12px 18px;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 1180px) {
   .site-nav {
-    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand actions"
+      "links links";
+    grid-template-columns: 1fr auto;
     justify-items: start;
   }
 
@@ -1197,6 +1251,12 @@ button:hover {
     top: 12px;
     width: calc(100vw - 28px);
     margin-top: 12px;
+    grid-template-areas:
+      "brand brand"
+      "links links"
+      "actions actions";
+    grid-template-columns: 1fr;
+    justify-items: stretch;
   }
 
   .section-advance {
@@ -1212,11 +1272,21 @@ button:hover {
 
   .site-nav__actions {
     width: 100%;
+    justify-self: stretch;
+    justify-content: flex-start;
+    align-self: stretch;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .site-nav__button,
   .cta-button {
     width: 100%;
+  }
+
+  .site-nav__links {
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .hero-panel h1 {
