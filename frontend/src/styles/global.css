@@ -1109,6 +1109,27 @@ button:hover {
     grid-template-columns: 1fr;
   }
 
+  .hero-panel__aside {
+    justify-items: center;
+  }
+
+  .hero-panel__copy {
+    width: fit-content;
+    max-width: min(100%, 760px);
+    margin-inline: auto;
+    justify-self: center;
+  }
+
+  .hero-panel__aside {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+
+  .hero-panel__portrait-wrap {
+    margin-inline: auto;
+  }
+
   .ide-example-rail {
     padding-inline: 42px;
   }
@@ -1194,10 +1215,6 @@ button:hover {
     width: 100%;
   }
 
-  .metric-grid {
-    grid-template-columns: 1fr;
-  }
-
   .hero-panel h1 {
     font-size: clamp(2.7rem, 18vw, 4.2rem);
   }
@@ -1211,12 +1228,12 @@ button:hover {
 
   .hero-panel__copy,
   .hero-panel__aside {
-    padding: 0;
+    padding: 0 10px;
   }
 
   .hero-panel__portrait-wrap {
-    width: 100%;
-    margin-left: 0;
+    width: min(100%, 520px);
+    margin-inline: auto;
   }
 
   .ide-workspace__body {
@@ -1249,6 +1266,12 @@ button:hover {
   .experience-card__meta {
     justify-items: start;
     text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
   }
 }
 
