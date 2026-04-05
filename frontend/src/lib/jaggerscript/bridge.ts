@@ -1,5 +1,5 @@
-import { convertToProgram } from "../../../../old_website/jagger-website/src/jaggerscript/compiler/compiler";
-import { evalProgram } from "../../../../old_website/jagger-website/src/jaggerscript/interpreter/interpreter";
+import { convertToProgram } from "../../../../jaggerscript/compiler/compiler";
+import { evalProgram } from "../../../../jaggerscript/interpreter/interpreter";
 import {
   defaultExampleId,
   jaggerscriptExamples
