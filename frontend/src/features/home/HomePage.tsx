@@ -13,12 +13,14 @@ import { usePageReveal } from "../../hooks/usePageReveal";
 import SceneBackdrop from "./SceneBackdrop";
 
 const sectionOrder = profileContent.sceneSections.map((section) => section.id);
+const ENABLE_MOBILE_STATIC_SCENE = false;
 
 function HomePage() {
   const location = useLocation();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const isCompactViewport = useMediaQuery("(max-width: 960px)");
-  const useStaticScene = prefersReducedMotion || isCompactViewport;
+  const isCompactViewport = useMediaQuery("(max-width: 768px)");
+  const useStaticScene =
+    prefersReducedMotion || (ENABLE_MOBILE_STATIC_SCENE && isCompactViewport);
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
   const hasHandledInitialHash = useRef(false);

@@ -14,7 +14,7 @@ function sectionHref(pathname: string, sectionId: string) {
 
 function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
   const location = useLocation();
-  const isMobileMenuViewport = useMediaQuery("(max-width: 960px)");
+  const isMobileMenuViewport = useMediaQuery("(max-width: 768px)");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuId = useId();
 
