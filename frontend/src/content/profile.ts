@@ -1,4 +1,4 @@
-import headshotImage from "../assets/headshot.png";
+import headshotImage from "../assets/headshot.jpg";
 import domesPreview from "../assets/domes-preview.jpg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
