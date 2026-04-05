@@ -119,13 +119,7 @@ a {
 }
 
 .page-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  height: var(--header-mask-height);
-  z-index: 4;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(4, 7, 18, 1) 0%, rgba(4, 7, 18, 0.98) 58%, rgba(4, 7, 18, 0.88) 76%, rgba(4, 7, 18, 0) 100%);
+  content: none;
 }
 
 .page-shell::after {
@@ -229,17 +223,51 @@ a {
   backdrop-filter: blur(18px);
 }
 
-.site-nav {
+.site-nav-shell {
   position: sticky;
-  top: 16px;
+  top: 0;
   z-index: 5;
+  width: 100%;
+  margin: 0;
+  padding: 16px 24px 0;
+}
+
+.site-nav-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(4, 7, 18, 0.985);
+}
+
+.site-nav-shell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 2px);
+  height: 20px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 7, 18, 0.72) 0%,
+    rgba(4, 7, 18, 0.52) 36%,
+    rgba(4, 7, 18, 0.24) 68%,
+    rgba(4, 7, 18, 0) 100%
+  );
+}
+
+.site-nav {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-areas: "topbar links actions";
   grid-template-columns: auto 1fr auto;
   gap: 20px;
   align-items: center;
-  width: calc(100vw - 48px);
-  margin: 16px auto 0;
+  width: 100%;
+  margin: 0;
   padding: 14px 18px;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -1197,6 +1225,10 @@ button:hover {
 }
 
 @media (max-width: 1180px) {
+  :root {
+    --header-mask-height: 196px;
+  }
+
   .site-nav {
     grid-template-areas:
       "topbar actions"
@@ -1309,15 +1341,16 @@ button:hover {
 
 
   .site-nav {
-    top: 12px;
-    width: calc(100vw - 28px);
-    margin-top: 12px;
     grid-template-areas:
       "topbar"
       "menu";
     grid-template-columns: 1fr;
     justify-items: stretch;
     gap: 0;
+  }
+
+  .site-nav-shell {
+    padding: 12px 14px 0;
   }
 
   .site-nav__toggle {

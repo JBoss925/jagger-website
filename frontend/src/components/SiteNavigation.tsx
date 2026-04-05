@@ -31,75 +31,85 @@ function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
   const isMenuExpanded = !isMobileMenuViewport || isMenuOpen;
 
   return (
-    <header
+    <div
       className={
         isMobileMenuViewport
           ? isMenuOpen
-            ? "site-nav is-mobile-nav is-mobile-open"
-            : "site-nav is-mobile-nav"
-          : "site-nav"
+            ? "site-nav-shell is-mobile-open"
+            : "site-nav-shell"
+          : "site-nav-shell"
       }
     >
-      <div className="site-nav__topbar">
-        <Link to="/" className="site-nav__brand-link">
-          <span className="site-nav__brand-mark">JB</span>
-          <span>
-            <strong>Jagger Brulato</strong>
-            <small>full-stack systems builder</small>
-          </span>
-        </Link>
-
-        {isMobileMenuViewport ? (
-          <button
-            type="button"
-            className={isMenuOpen ? "site-nav__toggle is-open" : "site-nav__toggle"}
-            aria-expanded={isMenuOpen}
-            aria-controls={menuId}
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            onClick={() => setIsMenuOpen((current) => !current)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        ) : null}
-      </div>
-
-      <div
-        id={menuId}
-        className={isMenuExpanded ? "site-nav__menu is-open" : "site-nav__menu"}
+      <header
+        className={
+          isMobileMenuViewport
+            ? isMenuOpen
+              ? "site-nav is-mobile-nav is-mobile-open"
+              : "site-nav is-mobile-nav"
+            : "site-nav"
+        }
       >
-        <nav className="site-nav__links" aria-label="Primary">
-          {sections.map((section) => (
+        <div className="site-nav__topbar">
+          <Link to="/" className="site-nav__brand-link">
+            <span className="site-nav__brand-mark">JB</span>
+            <span>
+              <strong>Jagger Brulato</strong>
+              <small>full-stack systems builder</small>
+            </span>
+          </Link>
+
+          {isMobileMenuViewport ? (
+            <button
+              type="button"
+              className={isMenuOpen ? "site-nav__toggle is-open" : "site-nav__toggle"}
+              aria-expanded={isMenuOpen}
+              aria-controls={menuId}
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              onClick={() => setIsMenuOpen((current) => !current)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          ) : null}
+        </div>
+
+        <div
+          id={menuId}
+          className={isMenuExpanded ? "site-nav__menu is-open" : "site-nav__menu"}
+        >
+          <nav className="site-nav__links" aria-label="Primary">
+            {sections.map((section) => (
+              <a
+                key={section.id}
+                className={
+                  activeSectionId === section.id && location.pathname === "/"
+                    ? "site-nav__link is-active"
+                    : "site-nav__link"
+                }
+                href={sectionHref(location.pathname, section.id)}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {section.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="site-nav__actions">
             <a
-              key={section.id}
-              className={
-                activeSectionId === section.id && location.pathname === "/"
-                  ? "site-nav__link is-active"
-                  : "site-nav__link"
-              }
-              href={sectionHref(location.pathname, section.id)}
+              className="site-nav__button site-nav__button--ghost"
+              href="/files/resume.pdf"
               onClick={() => setIsMenuOpen(false)}
             >
-              {section.label}
+              Resume
             </a>
-          ))}
-        </nav>
-
-        <div className="site-nav__actions">
-          <a
-            className="site-nav__button site-nav__button--ghost"
-            href="/files/resume.pdf"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Resume
-          </a>
-          <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
-            Open JaggerScript Playground
-          </Link>
+            <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
+              Open JaggerScript Playground
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </div>
   );
 }
 
