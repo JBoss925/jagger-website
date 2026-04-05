@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { SceneSection } from "../types/content";
 import { useMediaQuery } from "../hooks/useMediaQuery";
@@ -6,13 +6,14 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 type SiteNavigationProps = {
   sections: SceneSection[];
   activeSectionId?: string;
+  onSectionNavigate?: (sectionId: string) => void;
 };
 
 function sectionHref(pathname: string, sectionId: string) {
   return pathname === "/" ? `#${sectionId}` : `/#${sectionId}`;
 }
 
-function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
+function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNavigationProps) {
   const location = useLocation();
   const isMobileMenuViewport = useMediaQuery("(max-width: 768px)");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,6 +30,29 @@ function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
   }, [location.pathname, location.hash]);
 
   const isMenuExpanded = !isMobileMenuViewport || isMenuOpen;
+
+  const handleSectionClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    sectionId: string
+  ) => {
+    if (!onSectionNavigate || location.pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (isMobileMenuViewport && isMenuOpen) {
+      setIsMenuOpen(false);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          onSectionNavigate(sectionId);
+        });
+      });
+      return;
+    }
+
+    onSectionNavigate(sectionId);
+  };
 
   return (
     <div
@@ -88,7 +112,7 @@ function SiteNavigation({ sections, activeSectionId }: SiteNavigationProps) {
                     : "site-nav__link"
                 }
                 href={sectionHref(location.pathname, section.id)}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(event) => handleSectionClick(event, section.id)}
               >
                 {section.label}
               </a>

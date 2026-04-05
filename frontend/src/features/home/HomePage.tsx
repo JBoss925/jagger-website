@@ -14,6 +14,7 @@ import SceneBackdrop from "./SceneBackdrop";
 
 const sectionOrder = profileContent.sceneSections.map((section) => section.id);
 const ENABLE_MOBILE_STATIC_SCENE = false;
+const HEADER_SCROLL_GAP = 16;
 
 function HomePage() {
   const location = useLocation();
@@ -31,6 +32,15 @@ function HomePage() {
       : "hero";
   const isAtLastSection = activeSectionIndex === sectionOrder.length - 1;
 
+  function getHeaderScrollOffset() {
+    const navShell = document.querySelector<HTMLElement>(".site-nav-shell");
+    if (!navShell) {
+      return HEADER_SCROLL_GAP;
+    }
+
+    return navShell.getBoundingClientRect().height + HEADER_SCROLL_GAP;
+  }
+
   function scrollToSection(targetId: string) {
     if (targetId === "hero") {
       window.history.replaceState(null, "", "/#hero");
@@ -44,9 +54,15 @@ function HomePage() {
     }
 
     window.history.replaceState(null, "", `/#${targetId}`);
-    element.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
-      block: "start"
+
+    const top = Math.max(
+      0,
+      window.scrollY + element.getBoundingClientRect().top - getHeaderScrollOffset()
+    );
+
+    window.scrollTo({
+      top,
+      behavior: prefersReducedMotion ? "auto" : "smooth"
     });
   }
 
@@ -74,10 +90,14 @@ function HomePage() {
 
       const previousScrollBehavior = document.documentElement.style.scrollBehavior;
       document.documentElement.style.scrollBehavior = "auto";
+      const top = Math.max(
+        0,
+        window.scrollY + element.getBoundingClientRect().top - getHeaderScrollOffset()
+      );
 
-      element.scrollIntoView({
-        behavior: "auto",
-        block: "start"
+      window.scrollTo({
+        top,
+        behavior: "auto"
       });
 
       requestAnimationFrame(() => {
@@ -92,9 +112,14 @@ function HomePage() {
       return;
     }
 
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
+    const top = Math.max(
+      0,
+      window.scrollY + element.getBoundingClientRect().top - getHeaderScrollOffset()
+    );
+
+    window.scrollTo({
+      top,
+      behavior: "smooth"
     });
   }, [location.hash, prefersReducedMotion]);
 
@@ -108,6 +133,7 @@ function HomePage() {
       <SiteNavigation
         sections={profileContent.sceneSections}
         activeSectionId={activeSectionId}
+        onSectionNavigate={scrollToSection}
       />
 
       <main className="content-shell home-shell">
