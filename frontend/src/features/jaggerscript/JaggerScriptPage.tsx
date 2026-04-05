@@ -1,5 +1,5 @@
 import Editor, { type Monaco } from "@monaco-editor/react";
-import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SiteNavigation from "../../components/SiteNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import { defaultExampleId, jaggerscriptExamples } from "../../content/jaggerscriptExamples";
@@ -58,6 +58,16 @@ function JaggerScriptPage() {
   const selectedExample = loadExample(selectedExampleId);
   const selectedExampleIndex = jaggerscriptExamples.findIndex((example) => example.id === selectedExampleId);
   const deferredOutput = useDeferredValue(output.join("\n"));
+
+  useLayoutEffect(() => {
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+
+    requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    });
+  }, []);
 
   const handleLoadExample = (exampleId: string) => {
     const example = loadExample(exampleId);
