@@ -221,6 +221,7 @@ a {
   display: grid;
   gap: 28px;
   padding: 18px 0 8px;
+  padding-inline: clamp(8px, 2vw, 22px);
 }
 
 .games-nav-shell {
@@ -622,6 +623,26 @@ a {
 .games-hero__chip--jeardle span:nth-child(3) { height: 28px; }
 .games-hero__chip--jeardle span:nth-child(4) { height: 18px; }
 .games-hero__chip--jeardle span:nth-child(5) { height: 10px; }
+
+.games-section-intro {
+  display: grid;
+  gap: 12px;
+  padding: 22px 0 6px;
+  max-width: 48rem;
+}
+
+.games-section-intro h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 4.4rem);
+  line-height: 0.96;
+  text-shadow: 0 10px 36px rgba(0, 0, 0, 0.32);
+}
+
+.games-section-intro p {
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
 
 .games-grid {
   display: grid;
@@ -2299,7 +2320,7 @@ button:hover {
   overflow: auto;
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 1380px) {
   .site-nav {
     grid-template-areas:
       "topbar actions"

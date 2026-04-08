@@ -24,7 +24,7 @@ function SiteNavigation({
   activeSectionId,
   onSectionNavigate,
   brandTitle = "Jagger Brulato",
-  brandSubtitle = "full-stack systems builder",
+  brandSubtitle = "full-stack engineer",
   brandHref = "/",
   showActions = true
 }: SiteNavigationProps) {
@@ -172,8 +172,11 @@ function SiteNavigation({
               >
                 Resume
               </a>
+              <Link className="site-nav__button" to="/games" onClick={() => setIsMenuOpen(false)}>
+                Go to Games
+              </Link>
               <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
-                Open JaggerScript Playground
+                Go to JaggerScript
               </Link>
             </div>
           ) : null}

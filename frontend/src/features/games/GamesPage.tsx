@@ -21,6 +21,7 @@ function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jeardle" }) {
 function GamesPage() {
   const location = useLocation();
   const isPageReady = usePageReveal();
+  const isGamesHub = location.pathname === "/games";
 
   const currentContent = useMemo(() => {
     return (
@@ -28,6 +29,7 @@ function GamesPage() {
       gamesPlaceholderContent["/games"]
     );
   }, [location.pathname]);
+  const hasSectionIntro = !isGamesHub && "title" in currentContent;
 
   return (
     <div
@@ -45,38 +47,45 @@ function GamesPage() {
       <GamesNavigation />
 
       <main className="content-shell games-shell">
-        <section className="games-hero" aria-labelledby="games-hero-title">
-          <div className="games-hero__copy">
-            <h1 id="games-hero-title">Small games, daily puzzles, and experiments worth opening twice.</h1>
-            <p>
-              This is where I put the lighter-weight things: daily rituals, strategy ideas, and side projects
-              that are more fun when people can actually play with them.
-            </p>
-          </div>
+        {isGamesHub ? (
+          <section className="games-hero" aria-labelledby="games-hero-title">
+            <div className="games-hero__copy">
+              <h1 id="games-hero-title">Small games and daily puzzles.</h1>
+              <p>
+                This is where I put the game-sized projects: daily rituals, strategy ideas, and things people can actually play.
+              </p>
+            </div>
 
-          <div className="games-hero__art" aria-hidden="true">
-            <div className="games-hero__orb games-hero__orb--large" />
-            <div className="games-hero__orb games-hero__orb--small" />
-            <div className="games-hero__chip games-hero__chip--jordle">
-              <span />
-              <span />
-              <span />
-              <span />
+            <div className="games-hero__art" aria-hidden="true">
+              <div className="games-hero__orb games-hero__orb--large" />
+              <div className="games-hero__orb games-hero__orb--small" />
+              <div className="games-hero__chip games-hero__chip--jordle">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="games-hero__chip games-hero__chip--domes">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="games-hero__chip games-hero__chip--jeardle">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
-            <div className="games-hero__chip games-hero__chip--domes">
-              <span />
-              <span />
-              <span />
-            </div>
-            <div className="games-hero__chip games-hero__chip--jeardle">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : hasSectionIntro ? (
+          <section className="games-section-intro" aria-labelledby="games-section-title">
+            <span className="section-heading__eyebrow">Game</span>
+            <h1 id="games-section-title">{currentContent.title}</h1>
+            {currentContent.summary ? <p>{currentContent.summary}</p> : null}
+          </section>
+        ) : null}
 
         <section className="games-grid">
           {currentContent.cards.map((card) => (
