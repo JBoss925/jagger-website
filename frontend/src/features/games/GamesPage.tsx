@@ -1,123 +1,78 @@
 import { useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { usePageReveal } from "../../hooks/usePageReveal";
-import type { NavLinkItem } from "../../types/content";
+import GamesNavigation from "./GamesNavigation";
+import { gamesPlaceholderContent } from "./gamesData";
 
-const gameLinks: NavLinkItem[] = [
-  { id: "domes", label: "Domes", href: "/games/domes", matchPrefix: "/games/domes" },
-  { id: "jordle", label: "Jordle", href: "/games/jordle", matchPrefix: "/games/jordle" },
-  { id: "jeardle", label: "Jeardle", href: "/games/jeardle", matchPrefix: "/games/jeardle" }
-];
-
-const gameContent = {
-  "/games": {
-    title: "Small games, daily puzzles, and things I want people to actually play.",
-    summary:
-      "This is where the games side of the site is going to live. Some will reset every day, some will just be small self-contained projects.",
-    cards: [
-      {
-        title: "Domes",
-        text: "A head-to-head strategy game inspired by Santorini. This one already exists and needs a cleaner home."
-      },
-      {
-        title: "Jordle",
-        text: "A six-letter daily word game. Same basic intuition as Wordle, just with a slightly different space."
-      },
-      {
-        title: "Jeardle",
-        text: "A Heardle-style music game curated by me instead of generated from some generic catalog."
-      }
-    ]
-  },
-  "/games/domes": {
-    title: "Domes",
-    summary:
-      "This route will become the cleaned-up home for Domes instead of sending people to the legacy site.",
-    cards: [
-      {
-        title: "Status",
-        text: "Placeholder for now. The plan is to bring the board game experience into this site in a way that feels more polished than the old demo."
-      }
-    ]
-  },
-  "/games/jordle": {
-    title: "Jordle",
-    summary:
-      "A six-letter daily word game. Same broad family as Wordle, but with a longer guess space and a slightly different feel.",
-    cards: [
-      {
-        title: "Status",
-        text: "Placeholder for now. This is where the daily game will go."
-      }
-    ]
-  },
-  "/games/jeardle": {
-    title: "Jeardle",
-    summary:
-      "A Heardle-style daily game with songs I choose myself instead of a generic feed.",
-    cards: [
-      {
-        title: "Status",
-        text: "Placeholder for now. This route will eventually hold the actual playable version."
-      }
-    ]
+function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jeardle" }) {
+  if (icon === "domes") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M9 31 24 12l15 19" />
+        <path d="M15 31v6h18v-6" />
+        <path d="M20 24h8" />
+      </svg>
+    );
   }
-} as const;
+
+  if (icon === "jordle") {
+    return (
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="8" y="8" width="12" height="12" rx="3" />
+        <rect x="28" y="8" width="12" height="12" rx="3" />
+        <rect x="8" y="28" width="12" height="12" rx="3" />
+        <path d="M30 30h8v8h-8z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M12 30a12 12 0 1 1 24 0" />
+      <path d="M16 30h16" />
+      <path d="M18 18v4M24 16v6M30 18v4" />
+    </svg>
+  );
+}
 
 function GamesPage() {
   const location = useLocation();
   const isPageReady = usePageReveal();
 
   const currentContent = useMemo(() => {
-    return gameContent[location.pathname as keyof typeof gameContent] ?? gameContent["/games"];
+    return (
+      gamesPlaceholderContent[location.pathname as keyof typeof gamesPlaceholderContent] ??
+      gamesPlaceholderContent["/games"]
+    );
   }, [location.pathname]);
 
   return (
-    <div className={isPageReady ? "page-shell page-shell--ready games-page" : "page-shell page-shell--entering games-page"}>
+    <div
+      className={
+        isPageReady
+          ? "page-shell page-shell--ready games-page"
+          : "page-shell page-shell--entering games-page"
+      }
+    >
       <div className="scene-static" aria-hidden="true">
         <div className="scene-static__gradient" />
         <div className="scene-static__grid" />
       </div>
 
-      <div className="games-nav-shell">
-        <header className="games-nav">
-          <Link to="/games" className="games-nav__brand">
-            <strong>Jagger Games</strong>
-          </Link>
-
-          <nav className="games-nav__links" aria-label="Games navigation">
-            {gameLinks.map((item) => {
-              const isActive =
-                location.pathname === item.href ||
-                (!!item.matchPrefix && location.pathname.startsWith(item.matchPrefix));
-
-              return (
-                <Link
-                  key={item.id}
-                  to={item.href}
-                  className={isActive ? "games-nav__link is-active" : "games-nav__link"}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </header>
-      </div>
+      <GamesNavigation />
 
       <main className="content-shell games-shell">
-        <section className="games-hero">
-          <span className="section-heading__eyebrow">Games</span>
-          <h1>{currentContent.title}</h1>
-          <p>{currentContent.summary}</p>
-        </section>
-
         <section className="games-grid">
           {currentContent.cards.map((card) => (
-            <article key={card.title} className="glass-card games-card">
+            <Link key={card.title} to={card.href} className="glass-card games-card games-card--link">
+              <div className={`games-card__icon games-card__icon--${card.icon}`}>
+                <GameCardIcon icon={card.icon} />
+              </div>
               <h2>{card.title}</h2>
               <p>{card.text}</p>
-            </article>
+              <span className="games-card__meta">Open game</span>
+            </Link>
           ))}
         </section>
       </main>

@@ -3,13 +3,16 @@ import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
 import {
   evaluateGuess,
+  getJordlePuzzleById,
   getTodaysJordlePuzzle,
   isValidJordleGuess,
   JORDLE_MAX_GUESSES,
   JORDLE_STORAGE_KEY,
   JORDLE_WORD_LENGTH,
   mergeKeyboardState,
+  normalizeArchivedGuesses,
   normalizeGuess,
+  type JordleArchiveState,
   type JordleSaveState,
   type LetterState
 } from "./jordle/game";
@@ -75,39 +78,64 @@ function HelpIcon() {
   );
 }
 
-function readSavedGuesses(puzzleId: number) {
+function ArchiveIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M8 3.75v3" />
+      <path d="M16 3.75v3" />
+      <path d="M4 9.5h16" />
+      <path d="M8 13h8" />
+    </svg>
+  );
+}
+
+function readSavedArchive() {
   if (typeof window === "undefined") {
-    return [];
+    return {};
   }
 
   try {
     const raw = window.localStorage.getItem(JORDLE_STORAGE_KEY);
     if (!raw) {
-      return [];
+      return {};
     }
 
-    const saved = JSON.parse(raw) as JordleSaveState;
-    if (saved.puzzleId !== puzzleId || !Array.isArray(saved.guesses)) {
-      return [];
+    const saved = JSON.parse(raw) as JordleArchiveState | JordleSaveState;
+    if ("puzzles" in saved && saved.puzzles && typeof saved.puzzles === "object") {
+      return Object.fromEntries(
+        Object.entries(saved.puzzles).map(([key, guesses]) => [key, normalizeArchivedGuesses(guesses)])
+      );
     }
 
-    return saved.guesses
-      .map((guess) => normalizeGuess(String(guess)))
-      .filter((guess) => guess.length === JORDLE_WORD_LENGTH)
-      .slice(0, JORDLE_MAX_GUESSES);
+    if ("puzzleId" in saved) {
+      return {
+        [String(saved.puzzleId)]: normalizeArchivedGuesses(saved.guesses)
+      };
+    }
+
+    return {};
   } catch {
-    return [];
+    return {};
   }
 }
 
 function JordlePage() {
   const isPageReady = usePageReveal();
-  const { answer, puzzleId } = useMemo(() => getTodaysJordlePuzzle(), []);
-  const [guesses, setGuesses] = useState<string[]>(() => readSavedGuesses(puzzleId));
+  const todaysPuzzle = useMemo(() => getTodaysJordlePuzzle(), []);
+  const [activePuzzleId, setActivePuzzleId] = useState(todaysPuzzle.puzzleId);
+  const [archive, setArchive] = useState<Record<string, string[]>>(() => readSavedArchive());
   const [draft, setDraft] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+
+  const { answer, puzzleId, date } = useMemo(
+    () => getJordlePuzzleById(activePuzzleId),
+    [activePuzzleId]
+  );
+  const guesses = archive[String(activePuzzleId)] ?? [];
 
   const solved = guesses.at(-1) === answer;
   const failed = !solved && guesses.length >= JORDLE_MAX_GUESSES;
@@ -124,12 +152,18 @@ function JordlePage() {
       return;
     }
 
-    const payload: JordleSaveState = {
-      puzzleId,
-      guesses
+    const payload: JordleArchiveState = {
+      puzzles: archive
     };
     window.localStorage.setItem(JORDLE_STORAGE_KEY, JSON.stringify(payload));
-  }, [guesses, puzzleId]);
+  }, [archive]);
+
+  useEffect(() => {
+    setDraft("");
+    setValidationMessage("");
+    setIsHelpOpen(false);
+    setIsSummaryOpen(false);
+  }, [activePuzzleId]);
 
   function addLetter(letter: string) {
     if (solved || failed || draft.length >= JORDLE_WORD_LENGTH) {
@@ -165,15 +199,24 @@ function JordlePage() {
 
     const nextGuesses = [...guesses, guess];
 
-    setGuesses(nextGuesses);
+    setArchive((current) => ({
+      ...current,
+      [String(activePuzzleId)]: nextGuesses
+    }));
     setDraft("");
     setValidationMessage("");
+
+    if (guess === answer || nextGuesses.length >= JORDLE_MAX_GUESSES) {
+      setIsSummaryOpen(true);
+    }
   }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsHelpOpen(false);
+        setIsArchiveOpen(false);
+        setIsSummaryOpen(false);
         return;
       }
 
@@ -181,7 +224,7 @@ function JordlePage() {
         return;
       }
 
-      if (isHelpOpen) {
+      if (isHelpOpen || isArchiveOpen || isSummaryOpen) {
         return;
       }
 
@@ -205,7 +248,7 @@ function JordlePage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [draft, failed, isHelpOpen, solved]);
+  }, [draft, failed, isArchiveOpen, isHelpOpen, isSummaryOpen, solved]);
 
   const rows = Array.from({ length: JORDLE_MAX_GUESSES }, (_, rowIndex) => {
     const committedGuess = guesses[rowIndex];
@@ -227,6 +270,15 @@ function JordlePage() {
   });
 
   const puzzleNumber = puzzleId + 1;
+  const puzzleDateLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }).format(date),
+    [date]
+  );
   const status = useMemo(() => {
     if (solved) {
       return `Solved in ${guesses.length} ${guesses.length === 1 ? "guess" : "guesses"}.`;
@@ -280,12 +332,29 @@ function JordlePage() {
     };
   }, [answer, guesses]);
 
-  useEffect(() => {
-    if (solved || failed) {
-      setIsSummaryOpen(true);
-      setIsHelpOpen(false);
+  const archiveEntries = useMemo(() => {
+    const entries = [];
+    for (let id = todaysPuzzle.puzzleId; id >= 0; id -= 1) {
+      const puzzle = getJordlePuzzleById(id);
+      const entryGuesses = archive[String(id)] ?? [];
+      const entrySolved = entryGuesses.at(-1) === puzzle.answer;
+      const entryFailed = !entrySolved && entryGuesses.length >= JORDLE_MAX_GUESSES;
+
+      entries.push({
+        puzzleId: id,
+        label: `Puzzle #${id + 1}`,
+        dateLabel: new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }).format(puzzle.date),
+        guesses: entryGuesses.length,
+        solved: entrySolved,
+        failed: entryFailed
+      });
     }
-  }, [failed, solved]);
+    return entries;
+  }, [archive, todaysPuzzle.puzzleId]);
 
   return (
     <div
@@ -317,21 +386,40 @@ function JordlePage() {
                   <span className="section-heading__eyebrow">Puzzle #{puzzleNumber}</span>
                   <h2>{solved ? "Solved" : failed ? "Tough board" : "Today’s Jordle"}</h2>
                 </div>
-                <button
-                  type="button"
-                  className="jordle-help-button"
-                  aria-label="How to play Jordle"
-                  onClick={() => setIsHelpOpen(true)}
-                >
-                  <span className="jordle-help-button__icon">
-                    <HelpIcon />
-                  </span>
-                  <span className="jordle-help-button__tooltip" role="tooltip">
-                    How to play
-                  </span>
-                </button>
+                <div className="jordle-board-card__actions">
+                  <button
+                    type="button"
+                    className="jordle-help-button"
+                    aria-label="Open Jordle archive"
+                    onClick={() => setIsArchiveOpen(true)}
+                  >
+                    <span className="jordle-help-button__icon">
+                      <ArchiveIcon />
+                    </span>
+                    <span className="jordle-help-button__tooltip" role="tooltip">
+                      Archive
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="jordle-help-button"
+                    aria-label="How to play Jordle"
+                    onClick={() => setIsHelpOpen(true)}
+                  >
+                    <span className="jordle-help-button__icon">
+                      <HelpIcon />
+                    </span>
+                    <span className="jordle-help-button__tooltip" role="tooltip">
+                      How to play
+                    </span>
+                  </button>
+                </div>
               </div>
-              <p>{status}</p>
+              <p>
+                {puzzleDateLabel}
+                <span className="jordle-board-card__meta-divider">·</span>
+                {status}
+              </p>
             </div>
 
             <div className="jordle-board" role="grid" aria-label="Jordle board">
@@ -477,6 +565,67 @@ function JordlePage() {
                   <div className="jordle-tile">R</div>
                 </div>
                 <p><strong>Dark</strong> means the letter is not in the word.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isArchiveOpen ? (
+        <div
+          className="jordle-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="jordle-archive-title"
+          onClick={() => setIsArchiveOpen(false)}
+        >
+          <div className="glass-card jordle-modal__card jordle-archive-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="jordle-modal__header">
+              <div>
+                <span className="section-heading__eyebrow">Archive</span>
+                <h2 id="jordle-archive-title">Previous Jordles</h2>
+              </div>
+              <button
+                type="button"
+                className="jordle-modal__close"
+                aria-label="Close Jordle archive"
+                onClick={() => setIsArchiveOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="jordle-modal__body">
+              <p>Open any previous puzzle to review it or keep playing where you left off.</p>
+
+              <div className="jordle-archive-list">
+                {archiveEntries.map((entry) => (
+                  <button
+                    key={entry.puzzleId}
+                    type="button"
+                    className={`jordle-archive-item ${entry.puzzleId === activePuzzleId ? "is-active" : ""}`}
+                    onClick={() => {
+                      setActivePuzzleId(entry.puzzleId);
+                      setIsArchiveOpen(false);
+                    }}
+                  >
+                    <div>
+                      <strong>{entry.label}</strong>
+                      <span>{entry.dateLabel}</span>
+                    </div>
+                    <div className="jordle-archive-item__meta">
+                      {entry.solved ? (
+                        <span className="jordle-archive-chip is-solved">Solved</span>
+                      ) : entry.failed ? (
+                        <span className="jordle-archive-chip is-failed">Finished</span>
+                      ) : entry.guesses > 0 ? (
+                        <span className="jordle-archive-chip is-progress">{entry.guesses}/6 guesses</span>
+                      ) : (
+                        <span className="jordle-archive-chip">Unplayed</span>
+                      )}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

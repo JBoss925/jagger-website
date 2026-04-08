@@ -9,6 +9,7 @@ const GeneticTsRoute = lazy(
   () => import("../features/genetic-ts/GeneticTsRoute")
 );
 const GamesPage = lazy(() => import("../features/games/GamesPage"));
+const JordlePage = lazy(() => import("../features/games/JordlePage"));
 
 function RouteLoading() {
   return (
@@ -32,7 +33,7 @@ function App() {
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/domes" element={<GamesPage />} />
-        <Route path="/games/jordle" element={<GamesPage />} />
+        <Route path="/games/jordle" element={<JordlePage />} />
         <Route path="/games/jeardle" element={<GamesPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
