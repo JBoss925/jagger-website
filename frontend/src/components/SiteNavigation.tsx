@@ -1,23 +1,44 @@
 import { useEffect, useId, useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import type { SceneSection } from "../types/content";
+import type { NavLinkItem, SceneSection } from "../types/content";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 
 type SiteNavigationProps = {
-  sections: SceneSection[];
+  sections?: SceneSection[];
+  navLinks?: NavLinkItem[];
   activeSectionId?: string;
   onSectionNavigate?: (sectionId: string) => void;
+  brandTitle?: string;
+  brandSubtitle?: string;
+  brandHref?: string;
+  showActions?: boolean;
 };
 
 function sectionHref(pathname: string, sectionId: string) {
   return pathname === "/" ? `#${sectionId}` : `/#${sectionId}`;
 }
 
-function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNavigationProps) {
+function SiteNavigation({
+  sections = [],
+  navLinks,
+  activeSectionId,
+  onSectionNavigate,
+  brandTitle = "Jagger Brulato",
+  brandSubtitle = "full-stack systems builder",
+  brandHref = "/",
+  showActions = true
+}: SiteNavigationProps) {
   const location = useLocation();
   const isMobileMenuViewport = useMediaQuery("(max-width: 768px)");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuId = useId();
+  const resolvedNavLinks: NavLinkItem[] =
+    navLinks ??
+    sections.map((section) => ({
+      id: section.id,
+      label: section.label,
+      href: sectionHref(location.pathname, section.id)
+    }));
 
   useEffect(() => {
     if (!isMobileMenuViewport) {
@@ -57,7 +78,7 @@ function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNa
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setIsMenuOpen(false);
 
-    if (location.pathname !== "/") {
+    if (location.pathname !== brandHref || brandHref !== "/") {
       return;
     }
 
@@ -77,20 +98,21 @@ function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNa
       }
     >
       <header
-        className={
-          isMobileMenuViewport
-            ? isMenuOpen
-              ? "site-nav is-mobile-nav is-mobile-open"
-              : "site-nav is-mobile-nav"
-            : "site-nav"
-        }
+        className={[
+          "site-nav",
+          isMobileMenuViewport ? "is-mobile-nav" : "",
+          isMobileMenuViewport && isMenuOpen ? "is-mobile-open" : "",
+          showActions ? "" : "site-nav--links-only"
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
         <div className="site-nav__topbar">
-          <Link to="/" className="site-nav__brand-link" onClick={handleBrandClick}>
+          <Link to={brandHref} className="site-nav__brand-link" onClick={handleBrandClick}>
             <span className="site-nav__brand-mark">JB</span>
             <span>
-              <strong>Jagger Brulato</strong>
-              <small>full-stack systems builder</small>
+              <strong>{brandTitle}</strong>
+              <small>{brandSubtitle}</small>
             </span>
           </Link>
 
@@ -115,34 +137,46 @@ function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNa
           className={isMenuExpanded ? "site-nav__menu is-open" : "site-nav__menu"}
         >
           <nav className="site-nav__links" aria-label="Primary">
-            {sections.map((section) => (
-              <a
-                key={section.id}
-                className={
-                  activeSectionId === section.id && location.pathname === "/"
-                    ? "site-nav__link is-active"
-                    : "site-nav__link"
-                }
-                href={sectionHref(location.pathname, section.id)}
-                onClick={(event) => handleSectionClick(event, section.id)}
-              >
-                {section.label}
-              </a>
-            ))}
+            {resolvedNavLinks.map((item) => {
+              const isSectionLink = !navLinks;
+              const isActive = isSectionLink
+                ? activeSectionId === item.id && location.pathname === "/"
+                : location.pathname === item.href ||
+                  (!!item.matchPrefix && location.pathname.startsWith(item.matchPrefix));
+
+              return (
+                <a
+                  key={item.id}
+                  className={isActive ? "site-nav__link is-active" : "site-nav__link"}
+                  href={item.href}
+                  onClick={(event) => {
+                    if (isSectionLink) {
+                      handleSectionClick(event, item.id);
+                    } else {
+                      setIsMenuOpen(false);
+                    }
+                  }}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
-          <div className="site-nav__actions">
-            <a
-              className="site-nav__button site-nav__button--ghost"
-              href="/files/resume.pdf"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Resume
-            </a>
-            <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
-              Open JaggerScript Playground
-            </Link>
-          </div>
+          {showActions ? (
+            <div className="site-nav__actions">
+              <a
+                className="site-nav__button site-nav__button--ghost"
+                href="/files/resume.pdf"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Resume
+              </a>
+              <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
+                Open JaggerScript Playground
+              </Link>
+            </div>
+          ) : null}
         </div>
       </header>
     </div>

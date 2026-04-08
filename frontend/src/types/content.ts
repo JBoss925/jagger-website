@@ -10,6 +10,13 @@ export type SceneSection = {
   accent: string;
 };
 
+export type NavLinkItem = {
+  id: string;
+  label: string;
+  href: string;
+  matchPrefix?: string;
+};
+
 export type ExperienceEntry = {
   company: string;
   role: string;
