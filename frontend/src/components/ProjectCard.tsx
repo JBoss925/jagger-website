@@ -1,5 +1,5 @@
 import type { ProjectEntry } from "../types/content";
-import { DomesIcon, GeneticIcon, JaggerScriptIcon, JeardleIcon, JordleIcon, MaterializeIcon } from "../features/games/GameIcons";
+import { DomesIcon, GeneticIcon, JaggerScriptIcon, JolorIcon, JordleIcon, MaterializeIcon } from "../features/games/GameIcons";
 
 type ProjectCardProps = {
   project: ProjectEntry;
@@ -27,8 +27,8 @@ function ProjectCard({ project }: ProjectCardProps) {
         return <DomesIcon />;
       case "jordle":
         return <JordleIcon />;
-      case "jeardle":
-        return <JeardleIcon />;
+      case "jolor":
+        return <JolorIcon />;
       case "genetic":
         return <GeneticIcon />;
       case "jaggerscript":

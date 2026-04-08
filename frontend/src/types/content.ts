@@ -33,7 +33,8 @@ export type ProjectEntry = {
   description: string;
   impact: string;
   stack: string[];
-  image: string;
+  image?: string;
+  icon?: "domes" | "jordle" | "jolor" | "genetic" | "jaggerscript" | "materialize";
   links: {
     label: string;
     href: string;

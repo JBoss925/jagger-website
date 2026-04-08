@@ -4,6 +4,7 @@ import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jordlePreview from "../assets/jordle-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
+import monadPreview from "../assets/monad-preview.jpg";
 import type { ProfileContent } from "../types/content";
 
 export const headshotAsset = headshotImage;
@@ -213,14 +214,15 @@ export const profileContent: ProfileContent = {
       slug: "domes",
       title: "Domes",
       description:
-        "An online multiplayer board game inspired by Santorini.",
+        "A two-player strategy game inspired by Santorini, centered on positional play, sequencing, and board control.",
       impact:
-        "I built it because I like stateful interactive systems, especially when the product side and the technical side are tightly coupled.",
-      stack: ["Realtime gameplay", "Web app", "State management"],
+        "It sits right in the overlap I like most: game rules, interaction design, and state that has to stay coherent turn after turn.",
+      stack: ["React", "Turn-based gameplay", "State machines", "Game UI"],
       image: domesPreview,
       icon: "domes",
       links: [
-        { label: "Legacy Demo", href: "https://jagger.netlify.app/domes/" }
+        { label: "Play Domes", href: "/games/domes" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
     {
@@ -255,6 +257,22 @@ export const profileContent: ProfileContent = {
         {
           label: "Reference",
           href: "https://gist.github.com/JBoss925/192cad63b955f41e9615622b5c943d15"
+        }
+      ]
+    },
+    {
+      slug: "chains",
+      title: "Chains",
+      description:
+        "A small monadic pattern for wrapping a value, composing transformations, and layering side behaviors like history or undo on top.",
+      impact:
+        "It shows the kind of abstraction work I like most: finding a pattern that stays simple at the surface while opening up more expressive behavior underneath.",
+      stack: ["TypeScript", "Monads", "Composable abstractions", "API design"],
+      image: monadPreview,
+      links: [
+        {
+          label: "Reference",
+          href: "https://gist.github.com/JBoss925/183ba9fa079ebab1d5f908fbf7725243"
         }
       ]
     }

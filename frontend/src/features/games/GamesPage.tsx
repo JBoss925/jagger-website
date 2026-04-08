@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
-import { DomesIcon, JeardleIcon, JordleIcon } from "./GameIcons";
+import { DomesIcon, JolorIcon, JordleIcon } from "./GameIcons";
 import { gamesPlaceholderContent } from "./gamesData";
 
-function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jeardle" }) {
+function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jolor" }) {
   if (icon === "domes") {
     return <DomesIcon />;
   }
@@ -15,7 +15,7 @@ function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jeardle" }) {
     return <JordleIcon />;
   }
 
-  return <JeardleIcon />;
+  return <JolorIcon />;
 }
 
 function GamesPage() {
@@ -70,7 +70,7 @@ function GamesPage() {
                 <span />
                 <span />
               </div>
-              <div className="games-hero__chip games-hero__chip--jeardle">
+              <div className="games-hero__chip games-hero__chip--jolor">
                 <span />
                 <span />
                 <span />

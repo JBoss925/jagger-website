@@ -3,7 +3,7 @@ import type { NavLinkItem } from "../../types/content";
 export const gameLinks: NavLinkItem[] = [
   { id: "domes", label: "Domes", href: "/games/domes", matchPrefix: "/games/domes" },
   { id: "jordle", label: "Jordle", href: "/games/jordle", matchPrefix: "/games/jordle" },
-  { id: "jeardle", label: "Jeardle", href: "/games/jeardle", matchPrefix: "/games/jeardle" }
+  { id: "jolor", label: "Jolor", href: "/games/jolor", matchPrefix: "/games/jolor" }
 ];
 
 export const gamesPlaceholderContent = {
@@ -13,7 +13,7 @@ export const gamesPlaceholderContent = {
         title: "Domes",
         icon: "domes",
         href: "/games/domes",
-        text: "A head-to-head strategy game inspired by Santorini. This one already exists and needs a cleaner home."
+        text: "A head-to-head strategy game inspired by Santorini. Climb, build, and cut off the other player before they reach the third level."
       },
       {
         title: "Jordle",
@@ -22,35 +22,22 @@ export const gamesPlaceholderContent = {
         text: "A six-letter daily word game. Same basic intuition as Wordle, just with a slightly different space."
       },
       {
-        title: "Jeardle",
-        icon: "jeardle",
-        href: "/games/jeardle",
-        text: "A Heardle-style music game curated by me instead of generated from some generic catalog."
+        title: "Jolor",
+        icon: "jolor",
+        href: "/games/jolor",
+        text: "A daily color-guessing game where the name is the clue and your eye has to do the rest."
       }
     ]
   },
-  "/games/domes": {
-    title: "Domes",
+  "/games/jolor": {
+    title: "Jolor",
     summary:
-      "This route will become the cleaned-up home for Domes instead of sending people to the legacy site.",
+      "A daily color puzzle where you tune a guess by eye until it matches the named target closely enough.",
     cards: [
       {
         title: "Status",
-        icon: "domes",
-        href: "/games/domes",
-        text: "Placeholder for now. The plan is to bring the board game experience into this site in a way that feels more polished than the old demo."
-      }
-    ]
-  },
-  "/games/jeardle": {
-    title: "Jeardle",
-    summary:
-      "A Heardle-style daily game with songs I choose myself instead of a generic feed.",
-    cards: [
-      {
-        title: "Status",
-        icon: "jeardle",
-        href: "/games/jeardle",
+        icon: "jolor",
+        href: "/games/jolor",
         text: "Placeholder for now. This route will eventually hold the actual playable version."
       }
     ]
