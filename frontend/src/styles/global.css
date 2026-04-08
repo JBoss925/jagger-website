@@ -220,6 +220,7 @@ a {
 .games-shell {
   display: grid;
   gap: 28px;
+  padding: 18px 0 8px;
 }
 
 .games-nav-shell {
@@ -272,6 +273,10 @@ a {
   backdrop-filter: blur(18px);
 }
 
+.games-nav__topbar {
+  display: contents;
+}
+
 .games-nav__brand {
   display: inline-flex;
   align-items: center;
@@ -301,6 +306,60 @@ a {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.games-nav__menu {
+  display: contents;
+}
+
+.games-nav__toggle {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(87, 208, 255, 0.18);
+  background: rgba(9, 18, 31, 0.82);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.games-nav__toggle span {
+  position: absolute;
+  left: 11px;
+  width: 20px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: center;
+  transition: transform 220ms ease, opacity 180ms ease, top 220ms ease;
+}
+
+.games-nav__toggle span:nth-child(1) {
+  top: 14px;
+}
+
+.games-nav__toggle span:nth-child(2) {
+  top: 21px;
+}
+
+.games-nav__toggle span:nth-child(3) {
+  top: 28px;
+}
+
+.games-nav__toggle.is-open span:nth-child(1) {
+  top: 21px;
+  transform: rotate(45deg);
+}
+
+.games-nav__toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.games-nav__toggle.is-open span:nth-child(3) {
+  top: 21px;
+  transform: rotate(-45deg);
 }
 
 .games-nav__link {
@@ -363,23 +422,433 @@ a {
 
 .games-grid {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  padding: 8px 0 4px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .games-card {
-  padding: 24px;
+  padding: 28px;
+  border-radius: 28px;
+}
+
+.games-card--link {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-height: 248px;
+  background:
+    linear-gradient(180deg, rgba(18, 33, 53, 0.82), rgba(9, 16, 28, 0.92)),
+    radial-gradient(circle at top right, rgba(87, 208, 255, 0.08), transparent 34%);
+  border: 1px solid rgba(126, 173, 228, 0.2);
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.games-card--link:hover,
+.games-card--link:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(87, 208, 255, 0.28);
+  background:
+    linear-gradient(180deg, rgba(24, 40, 62, 0.88), rgba(10, 17, 30, 0.96)),
+    radial-gradient(circle at top right, rgba(247, 169, 91, 0.08), transparent 32%);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.26);
 }
 
 .games-card h2 {
-  margin: 0 0 10px;
-  font-size: 1.35rem;
+  margin: 0;
+  font-size: 1.52rem;
 }
 
 .games-card p {
   margin: 0;
   color: var(--text-dim);
   line-height: 1.75;
+}
+
+.games-card__icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(10, 19, 33, 0.84);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.games-card__icon svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.games-card__icon--domes {
+  color: #ffd09d;
+}
+
+.games-card__icon--jordle {
+  color: #95ddff;
+}
+
+.games-card__icon--jeardle {
+  color: #8de7c1;
+}
+
+.games-card__meta {
+  margin-top: auto;
+  font: 0.76rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.jordle-hero {
+  gap: 10px;
+}
+
+.jordle-hero h1 {
+  font-size: clamp(3rem, 9vw, 5.6rem);
+}
+
+.jordle-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+.jordle-board-card,
+.jordle-keyboard-card {
+  padding: 24px;
+  backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(18, 33, 53, 0.96), rgba(9, 16, 28, 0.98));
+  overflow: visible;
+}
+
+.jordle-board-card__header {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.jordle-board-card__title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.jordle-board-card__header h2 {
+  margin: 6px 0 0;
+  font-size: 1.6rem;
+}
+
+.jordle-board-card__header p {
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+
+.jordle-help-button {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 173, 228, 0.22);
+  background: rgba(8, 15, 26, 0.82);
+  color: var(--text);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.jordle-help-button:hover,
+.jordle-help-button:focus-visible {
+  transform: translateY(-10%);
+  border-color: rgba(87, 208, 255, 0.36);
+  background: rgba(10, 21, 37, 0.96);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+}
+
+.jordle-help-button__icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+
+.jordle-help-button__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jordle-help-button__tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(7, 14, 25, 0.94);
+  color: var(--text-dim);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  font-size: 0.9rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.jordle-help-button:hover .jordle-help-button__tooltip,
+.jordle-help-button:focus-visible .jordle-help-button__tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.jordle-board {
+  display: grid;
+  gap: clamp(8px, 1.2vw, 12px);
+}
+
+.jordle-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(8px, 1.2vw, 12px);
+}
+
+.jordle-tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  border-radius: clamp(12px, 2vw, 18px);
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(8, 15, 26, 0.74);
+  color: var(--text);
+  text-transform: uppercase;
+  font-size: clamp(1rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: clamp(0.04em, 0.25vw, 0.08em);
+}
+
+.jordle-tile.is-empty {
+  color: rgba(238, 245, 255, 0.45);
+}
+
+.jordle-tile.is-miss {
+  background: rgba(20, 28, 40, 0.96);
+  color: rgba(238, 245, 255, 0.72);
+}
+
+.jordle-tile.is-present {
+  background: linear-gradient(135deg, rgba(247, 169, 91, 0.68), rgba(204, 132, 38, 0.88));
+  border-color: rgba(247, 169, 91, 0.42);
+  color: #08111d;
+}
+
+.jordle-tile.is-correct {
+  background: linear-gradient(135deg, rgba(141, 231, 193, 0.72), rgba(77, 197, 145, 0.88));
+  border-color: rgba(141, 231, 193, 0.4);
+  color: #08111d;
+}
+
+.jordle-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.jordle-keyboard__row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: visible;
+}
+
+.jordle-keyboard__row--offset {
+  padding-inline: clamp(12px, 4vw, 34px);
+}
+
+.jordle-key {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: clamp(42px, 7vw, 52px);
+  padding: 0 6px;
+  border-radius: clamp(11px, 1.8vw, 15px);
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(8, 15, 26, 0.8);
+  color: var(--text);
+  font-weight: 600;
+  font-size: clamp(0.78rem, 1.5vw, 1rem);
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.jordle-key.is-wide {
+  flex: 1.32 1 0;
+}
+
+.jordle-key.is-miss {
+  background: rgba(20, 28, 40, 0.96);
+  color: rgba(238, 245, 255, 0.74);
+}
+
+.jordle-key.is-present {
+  background: linear-gradient(135deg, rgba(247, 169, 91, 0.68), rgba(204, 132, 38, 0.88));
+  border-color: rgba(247, 169, 91, 0.42);
+  color: #08111d;
+}
+
+.jordle-key.is-correct {
+  background: linear-gradient(135deg, rgba(141, 231, 193, 0.72), rgba(77, 197, 145, 0.88));
+  border-color: rgba(141, 231, 193, 0.4);
+  color: #08111d;
+}
+
+.jordle-key__icon {
+  display: inline-flex;
+  width: clamp(16px, 2vw, 20px);
+  height: clamp(16px, 2vw, 20px);
+}
+
+.jordle-key__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jordle-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4, 7, 18, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.jordle-modal__card {
+  width: min(680px, 100%);
+  padding: 26px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(18, 33, 53, 0.9), rgba(9, 16, 28, 0.96)),
+    radial-gradient(circle at top right, rgba(87, 208, 255, 0.08), transparent 34%);
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+}
+
+.jordle-modal__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.jordle-modal__header h2 {
+  margin: 6px 0 0;
+  font-size: 1.9rem;
+}
+
+.jordle-modal__close {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(8, 15, 26, 0.8);
+  color: var(--text);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.jordle-modal__body {
+  display: grid;
+  gap: 18px;
+}
+
+.jordle-modal__body p {
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+
+.jordle-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.jordle-summary-stat {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(126, 173, 228, 0.16);
+  background: rgba(7, 14, 25, 0.72);
+}
+
+.jordle-summary-stat span {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.jordle-summary-stat strong {
+  color: var(--text);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  line-height: 1.1;
+}
+
+.jordle-modal__example {
+  display: grid;
+  gap: 10px;
+}
+
+.jordle-modal__example-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 56px));
+  gap: 10px;
+}
+
+.jordle-modal__example-row .jordle-tile {
+  font-size: 1.15rem;
 }
 
 .glass-card {
@@ -1535,16 +2004,61 @@ button:hover {
   .games-nav {
     grid-template-columns: 1fr;
     justify-items: stretch;
+    gap: 0;
+  }
+
+  .games-nav__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .games-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .games-nav__menu {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+    align-content: start;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      max-height 260ms ease,
+      opacity 180ms ease,
+      transform 260ms ease,
+      margin-top 260ms ease;
+    margin-top: 0;
+  }
+
+  .games-nav-shell.is-mobile-open .games-nav__menu {
+    max-height: 320px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    margin-top: 14px;
   }
 
   .games-nav__links {
     justify-content: stretch;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .games-nav__link {
     width: 100%;
+  }
+
+  .jordle-row {
+    gap: 8px;
   }
 
 
@@ -1700,6 +2214,68 @@ button:hover {
   .experience-card__meta {
     justify-items: start;
     text-align: left;
+  }
+}
+
+@media (max-width: 380px) {
+  .jordle-board-card,
+  .jordle-keyboard-card {
+    padding: 18px;
+  }
+
+  .jordle-board-card__title-row {
+    gap: 12px;
+  }
+
+  .jordle-board-card__header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .jordle-board-card__header h2 {
+    font-size: 1.4rem;
+  }
+
+  .jordle-row {
+    gap: 6px;
+  }
+
+  .jordle-tile {
+    border-radius: 12px;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+  }
+
+  .jordle-keyboard {
+    gap: 8px;
+  }
+
+  .jordle-keyboard__row {
+    gap: 4px;
+  }
+
+  .jordle-key {
+    min-height: 40px;
+    padding: 0 4px;
+    border-radius: 11px;
+    font-size: 0.72rem;
+  }
+
+  .jordle-key.is-wide {
+    flex: 1.2 1 0;
+  }
+
+  .jordle-key__icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .jordle-keyboard__row--offset {
+    padding-inline: 10px;
+  }
+
+  .jordle-summary-grid {
+    grid-template-columns: 1fr;
   }
 }
 
