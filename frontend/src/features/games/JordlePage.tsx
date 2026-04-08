@@ -124,12 +124,16 @@ function readSavedArchive() {
 function JordlePage() {
   const isPageReady = usePageReveal();
   const todaysPuzzle = useMemo(() => getTodaysJordlePuzzle(), []);
+  const initialArchive = useMemo(() => readSavedArchive(), []);
+  const initialTodayGuesses = initialArchive[String(todaysPuzzle.puzzleId)] ?? [];
+  const initialTodaySolved = initialTodayGuesses.at(-1) === todaysPuzzle.answer;
+  const initialTodayFailed = !initialTodaySolved && initialTodayGuesses.length >= JORDLE_MAX_GUESSES;
   const [activePuzzleId, setActivePuzzleId] = useState(todaysPuzzle.puzzleId);
-  const [archive, setArchive] = useState<Record<string, string[]>>(() => readSavedArchive());
+  const [archive, setArchive] = useState<Record<string, string[]>>(initialArchive);
   const [draft, setDraft] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(initialTodaySolved || initialTodayFailed);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   const { answer, puzzleId, date } = useMemo(
@@ -158,19 +162,6 @@ function JordlePage() {
     };
     window.localStorage.setItem(JORDLE_STORAGE_KEY, JSON.stringify(payload));
   }, [archive]);
-
-  useEffect(() => {
-    setDraft("");
-    setValidationMessage("");
-    setIsHelpOpen(false);
-    setIsSummaryOpen(false);
-  }, [activePuzzleId]);
-
-  useEffect(() => {
-    if ((solved || failed) && guesses.length > 0) {
-      setIsSummaryOpen(true);
-    }
-  }, [failed, guesses.length, solved]);
 
   function addLetter(letter: string) {
     if (solved || failed || draft.length >= JORDLE_WORD_LENGTH) {
@@ -617,6 +608,10 @@ function JordlePage() {
                     type="button"
                     className={`jordle-archive-item ${entry.puzzleId === activePuzzleId ? "is-active" : ""}`}
                     onClick={() => {
+                      setDraft("");
+                      setValidationMessage("");
+                      setIsHelpOpen(false);
+                      setIsSummaryOpen(false);
                       setActivePuzzleId(entry.puzzleId);
                       setIsArchiveOpen(false);
                     }}

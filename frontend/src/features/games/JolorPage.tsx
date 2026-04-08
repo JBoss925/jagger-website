@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
 import { JolorIcon } from "./GameIcons";
@@ -67,6 +67,7 @@ function readSavedArchive(): Record<string, JolorPuzzleState> {
 function JolorPage() {
   const isPageReady = usePageReveal();
   const todaysPuzzle = useMemo(() => getTodaysJolorPuzzle(), []);
+  const hasHandledInitialSummary = useRef(false);
   const [activePuzzleId, setActivePuzzleId] = useState(todaysPuzzle.puzzleId);
   const [archive, setArchive] = useState<Record<string, JolorPuzzleState>>(() => readSavedArchive());
   const [draftHex, setDraftHex] = useState("#808080");
@@ -105,10 +106,16 @@ function JolorPage() {
   }, [activePuzzleId]);
 
   useEffect(() => {
-    if ((solved || failed) && guesses.length > 0) {
+    if (hasHandledInitialSummary.current) {
+      return;
+    }
+
+    hasHandledInitialSummary.current = true;
+
+    if (activePuzzleId === todaysPuzzle.puzzleId && (solved || failed) && guesses.length > 0) {
       setIsSummaryOpen(true);
     }
-  }, [failed, guesses.length, solved]);
+  }, [activePuzzleId, failed, guesses.length, solved, todaysPuzzle.puzzleId]);
 
   useEffect(() => {
     if (hintCountdown === null) {
@@ -161,13 +168,22 @@ function JolorPage() {
 
   const bestDistance = useMemo(() => getBestDistance(guesses, puzzle.hex), [guesses, puzzle.hex]);
   const latestDistance = guessResults.at(-1)?.distance ?? null;
+  const isComplete = solved || failed;
+  const previewHex = isHintVisible || isComplete ? puzzle.hex : draftHex;
+  const previewLabel = isHintVisible ? null : isComplete ? "Actual color" : "Current guess";
+  const previewHeading = isHintVisible ? "Hint reveal" : isComplete ? puzzle.name : draftHex;
+  const previewCopy = isHintVisible
+    ? `${puzzle.name} · ${puzzle.hex}`
+    : isComplete
+      ? puzzle.hex
+      : "Tune the color by eye, or nudge it numerically.";
   const status = useMemo(() => {
     if (solved) {
       return `Solved in ${guesses.length} ${guesses.length === 1 ? "guess" : "guesses"}.`;
     }
 
     if (failed) {
-      return `Out of guesses. The answer was ${puzzle.name}.`;
+      return "Out of guesses.";
     }
 
     if (hintCountdown !== null && hintCountdown > 0) {
@@ -363,16 +379,16 @@ function JolorPage() {
             </div>
 
             <div className="jolor-preview">
-              <div className="jolor-preview__surface" style={{ backgroundColor: isHintVisible ? puzzle.hex : draftHex }}>
+              <div className="jolor-preview__surface" style={{ backgroundColor: previewHex }}>
                 {hintCountdown !== null && hintCountdown > 0 ? (
                   <span className="jolor-preview__countdown">{hintCountdown}</span>
-                ) : !isHintVisible ? (
-                  <span className="jolor-preview__label">Current guess</span>
+                ) : previewLabel ? (
+                  <span className="jolor-preview__label">{previewLabel}</span>
                 ) : null}
               </div>
               <div className="jolor-preview__meta">
-                <strong>{isHintVisible ? "Hint reveal" : draftHex}</strong>
-                <span>{isHintVisible ? `${puzzle.name} · ${puzzle.hex}` : "Tune the color by eye, or nudge it numerically."}</span>
+                <strong>{previewHeading}</strong>
+                <span>{previewCopy}</span>
               </div>
             </div>
 
