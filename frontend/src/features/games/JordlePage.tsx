@@ -166,6 +166,12 @@ function JordlePage() {
     setIsSummaryOpen(false);
   }, [activePuzzleId]);
 
+  useEffect(() => {
+    if ((solved || failed) && guesses.length > 0) {
+      setIsSummaryOpen(true);
+    }
+  }, [failed, guesses.length, solved]);
+
   function addLetter(letter: string) {
     if (solved || failed || draft.length >= JORDLE_WORD_LENGTH) {
       return;

@@ -1071,6 +1071,7 @@ a {
     radial-gradient(circle at top right, rgba(87, 208, 255, 0.08), transparent 34%);
   border: 1px solid rgba(126, 173, 228, 0.18);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+  animation: jordleModalIn 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .jordle-modal__header {
@@ -1087,6 +1088,10 @@ a {
 }
 
 .jordle-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
   width: 42px;
   height: 42px;
   border-radius: 999px;
@@ -1095,6 +1100,7 @@ a {
   color: var(--text);
   font-size: 1.45rem;
   line-height: 1;
+  padding: 1px 0 0 0;
 }
 
 .jordle-modal__body {
@@ -1227,6 +1233,17 @@ a {
   background: rgba(87, 208, 255, 0.14);
   border-color: rgba(87, 208, 255, 0.24);
   color: rgba(194, 234, 255, 0.98);
+}
+
+@keyframes jordleModalIn {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .jordle-modal__example {
@@ -1892,6 +1909,44 @@ button:hover {
   object-fit: cover;
 }
 
+.project-card__image--icon {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 28% 26%, rgba(255, 255, 255, 0.08), transparent 18%),
+    linear-gradient(180deg, rgba(16, 30, 50, 0.94), rgba(7, 14, 26, 0.98));
+}
+
+.project-card__image--jordle {
+  background:
+    radial-gradient(circle at 72% 26%, rgba(149, 221, 255, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(17, 33, 53, 0.94), rgba(8, 15, 28, 0.98));
+}
+
+.project-card__icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 26px;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  background: rgba(10, 19, 33, 0.84);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 34px rgba(0, 0, 0, 0.2);
+  color: #95ddff;
+}
+
+.project-card__icon-wrap svg {
+  width: 48px;
+  height: 48px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .project-card__content {
   flex-direction: column;
   padding: 22px;
@@ -1907,6 +1962,18 @@ button:hover {
   padding: 10px 14px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--line);
+}
+
+.project-card__link--primary {
+  background: linear-gradient(135deg, rgba(247, 169, 91, 0.92), rgba(231, 140, 54, 0.88)) !important;
+  border-color: rgba(255, 203, 144, 0.28) !important;
+  color: #13233d;
+}
+
+.project-card__link--primary:hover,
+.project-card__link--primary:focus-visible {
+  background: linear-gradient(135deg, rgba(255, 184, 112, 0.96), rgba(240, 149, 60, 0.92)) !important;
+  color: #0d1d33;
 }
 
 .skill-grid {

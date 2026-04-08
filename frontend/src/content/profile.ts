@@ -2,6 +2,7 @@ import headshotImage from "../assets/headshot.jpg";
 import domesPreview from "../assets/domes-preview.jpg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
+import jordlePreview from "../assets/jordle-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import type { ProfileContent } from "../types/content";
 
@@ -187,9 +188,25 @@ export const profileContent: ProfileContent = {
         "This is probably the most complete example of the kind of side project I like building.",
       stack: ["TypeScript", "PEG parser", "Interpreter", "Browser tooling"],
       image: jaggerscriptPreview,
+      icon: "jaggerscript",
       links: [
         { label: "Open Playground", href: "/jaggerscript" },
         { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
+      ]
+    },
+    {
+      slug: "jordle",
+      title: "Jordle",
+      description:
+        "A six-letter daily word game with archives, reusable daily state, and a bigger curated dictionary behind it.",
+      impact:
+        "I wanted at least one game on the site that people could come back to every day instead of just opening once.",
+      stack: ["React", "Daily puzzles", "Local persistence", "Game UI"],
+      image: jordlePreview,
+      icon: "jordle",
+      links: [
+        { label: "Play Jordle", href: "/games/jordle" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
     {
@@ -201,6 +218,7 @@ export const profileContent: ProfileContent = {
         "I built it because I like stateful interactive systems, especially when the product side and the technical side are tightly coupled.",
       stack: ["Realtime gameplay", "Web app", "State management"],
       image: domesPreview,
+      icon: "domes",
       links: [
         { label: "Legacy Demo", href: "https://jagger.netlify.app/domes/" }
       ]
@@ -214,6 +232,7 @@ export const profileContent: ProfileContent = {
         "I wanted this to feel like a real tool: tweak the physics, reroll the target, and watch the population adapt in real time.",
       stack: ["TypeScript", "matter-js", "Genetic algorithms", "Interactive simulation"],
       image: geneticPreview,
+      icon: "genetic",
       links: [
         {
           label: "Open Demo",
@@ -231,6 +250,7 @@ export const profileContent: ProfileContent = {
         "It’s a small example, but it shows the kind of backend utility work I enjoy writing.",
       stack: ["TypeScript", "Firestore", "Backend utilities", "Data shaping"],
       image: materializePreview,
+      icon: "materialize",
       links: [
         {
           label: "Reference",
