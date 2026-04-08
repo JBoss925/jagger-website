@@ -24,6 +24,11 @@ function GamesNavigation() {
       <header className={isMobileMenuViewport ? "games-nav is-mobile-nav" : "games-nav"}>
         <div className="games-nav__topbar">
           <Link to="/games" className="games-nav__brand">
+            <span className="games-nav__brand-mark" aria-hidden="true">
+              <span className="games-nav__brand-shape games-nav__brand-shape--gold" />
+              <span className="games-nav__brand-shape games-nav__brand-shape--teal" />
+              <span className="games-nav__brand-shape games-nav__brand-shape--ink" />
+            </span>
             <strong>Jagger Games</strong>
           </Link>
 
