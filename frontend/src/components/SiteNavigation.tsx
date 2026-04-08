@@ -54,6 +54,18 @@ function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNa
     onSectionNavigate(sectionId);
   };
 
+  const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    setIsMenuOpen(false);
+
+    if (location.pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+    window.history.replaceState(null, "", "/#hero");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
   return (
     <div
       className={
@@ -74,7 +86,7 @@ function SiteNavigation({ sections, activeSectionId, onSectionNavigate }: SiteNa
         }
       >
         <div className="site-nav__topbar">
-          <Link to="/" className="site-nav__brand-link">
+          <Link to="/" className="site-nav__brand-link" onClick={handleBrandClick}>
             <span className="site-nav__brand-mark">JB</span>
             <span>
               <strong>Jagger Brulato</strong>
