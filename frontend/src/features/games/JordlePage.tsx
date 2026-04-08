@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { usePageReveal } from "../../hooks/usePageReveal";
+import { JordleIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import {
   evaluateGuess,
@@ -374,7 +375,12 @@ function JordlePage() {
       <main className="content-shell games-shell">
         <section className="games-hero jordle-hero">
           <span className="section-heading__eyebrow">Daily game</span>
-          <h1>Jordle</h1>
+          <div className="jordle-hero__title-row">
+            <div className="games-card__icon games-card__icon--jordle jordle-hero__icon" aria-hidden="true">
+              <JordleIcon />
+            </div>
+            <h1>Jordle</h1>
+          </div>
           <p>A six-letter daily word game. Same family as Wordle, just slightly roomier.</p>
         </section>
 

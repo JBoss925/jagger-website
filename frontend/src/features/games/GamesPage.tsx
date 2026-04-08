@@ -3,37 +3,19 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
+import { DomesIcon, JeardleIcon, JordleIcon } from "./GameIcons";
 import { gamesPlaceholderContent } from "./gamesData";
 
 function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jeardle" }) {
   if (icon === "domes") {
-    return (
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M9 31 24 12l15 19" />
-        <path d="M15 31v6h18v-6" />
-        <path d="M20 24h8" />
-      </svg>
-    );
+    return <DomesIcon />;
   }
 
   if (icon === "jordle") {
-    return (
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <rect x="8" y="8" width="12" height="12" rx="3" />
-        <rect x="28" y="8" width="12" height="12" rx="3" />
-        <rect x="8" y="28" width="12" height="12" rx="3" />
-        <path d="M30 30h8v8h-8z" />
-      </svg>
-    );
+    return <JordleIcon />;
   }
 
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path d="M12 30a12 12 0 1 1 24 0" />
-      <path d="M16 30h16" />
-      <path d="M18 18v4M24 16v6M30 18v4" />
-    </svg>
-  );
+  return <JeardleIcon />;
 }
 
 function GamesPage() {
@@ -63,6 +45,39 @@ function GamesPage() {
       <GamesNavigation />
 
       <main className="content-shell games-shell">
+        <section className="games-hero" aria-labelledby="games-hero-title">
+          <div className="games-hero__copy">
+            <h1 id="games-hero-title">Small games, daily puzzles, and experiments worth opening twice.</h1>
+            <p>
+              This is where I put the lighter-weight things: daily rituals, strategy ideas, and side projects
+              that are more fun when people can actually play with them.
+            </p>
+          </div>
+
+          <div className="games-hero__art" aria-hidden="true">
+            <div className="games-hero__orb games-hero__orb--large" />
+            <div className="games-hero__orb games-hero__orb--small" />
+            <div className="games-hero__chip games-hero__chip--jordle">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="games-hero__chip games-hero__chip--domes">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="games-hero__chip games-hero__chip--jeardle">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </section>
+
         <section className="games-grid">
           {currentContent.cards.map((card) => (
             <Link key={card.title} to={card.href} className="glass-card games-card games-card--link">
