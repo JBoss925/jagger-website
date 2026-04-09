@@ -3,6 +3,7 @@ import domesPreview from "../assets/domes-preview.jpg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jordlePreview from "../assets/jordle-preview.jpg";
+import jolorPreview from "../assets/jolor-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
 import type { ProfileContent } from "../types/content";
@@ -196,6 +197,24 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "genetic-ts",
+      title: "Genetic Algorithms in TypeScript",
+      description:
+        "A rebuilt interactive simulation where a genetic algorithm learns the launch velocity needed to hit a target.",
+      impact:
+        "I wanted this to feel like a real tool: tweak the physics, reroll the target, and watch the population adapt in real time.",
+      stack: ["TypeScript", "matter-js", "Genetic algorithms", "Interactive simulation"],
+      image: geneticPreview,
+      icon: "genetic",
+      links: [
+        {
+          label: "Open Demo",
+          href: "/genetic-ts"
+        },
+        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
+      ]
+    },
+    {
       slug: "jordle",
       title: "Jordle",
       description:
@@ -207,6 +226,21 @@ export const profileContent: ProfileContent = {
       icon: "jordle",
       links: [
         { label: "Play Jordle", href: "/games/jordle" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
+      ]
+    },
+    {
+      slug: "jolor",
+      title: "Jolor",
+      description:
+        "A daily color-guessing game where the target is given by name and every guess has to get closer by eye.",
+      impact:
+        "It gave me a nice way to build a more visual daily game with archives, hints, and feedback that still feels clean and intuitive.",
+      stack: ["React", "Daily puzzles", "Color systems", "Game UI"],
+      image: jolorPreview,
+      icon: "jolor",
+      links: [
+        { label: "Play Jolor", href: "/games/jolor" },
         { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
@@ -226,21 +260,19 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "genetic-ts",
-      title: "Genetic Algorithms in TypeScript",
+      slug: "chains",
+      title: "Chains",
       description:
-        "A rebuilt interactive simulation where a genetic algorithm learns the launch velocity needed to hit a target.",
+        "A small monadic pattern for wrapping a value, composing transformations, and layering side behaviors like history or undo on top.",
       impact:
-        "I wanted this to feel like a real tool: tweak the physics, reroll the target, and watch the population adapt in real time.",
-      stack: ["TypeScript", "matter-js", "Genetic algorithms", "Interactive simulation"],
-      image: geneticPreview,
-      icon: "genetic",
+        "It shows the kind of abstraction work I like most: finding a pattern that stays simple at the surface while opening up more expressive behavior underneath.",
+      stack: ["TypeScript", "Monads", "Composable abstractions", "API design"],
+      image: monadPreview,
       links: [
         {
-          label: "Open Demo",
-          href: "/genetic-ts"
-        },
-        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
+          label: "Reference",
+          href: "https://gist.github.com/JBoss925/183ba9fa079ebab1d5f908fbf7725243"
+        }
       ]
     },
     {
@@ -257,22 +289,6 @@ export const profileContent: ProfileContent = {
         {
           label: "Reference",
           href: "https://gist.github.com/JBoss925/192cad63b955f41e9615622b5c943d15"
-        }
-      ]
-    },
-    {
-      slug: "chains",
-      title: "Chains",
-      description:
-        "A small monadic pattern for wrapping a value, composing transformations, and layering side behaviors like history or undo on top.",
-      impact:
-        "It shows the kind of abstraction work I like most: finding a pattern that stays simple at the surface while opening up more expressive behavior underneath.",
-      stack: ["TypeScript", "Monads", "Composable abstractions", "API design"],
-      image: monadPreview,
-      links: [
-        {
-          label: "Reference",
-          href: "https://gist.github.com/JBoss925/183ba9fa079ebab1d5f908fbf7725243"
         }
       ]
     }
