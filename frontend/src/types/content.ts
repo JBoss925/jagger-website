@@ -34,7 +34,17 @@ export type ProjectEntry = {
   impact: string;
   stack: string[];
   image?: string;
-  icon?: "domes" | "jordle" | "jolor" | "genetic" | "jaggerscript" | "materialize";
+  icon?:
+    | "domes"
+    | "jordle"
+    | "jolor"
+    | "genetic"
+    | "jaggerscript"
+    | "materialize"
+    | "tsxlight"
+    | "rengine"
+    | "typing-effect"
+    | "idol";
   links: {
     label: string;
     href: string;

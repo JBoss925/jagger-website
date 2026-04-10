@@ -1,5 +1,16 @@
 import type { ProjectEntry } from "../types/content";
-import { DomesIcon, GeneticIcon, JaggerScriptIcon, JolorIcon, JordleIcon, MaterializeIcon } from "../features/games/GameIcons";
+import {
+  DomesIcon,
+  GeneticIcon,
+  IdolIcon,
+  JaggerScriptIcon,
+  JolorIcon,
+  JordleIcon,
+  MaterializeIcon,
+  RengineIcon,
+  TsxLightIcon,
+  TypingEffectIcon
+} from "../features/games/GameIcons";
 
 type ProjectCardProps = {
   project: ProjectEntry;
@@ -35,6 +46,14 @@ function ProjectCard({ project }: ProjectCardProps) {
         return <JaggerScriptIcon />;
       case "materialize":
         return <MaterializeIcon />;
+      case "tsxlight":
+        return <TsxLightIcon />;
+      case "rengine":
+        return <RengineIcon />;
+      case "typing-effect":
+        return <TypingEffectIcon />;
+      case "idol":
+        return <IdolIcon />;
       default:
         return null;
     }

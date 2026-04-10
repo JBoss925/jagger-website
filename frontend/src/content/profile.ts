@@ -261,6 +261,53 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "idol",
+      title: "IDOL",
+      description:
+        "An internal tools platform for Cornell DTI that bundles org operations, scheduling workflows, member data, and the team website into one TypeScript monorepo.",
+      impact:
+        "It is a strong example of the full-stack work I like most: shared types, real product surface area, business logic-heavy APIs, and software a 100+ person organization actually depends on.",
+      stack: ["TypeScript monorepo", "Next.js", "Express + Netlify", "Firebase"],
+      icon: "idol",
+      links: [{ label: "Source", href: "https://github.com/cornell-dti/idol" }]
+    },
+    {
+      slug: "tsxlight-renderer",
+      title: "TSXLight Renderer",
+      description:
+        "A proof-of-concept TSX rendering engine for web and Electron apps, built around a custom JSX factory, server-managed component trees, and socket-triggered callbacks.",
+      impact:
+        "This is the kind of lower-level experiment I enjoy because it forces me to think about rendering, state persistence, per-user sessions, and page transitions from first principles.",
+      stack: ["TypeScript", "Custom JSX factory", "SSR + sockets", "Electron + Express"],
+      icon: "tsxlight",
+      links: [{ label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }]
+    },
+    {
+      slug: "rengine",
+      title: "Rengine",
+      description:
+        "A small rendering and game engine experiment with scenes, entities, transform hierarchies, animation loops, and switchable canvas or React output.",
+      impact:
+        "What I like about this one is that the interesting work sits below the demo: engine boundaries, update loops, renderer abstraction, and entity composition you can reason about directly.",
+      stack: ["TypeScript", "Canvas rendering", "Game loops", "Entity systems"],
+      icon: "rengine",
+      links: [{ label: "Source", href: "https://github.com/JBoss925/Rengine" }]
+    },
+    {
+      slug: "new-react-typing-effect",
+      title: "new-react-typing-effect",
+      description:
+        "A reusable typing animation component published as a TypeScript React package, with customizable cursor rendering, text rendering, and pacing controls.",
+      impact:
+        "It is a smaller project, but it still shows a practical skill I value: designing a clean component API, shipping types with the library, and making customization flexible instead of bolted on.",
+      stack: ["React", "TypeScript library", "Component API design", "NPM Packaging"],
+      icon: "typing-effect",
+      links: [
+        { label: "NPM", href: "https://www.npmjs.com/package/new-react-typing-effect" },
+        { label: "Source", href: "https://github.com/JBoss925/new-react-typing-effect" }
+      ]
+    },
+    {
       slug: "jordle",
       title: "Jordle",
       description:

@@ -100,3 +100,45 @@ export function MaterializeIcon() {
     </svg>
   );
 }
+
+export function TsxLightIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M12 14h10M12 24h16M12 34h10" />
+      <path d="m28 14 8 10-8 10" />
+      <path d="M23 10v28" />
+    </svg>
+  );
+}
+
+export function RengineIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="19" cy="24" r="9" />
+      <path d="M26 17h4c3.3 0 6 2.7 6 6s-2.7 6-6 6h-4" />
+      <path d="m27 27 9 11" />
+    </svg>
+  );
+}
+
+export function TypingEffectIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M10 14h28v20H10z" />
+      <path d="M15 21h10M15 27h14" />
+      <path d="M31 19v14" />
+    </svg>
+  );
+}
+
+export function IdolIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="11" y="10" width="6" height="28" rx="2" />
+      <path d="M24 14v20" />
+      <path d="M31 10v28" />
+      <circle cx="24" cy="10" r="2.5" />
+      <circle cx="31" cy="10" r="2.5" />
+    </svg>
+  );
+}
