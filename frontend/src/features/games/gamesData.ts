@@ -1,23 +1,17 @@
 import type { NavLinkItem } from "../../types/content";
 
 export const gameLinks: NavLinkItem[] = [
-  { id: "domes", label: "Domes", href: "/games/domes", matchPrefix: "/games/domes" },
   { id: "jordle", label: "Jordle", href: "/games/jordle", matchPrefix: "/games/jordle" },
   { id: "jolor", label: "Jolor", href: "/games/jolor", matchPrefix: "/games/jolor" },
   { id: "jinx", label: "Jinx", href: "/games/jinx", matchPrefix: "/games/jinx" },
   { id: "judoku", label: "Judoku", href: "/games/judoku", matchPrefix: "/games/judoku" },
-  { id: "jigsaw", label: "Jigsaw", href: "/games/jigsaw", matchPrefix: "/games/jigsaw" }
+  { id: "jigsaw", label: "Jigsaw", href: "/games/jigsaw", matchPrefix: "/games/jigsaw" },
+  { id: "domes", label: "Domes", href: "/games/domes", matchPrefix: "/games/domes" }
 ];
 
 export const gamesPlaceholderContent = {
   "/games": {
     cards: [
-      {
-        title: "Domes",
-        icon: "domes",
-        href: "/games/domes",
-        text: "A head-to-head strategy game inspired by Santorini. Climb, build, trap space, and try to reach the third level first."
-      },
       {
         title: "Jordle",
         icon: "jordle",
@@ -47,6 +41,12 @@ export const gamesPlaceholderContent = {
         icon: "jigsaw",
         href: "/games/jigsaw",
         text: "A daily image puzzle. Swap tiles back into place and rebuild the picture one move at a time."
+      },
+      {
+        title: "Domes",
+        icon: "domes",
+        href: "/games/domes",
+        text: "A head-to-head strategy game inspired by Santorini. Climb, build, trap space, and try to reach the third level first."
       }
     ]
   },

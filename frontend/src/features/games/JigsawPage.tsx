@@ -15,11 +15,22 @@ import {
 
 const jigsawImages = import.meta.glob("./jigsaw/images/*.svg", {
   eager: true,
-  import: "default"
-}) as Record<string, string>;
+  import: "default",
+  query: "?url"
+}) as Record<string, string | { default?: string }>;
 
 const imageLookup = Object.fromEntries(
-  Object.entries(jigsawImages).map(([path, url]) => [path.split("/").pop() ?? path, url])
+  Object.entries(jigsawImages).map(([path, value]) => {
+    const fileName = (path.split("/").pop() ?? path).replace(/\?.*$/, "");
+    const url =
+      typeof value === "string"
+        ? value
+        : typeof value?.default === "string"
+          ? value.default
+          : "";
+
+    return [fileName, url];
+  })
 );
 
 function HelpIcon() {
@@ -251,20 +262,30 @@ function JigsawPage() {
                       type="button"
                       className={`jigsaw-tile ${selectedTile === index ? "is-selected" : ""}`}
                       onClick={() => handleTilePress(index)}
-                      style={{
-                        backgroundImage: `url(${imageUrl})`,
-                        backgroundSize: "400% 400%",
-                        backgroundPosition: `${(column / 3) * 100}% ${(row / 3) * 100}%`
-                      }}
                       aria-label={`Tile ${index + 1}`}
-                    />
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt=""
+                          aria-hidden="true"
+                          className="jigsaw-tile__image"
+                          style={{
+                            left: `${column * -100}%`,
+                            top: `${row * -100}%`
+                          }}
+                        />
+                      ) : null}
+                    </button>
                   );
                 })}
               </div>
 
               {isHintVisible ? (
                 <div className="jigsaw-preview-overlay" aria-live="polite">
-                  <div className="jigsaw-preview-overlay__frame" style={{ backgroundImage: `url(${imageUrl})` }} />
+                  <div className="jigsaw-preview-overlay__frame">
+                    {imageUrl ? <img src={imageUrl} alt="" aria-hidden="true" className="jigsaw-preview-overlay__image" /> : null}
+                  </div>
                 </div>
               ) : null}
             </div>
@@ -371,7 +392,11 @@ function JigsawPage() {
                   <strong>{puzzle.title}</strong>
                 </div>
               </div>
-              <div className="jigsaw-summary-image" style={{ backgroundImage: `url(${imageUrl})` }} />
+              {imageUrl ? (
+                <div className="jigsaw-summary-image">
+                  <img src={imageUrl} alt="" aria-hidden="true" className="jigsaw-preview-overlay__image" />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

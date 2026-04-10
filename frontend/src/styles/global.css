@@ -1446,6 +1446,8 @@ a {
 }
 
 .jigsaw-tile {
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 1;
   border-radius: 14px;
   border: 1px solid rgba(126, 173, 228, 0.18);
@@ -1453,6 +1455,15 @@ a {
   background-repeat: no-repeat;
   cursor: pointer;
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.jigsaw-tile__image {
+  position: absolute;
+  width: 400%;
+  height: 400%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 .jigsaw-tile.is-selected {
@@ -1477,12 +1488,19 @@ a {
 
 .jigsaw-preview-overlay__frame,
 .jigsaw-summary-image {
+  position: relative;
+  overflow: hidden;
   width: min(100%, 440px);
   aspect-ratio: 1;
   border-radius: 22px;
-  background-size: cover;
-  background-position: center;
   border: 1px solid rgba(126, 173, 228, 0.18);
+}
+
+.jigsaw-preview-overlay__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .jigsaw-summary-image {

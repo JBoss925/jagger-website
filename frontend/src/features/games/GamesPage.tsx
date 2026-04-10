@@ -68,7 +68,7 @@ function GamesPage() {
             <div className="games-hero__copy">
               <h1 id="games-hero-title">Small games and daily puzzles.</h1>
               <p>
-                Six games now: words, colors, logic grids, a minefield, a picture puzzle, and one board game.
+                Some of these reset every morning. Some of them just sit here and dare you to get one more run in.
               </p>
             </div>
 
