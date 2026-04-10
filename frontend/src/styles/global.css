@@ -1980,9 +1980,10 @@ a {
 
 .site-nav__links {
   grid-area: links;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: nowrap;
   min-width: max-content;
+  padding-left: 10px;
 }
 
 .site-nav__actions {
@@ -2849,7 +2850,7 @@ button:hover {
   overflow: auto;
 }
 
-@media (max-width: 1380px) {
+@media (max-width: 1320px) {
   .site-nav {
     grid-template-areas:
       "topbar actions"
