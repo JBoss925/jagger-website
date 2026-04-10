@@ -1,14 +1,20 @@
 import puzzles from "./puzzles.json";
 
 export const JINX_STORAGE_KEY = "jinx-state";
-export const JINX_ROWS = 8;
-export const JINX_COLUMNS = 8;
-export const JINX_MINE_COUNT = 10;
 export const JINX_EPOCH = Date.UTC(2026, 0, 1);
 
 export type JinxCell = [number, number];
+export type JinxDifficulty = "easy" | "hard";
 
-export type JinxPuzzleData = {
+export type JinxDifficultySettings = {
+  columns: number;
+  difficulty: JinxDifficulty;
+  label: string;
+  mineCount: number;
+  rows: number;
+};
+
+export type JinxPuzzleData = JinxDifficultySettings & {
   puzzleId: number;
   mines: JinxCell[];
 };
@@ -18,24 +24,49 @@ export type JinxPuzzle = JinxPuzzleData & {
 };
 
 export type JinxPuzzleState = {
-  revealed: JinxCell[];
   flags: JinxCell[];
   hintCount: number;
-  moveCount: number;
   lost: boolean;
+  moveCount: number;
+  revealed: JinxCell[];
 };
 
 export type JinxArchiveState = {
   puzzles: Record<string, JinxPuzzleState>;
 };
 
-const JINX_PUZZLES = puzzles as JinxPuzzleData[];
+export const JINX_DIFFICULTIES: Record<JinxDifficulty, JinxDifficultySettings> = {
+  easy: {
+    columns: 8,
+    difficulty: "easy",
+    label: "Easy",
+    mineCount: 10,
+    rows: 8
+  },
+  hard: {
+    columns: 16,
+    difficulty: "hard",
+    label: "Hard",
+    mineCount: 40,
+    rows: 16
+  }
+};
+
+export const JINX_ROWS = JINX_DIFFICULTIES.easy.rows;
+export const JINX_COLUMNS = JINX_DIFFICULTIES.easy.columns;
+export const JINX_MINE_COUNT = JINX_DIFFICULTIES.easy.mineCount;
+
+const JINX_PUZZLES = puzzles as Array<{ mines: JinxCell[]; puzzleId: number }>;
 
 function keyForCell(row: number, column: number) {
   return `${row}:${column}`;
 }
 
-function normalizeCells(value: unknown) {
+function getDifficultySettings(difficulty: JinxDifficulty = "easy") {
+  return JINX_DIFFICULTIES[difficulty];
+}
+
+function normalizeCells(value: unknown, settings: JinxDifficultySettings) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -51,7 +82,14 @@ function normalizeCells(value: unknown) {
     const row = Number(item[0]);
     const column = Number(item[1]);
 
-    if (!Number.isInteger(row) || !Number.isInteger(column) || row < 0 || row >= JINX_ROWS || column < 0 || column >= JINX_COLUMNS) {
+    if (
+      !Number.isInteger(row) ||
+      !Number.isInteger(column) ||
+      row < 0 ||
+      row >= settings.rows ||
+      column < 0 ||
+      column >= settings.columns
+    ) {
       continue;
     }
 
@@ -67,7 +105,70 @@ function normalizeCells(value: unknown) {
   return cells;
 }
 
-export function normalizeJinxPuzzleState(value: unknown): JinxPuzzleState {
+function createSeededRandom(seed: number) {
+  let value = seed >>> 0;
+
+  return () => {
+    value += 0x6d2b79f5;
+    let next = Math.imul(value ^ (value >>> 15), 1 | value);
+    next ^= next + Math.imul(next ^ (next >>> 7), 61 | next);
+    return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function getHardPuzzleSeed(puzzleId: number) {
+  return (puzzleId + 1) * 2654435761;
+}
+
+function getCenterOpeningCell(settings: JinxDifficultySettings): JinxCell {
+  return [Math.floor((settings.rows - 1) / 2), Math.floor((settings.columns - 1) / 2)];
+}
+
+function createHardPuzzle(puzzleId: number): JinxPuzzleData {
+  const settings = getDifficultySettings("hard");
+  const [openingRow, openingColumn] = getCenterOpeningCell(settings);
+  const reserved = new Set(getNeighborCells(settings, openingRow, openingColumn).map(([row, column]) => keyForCell(row, column)));
+  reserved.add(keyForCell(openingRow, openingColumn));
+
+  const candidates: JinxCell[] = [];
+  for (let row = 0; row < settings.rows; row += 1) {
+    for (let column = 0; column < settings.columns; column += 1) {
+      if (!reserved.has(keyForCell(row, column))) {
+        candidates.push([row, column]);
+      }
+    }
+  }
+
+  const random = createSeededRandom(getHardPuzzleSeed(puzzleId));
+  for (let index = candidates.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [candidates[index], candidates[swapIndex]] = [candidates[swapIndex], candidates[index]];
+  }
+
+  const mines = candidates
+    .slice(0, settings.mineCount)
+    .sort(([firstRow, firstColumn], [secondRow, secondColumn]) =>
+      firstRow === secondRow ? firstColumn - secondColumn : firstRow - secondRow
+    );
+
+  return {
+    ...settings,
+    mines,
+    puzzleId
+  };
+}
+
+export function getJinxArchiveKey(difficulty: JinxDifficulty, puzzleId: number) {
+  return `${difficulty}:${puzzleId}`;
+}
+
+export function getJinxDifficultyFromArchiveKey(key: string): JinxDifficulty {
+  return key.startsWith("hard:") ? "hard" : "easy";
+}
+
+export function normalizeJinxPuzzleState(value: unknown, difficulty: JinxDifficulty = "easy"): JinxPuzzleState {
+  const settings = getDifficultySettings(difficulty);
+
   if (!value || typeof value !== "object") {
     return {
       revealed: [],
@@ -89,22 +190,29 @@ export function normalizeJinxPuzzleState(value: unknown): JinxPuzzleState {
   );
 
   return {
-    revealed: normalizeCells(maybeState.revealed),
-    flags: normalizeCells(maybeState.flags),
+    revealed: normalizeCells(maybeState.revealed, settings),
+    flags: normalizeCells(maybeState.flags, settings),
     hintCount: normalizedHintCount,
     moveCount: Math.max(0, Number(maybeState.moveCount) || 0),
     lost: Boolean(maybeState.lost)
   };
 }
 
-export function getTodaysJinxPuzzle(date = new Date()) {
+export function getTodaysJinxPuzzle(date = new Date(), difficulty: JinxDifficulty = "easy") {
   const puzzleId = Math.max(0, Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - JINX_EPOCH) / 86400000));
-  return getJinxPuzzleById(puzzleId);
+  return getJinxPuzzleById(puzzleId, difficulty);
 }
 
-export function getJinxPuzzleById(puzzleId: number): JinxPuzzle {
+export function getJinxPuzzleById(puzzleId: number, difficulty: JinxDifficulty = "easy"): JinxPuzzle {
   const safePuzzleId = Math.max(0, puzzleId);
-  const puzzle = JINX_PUZZLES[safePuzzleId % JINX_PUZZLES.length];
+  const settings = getDifficultySettings(difficulty);
+  const puzzle =
+    difficulty === "easy"
+      ? {
+          ...settings,
+          ...JINX_PUZZLES[safePuzzleId % JINX_PUZZLES.length]
+        }
+      : createHardPuzzle(safePuzzleId);
 
   return {
     ...puzzle,
@@ -117,7 +225,7 @@ export function isMine(puzzle: JinxPuzzleData, row: number, column: number) {
   return puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column);
 }
 
-export function getNeighborCells(row: number, column: number) {
+export function getNeighborCells(source: Pick<JinxDifficultySettings, "columns" | "rows">, row: number, column: number) {
   const neighbors: JinxCell[] = [];
 
   for (let rowOffset = -1; rowOffset <= 1; rowOffset += 1) {
@@ -129,7 +237,7 @@ export function getNeighborCells(row: number, column: number) {
       const nextRow = row + rowOffset;
       const nextColumn = column + columnOffset;
 
-      if (nextRow >= 0 && nextRow < JINX_ROWS && nextColumn >= 0 && nextColumn < JINX_COLUMNS) {
+      if (nextRow >= 0 && nextRow < source.rows && nextColumn >= 0 && nextColumn < source.columns) {
         neighbors.push([nextRow, nextColumn]);
       }
     }
@@ -139,7 +247,7 @@ export function getNeighborCells(row: number, column: number) {
 }
 
 export function getAdjacentMineCount(puzzle: JinxPuzzleData, row: number, column: number) {
-  return getNeighborCells(row, column).filter(([neighborRow, neighborColumn]) => isMine(puzzle, neighborRow, neighborColumn)).length;
+  return getNeighborCells(puzzle, row, column).filter(([neighborRow, neighborColumn]) => isMine(puzzle, neighborRow, neighborColumn)).length;
 }
 
 export function revealFromCell(puzzle: JinxPuzzleData, state: JinxPuzzleState, row: number, column: number) {
@@ -174,7 +282,7 @@ export function revealFromCell(puzzle: JinxPuzzleData, state: JinxPuzzleState, r
     nextRevealed.push([currentRow, currentColumn] as JinxCell);
 
     if (getAdjacentMineCount(puzzle, currentRow, currentColumn) === 0) {
-      queue.push(...getNeighborCells(currentRow, currentColumn));
+      queue.push(...getNeighborCells(puzzle, currentRow, currentColumn));
     }
   }
 
@@ -205,19 +313,19 @@ export function toggleFlag(state: JinxPuzzleState, row: number, column: number) 
     };
   }
 
-    return {
-      ...state,
-      flags: [...state.flags, [row, column] as JinxCell],
-      moveCount: state.moveCount + 1
-    };
+  return {
+    ...state,
+    flags: [...state.flags, [row, column] as JinxCell],
+    moveCount: state.moveCount + 1
+  };
 }
 
 export function getSafeHintCell(puzzle: JinxPuzzleData, state: JinxPuzzleState) {
   const revealed = new Set(state.revealed.map(([r, c]) => keyForCell(r, c)));
   const flags = new Set(state.flags.map(([r, c]) => keyForCell(r, c)));
 
-  for (let row = 0; row < JINX_ROWS; row += 1) {
-    for (let column = 0; column < JINX_COLUMNS; column += 1) {
+  for (let row = 0; row < puzzle.rows; row += 1) {
+    for (let column = 0; column < puzzle.columns; column += 1) {
       const key = keyForCell(row, column);
       if (!revealed.has(key) && !flags.has(key) && !isMine(puzzle, row, column)) {
         return [row, column] as JinxCell;
@@ -229,11 +337,11 @@ export function getSafeHintCell(puzzle: JinxPuzzleData, state: JinxPuzzleState) 
 }
 
 export function getInitialSafeRevealCell(puzzle: JinxPuzzleData) {
-  const centerRow = (JINX_ROWS - 1) / 2;
-  const centerColumn = (JINX_COLUMNS - 1) / 2;
-  const cells = Array.from({ length: JINX_ROWS * JINX_COLUMNS }, (_, index) => {
-    const row = Math.floor(index / JINX_COLUMNS);
-    const column = index % JINX_COLUMNS;
+  const centerRow = (puzzle.rows - 1) / 2;
+  const centerColumn = (puzzle.columns - 1) / 2;
+  const cells = Array.from({ length: puzzle.rows * puzzle.columns }, (_, index) => {
+    const row = Math.floor(index / puzzle.columns);
+    const column = index % puzzle.columns;
     const rowDistance = row - centerRow;
     const columnDistance = column - centerColumn;
 
@@ -260,22 +368,22 @@ export function getInitialSafeRevealCell(puzzle: JinxPuzzleData) {
     }
   }
 
-  return getSafeHintCell(puzzle, normalizeJinxPuzzleState(null));
+  return getSafeHintCell(puzzle, normalizeJinxPuzzleState(null, puzzle.difficulty));
 }
 
 export function createInitialJinxPuzzleState(puzzle: JinxPuzzleData) {
   const openingCell = getInitialSafeRevealCell(puzzle);
   if (!openingCell) {
-    return normalizeJinxPuzzleState(null);
+    return normalizeJinxPuzzleState(null, puzzle.difficulty);
   }
 
-  const openedState = revealFromCell(puzzle, normalizeJinxPuzzleState(null), openingCell[0], openingCell[1]);
+  const openedState = revealFromCell(puzzle, normalizeJinxPuzzleState(null, puzzle.difficulty), openingCell[0], openingCell[1]);
   return {
     ...openedState,
     moveCount: 0
   };
 }
 
-export function isJinxSolved(_puzzle: JinxPuzzleData, state: JinxPuzzleState) {
-  return !state.lost && state.revealed.length >= JINX_ROWS * JINX_COLUMNS - JINX_MINE_COUNT;
+export function isJinxSolved(puzzle: JinxPuzzleData, state: JinxPuzzleState) {
+  return !state.lost && state.revealed.length >= puzzle.rows * puzzle.columns - puzzle.mineCount;
 }

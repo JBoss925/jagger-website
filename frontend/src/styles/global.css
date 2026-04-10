@@ -1282,6 +1282,36 @@ a {
   flex-wrap: wrap;
 }
 
+.jinx-difficulty-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.jinx-difficulty-toggle button {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(126, 173, 228, 0.14);
+  background: rgba(8, 14, 24, 0.82);
+  color: var(--text-main);
+  font: inherit;
+  cursor: pointer;
+}
+
+.jinx-difficulty-toggle button.is-active {
+  border-color: rgba(104, 183, 255, 0.34);
+  background: rgba(104, 183, 255, 0.14);
+}
+
+.jinx-difficulty-toggle__meta {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
 .jinx-mode-toggle {
   display: inline-flex;
   align-items: center;
@@ -1308,26 +1338,40 @@ a {
   color: var(--text-main);
 }
 
+.jinx-board-scroll {
+  width: 100%;
+}
+
 .jinx-board {
   display: grid;
-  gap: 8px;
+  gap: var(--jinx-board-gap, 8px);
+  width: 100%;
 }
 
 .jinx-board__row {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(var(--jinx-columns, 8), minmax(0, 1fr));
+  gap: var(--jinx-board-gap, 8px);
 }
 
 .jinx-cell {
+  display: grid;
+  place-items: center;
   aspect-ratio: 1;
+  padding: 0;
   border-radius: 14px;
   border: 1px solid rgba(126, 173, 228, 0.16);
   background: linear-gradient(180deg, rgba(22, 32, 52, 0.98), rgba(12, 19, 33, 0.98));
   color: #f8fafc;
-  font: 800 1.05rem/1 "Inter", sans-serif;
+  font: 800 var(--jinx-cell-font-size, 1.05rem)/1 "Inter", sans-serif;
+  text-align: center;
+  min-width: 0;
   cursor: pointer;
   transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.jinx-board--hard .jinx-cell {
+  border-radius: 10px;
 }
 
 .jinx-cell:hover,
@@ -1535,8 +1579,13 @@ a {
   }
 
   .jinx-mode-toggle,
+  .jinx-difficulty-toggle,
   .judoku-pad {
     width: 100%;
+  }
+
+  .jinx-difficulty-toggle {
+    grid-template-columns: 1fr;
   }
 
   .judoku-pad {
@@ -1551,6 +1600,11 @@ a {
   .judoku-grid__row,
   .jigsaw-board {
     gap: 6px;
+  }
+
+  .jinx-board,
+  .jinx-board__row {
+    gap: min(var(--jinx-board-gap, 8px), 6px);
   }
 }
 
@@ -3723,6 +3777,36 @@ button:hover {
 @media (max-width: 560px) {
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .games-nav__brand {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 12px;
+    font-size: clamp(1.25rem, 6.2vw, 1.95rem);
+  }
+
+  .games-nav__brand strong {
+    display: block;
+    min-width: 0;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .games-nav__topbar {
+    gap: 10px;
+  }
+
+  .games-nav__brand {
+    gap: 0;
+    font-size: clamp(1.3rem, 6.8vw, 1.65rem);
+  }
+
+  .games-nav__brand-mark {
+    display: none;
   }
 }
 

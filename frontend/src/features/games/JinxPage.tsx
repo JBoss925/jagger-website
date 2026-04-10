@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from "react";
 import { JinxIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import {
   createInitialJinxPuzzleState,
   getAdjacentMineCount,
+  getJinxArchiveKey,
+  getJinxDifficultyFromArchiveKey,
   getJinxPuzzleById,
   getSafeHintCell,
   getTodaysJinxPuzzle,
@@ -15,9 +17,9 @@ import {
   toggleFlag,
   type JinxArchiveState,
   type JinxCell,
+  type JinxDifficulty,
   type JinxPuzzleState,
-  JINX_COLUMNS,
-  JINX_ROWS,
+  JINX_DIFFICULTIES,
   JINX_STORAGE_KEY
 } from "./jinx/game";
 
@@ -60,7 +62,11 @@ function readSavedArchive() {
     }
 
     return Object.fromEntries(
-      Object.entries(saved.puzzles).map(([key, state]) => [key, normalizeJinxPuzzleState(state)])
+      Object.entries(saved.puzzles).map(([key, state]) => {
+        const normalizedKey = key.includes(":") ? key : getJinxArchiveKey("easy", Number(key));
+        const difficulty = getJinxDifficultyFromArchiveKey(normalizedKey);
+        return [normalizedKey, normalizeJinxPuzzleState(state, difficulty)];
+      })
     );
   } catch {
     return {};
@@ -79,25 +85,31 @@ function cellEquals(first: JinxCell | null, second: JinxCell | null) {
   return Boolean(first && second && first[0] === second[0] && first[1] === second[1]);
 }
 
+function DifficultyIcon({ difficulty }: { difficulty: JinxDifficulty }) {
+  return difficulty === "easy" ? "8×8" : "16×16";
+}
+
 function JinxPage() {
   const isPageReady = usePageReveal();
-  const todaysPuzzle = useMemo(() => getTodaysJinxPuzzle(), []);
+  const todaysPuzzleId = useMemo(() => getTodaysJinxPuzzle(new Date(), "easy").puzzleId, []);
+  const [difficulty, setDifficulty] = useState<JinxDifficulty>("easy");
   const initialArchive = useMemo(() => {
     const savedArchive = readSavedArchive();
-    const todayKey = String(todaysPuzzle.puzzleId);
+    const todayKey = getJinxArchiveKey("easy", todaysPuzzleId);
     if (savedArchive[todayKey]) {
       return savedArchive;
     }
 
     return {
       ...savedArchive,
-      [todayKey]: createInitialJinxPuzzleState(todaysPuzzle)
+      [todayKey]: createInitialJinxPuzzleState(getJinxPuzzleById(todaysPuzzleId, "easy"))
     };
-  }, [todaysPuzzle]);
-  const initialTodayState = initialArchive[String(todaysPuzzle.puzzleId)] ?? normalizeJinxPuzzleState(null);
-  const initialTodaySolved = isJinxSolved(todaysPuzzle, initialTodayState);
+  }, [todaysPuzzleId]);
+  const initialTodayPuzzle = useMemo(() => getJinxPuzzleById(todaysPuzzleId, "easy"), [todaysPuzzleId]);
+  const initialTodayState = initialArchive[getJinxArchiveKey("easy", todaysPuzzleId)] ?? normalizeJinxPuzzleState(null, "easy");
+  const initialTodaySolved = isJinxSolved(initialTodayPuzzle, initialTodayState);
   const initialTodayFailed = initialTodayState.lost;
-  const [activePuzzleId, setActivePuzzleId] = useState(todaysPuzzle.puzzleId);
+  const [activePuzzleId, setActivePuzzleId] = useState(todaysPuzzleId);
   const [archive, setArchive] = useState<Record<string, JinxPuzzleState>>(initialArchive);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
@@ -105,11 +117,19 @@ function JinxPage() {
   const [mode, setMode] = useState<"reveal" | "flag">("reveal");
   const [hintCell, setHintCell] = useState<JinxCell | null>(null);
 
-  const puzzle = useMemo(() => getJinxPuzzleById(activePuzzleId), [activePuzzleId]);
-  const puzzleState = archive[String(activePuzzleId)] ?? normalizeJinxPuzzleState(null);
+  const todaysPuzzle = useMemo(() => getJinxPuzzleById(todaysPuzzleId, difficulty), [difficulty, todaysPuzzleId]);
+  const activePuzzleKey = useMemo(() => getJinxArchiveKey(difficulty, activePuzzleId), [activePuzzleId, difficulty]);
+  const puzzle = useMemo(() => getJinxPuzzleById(activePuzzleId, difficulty), [activePuzzleId, difficulty]);
+  const puzzleState = archive[activePuzzleKey] ?? normalizeJinxPuzzleState(null, difficulty);
   const solved = isJinxSolved(puzzle, puzzleState);
   const failed = puzzleState.lost;
   const puzzleNumber = puzzle.puzzleId + 1;
+  const boardStyle = {
+    "--jinx-board-gap": difficulty === "hard" ? "4px" : "8px",
+    "--jinx-cell-font-size": difficulty === "hard" ? "clamp(0.5rem, 1.8vw, 0.72rem)" : "clamp(0.72rem, 2.8vw, 1.05rem)",
+    "--jinx-columns": String(puzzle.columns)
+  } as CSSProperties;
+  const difficultyLabel = JINX_DIFFICULTIES[difficulty].label;
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -121,7 +141,7 @@ function JinxPage() {
   }, [archive]);
 
   useEffect(() => {
-    const puzzleKey = String(activePuzzleId);
+    const puzzleKey = getJinxArchiveKey(difficulty, activePuzzleId);
     if (archive[puzzleKey]) {
       return;
     }
@@ -136,12 +156,12 @@ function JinxPage() {
         [puzzleKey]: createInitialJinxPuzzleState(puzzle)
       };
     });
-  }, [activePuzzleId, archive, puzzle]);
+  }, [activePuzzleId, archive, difficulty, puzzle]);
 
   function setPuzzleState(nextState: JinxPuzzleState) {
     setArchive((current) => ({
       ...current,
-      [String(activePuzzleId)]: nextState
+      [activePuzzleKey]: nextState
     }));
   }
 
@@ -207,15 +227,15 @@ function JinxPage() {
         : "Reveal mode on.";
 
   const archiveEntries = useMemo(() => {
-    return Array.from({ length: todaysPuzzle.puzzleId + 1 }, (_, puzzleId) => {
-      const entryPuzzle = getJinxPuzzleById(puzzleId);
-      const entryState = archive[String(puzzleId)] ?? normalizeJinxPuzzleState(null);
+    return Array.from({ length: todaysPuzzleId + 1 }, (_, puzzleId) => {
+      const entryPuzzle = getJinxPuzzleById(puzzleId, difficulty);
+      const entryState = archive[getJinxArchiveKey(difficulty, puzzleId)] ?? normalizeJinxPuzzleState(null, difficulty);
       const entrySolved = isJinxSolved(entryPuzzle, entryState);
       const entryFailed = entryState.lost;
 
       return {
         puzzleId,
-        label: `Puzzle #${puzzleId + 1}`,
+        label: `${difficultyLabel} Puzzle #${puzzleId + 1}`,
         dateLabel: formatDateLabel(entryPuzzle.date),
         solved: entrySolved,
         failed: entryFailed,
@@ -223,7 +243,7 @@ function JinxPage() {
         hintCount: entryState.hintCount
       };
     }).reverse();
-  }, [archive, todaysPuzzle.puzzleId]);
+  }, [archive, difficulty, difficultyLabel, todaysPuzzleId]);
 
   const summaryStats = {
     revealed: puzzleState.revealed.length,
@@ -254,7 +274,7 @@ function JinxPage() {
             </div>
             <h1>Jinx</h1>
           </div>
-          <p>A daily minefield puzzle that opens with a safe region and lets you use hints whenever you need one.</p>
+          <p>Pick the current 8×8 easy board or a 16×16 hard board with more mines. Both open with a safe region and allow unlimited hints.</p>
         </section>
 
         <section className="jinx-layout">
@@ -262,7 +282,7 @@ function JinxPage() {
             <div className="jordle-board-card__header">
               <div className="jordle-board-card__title-row">
                 <div>
-                  <span className="section-heading__eyebrow">Puzzle #{puzzleNumber}</span>
+                  <span className="section-heading__eyebrow">{difficultyLabel} · Puzzle #{puzzleNumber}</span>
                   <h2>{solved ? "Board cleared" : failed ? "Boom." : "Minefield"}</h2>
                 </div>
                 <div className="jordle-board-card__actions">
@@ -292,6 +312,25 @@ function JinxPage() {
             </div>
 
             <div className="jinx-controls">
+              <div className="jinx-difficulty-toggle" role="tablist" aria-label="Jinx difficulty">
+                {(["easy", "hard"] as JinxDifficulty[]).map((entryDifficulty) => (
+                  <button
+                    key={entryDifficulty}
+                    type="button"
+                    className={difficulty === entryDifficulty ? "is-active" : ""}
+                    onClick={() => {
+                      setDifficulty(entryDifficulty);
+                      setHintCell(null);
+                      setIsSummaryOpen(false);
+                    }}
+                  >
+                    <span>{JINX_DIFFICULTIES[entryDifficulty].label}</span>
+                    <span className="jinx-difficulty-toggle__meta">
+                      <DifficultyIcon difficulty={entryDifficulty} /> · {JINX_DIFFICULTIES[entryDifficulty].mineCount} mines
+                    </span>
+                  </button>
+                ))}
+              </div>
               <div className="jinx-mode-toggle" role="tablist" aria-label="Jinx input mode">
                 <button type="button" className={mode === "reveal" ? "is-active" : ""} onClick={() => setMode("reveal")}>
                   Reveal
@@ -310,10 +349,11 @@ function JinxPage() {
               </button>
             </div>
 
-            <div className="jinx-board" role="grid" aria-label="Jinx board">
-              {Array.from({ length: JINX_ROWS }, (_, row) => (
+            <div className="jinx-board-scroll">
+              <div className={`jinx-board ${difficulty === "hard" ? "jinx-board--hard" : ""}`} role="grid" aria-label={`${difficultyLabel} Jinx board`} style={boardStyle}>
+                {Array.from({ length: puzzle.rows }, (_, row) => (
                 <div key={row} className="jinx-board__row" role="row">
-                  {Array.from({ length: JINX_COLUMNS }, (_, column) => {
+                  {Array.from({ length: puzzle.columns }, (_, column) => {
                     const isRevealed = puzzleState.revealed.some(([r, c]) => r === row && c === column);
                     const isFlagged = puzzleState.flags.some(([r, c]) => r === row && c === column);
                     const isHinted = cellEquals(hintCell, [row, column]);
@@ -345,6 +385,7 @@ function JinxPage() {
                   })}
                 </div>
               ))}
+              </div>
             </div>
           </article>
         </section>
@@ -363,9 +404,9 @@ function JinxPage() {
               </button>
             </div>
             <div className="jordle-modal__body">
+              <p>Easy uses the original 8×8 board. Hard doubles that to 16×16 and raises the mine count to 40.</p>
               <p>Each board opens with a safe region already revealed so you can start with real information.</p>
-              <p>Numbers tell you how many mines touch that square. Use them to find safe cells and flag mines.</p>
-              <p>Hints are unlimited. Each one highlights a safe unrevealed cell for two seconds.</p>
+              <p>Numbers tell you how many mines touch that square. Use them to find safe cells and flag mines. Hints are unlimited and highlight one safe unrevealed cell for two seconds.</p>
             </div>
           </div>
         </div>
@@ -377,7 +418,7 @@ function JinxPage() {
             <div className="jordle-modal__header">
               <div>
                 <span className="section-heading__eyebrow">Archive</span>
-                <h2 id="jinx-archive-title">Previous Jinx boards</h2>
+                <h2 id="jinx-archive-title">{difficultyLabel} Jinx boards</h2>
               </div>
               <button type="button" className="jordle-modal__close" aria-label="Close Jinx archive" onClick={() => setIsArchiveOpen(false)}>
                 ×
@@ -437,8 +478,8 @@ function JinxPage() {
             <div className="jordle-modal__body">
               <p>
                 {solved
-                  ? `You cleared Puzzle #${puzzleNumber} in ${summaryStats.moves} ${summaryStats.moves === 1 ? "move" : "moves"}.`
-                  : `You hit a mine on Puzzle #${puzzleNumber} after ${summaryStats.moves} moves.`}
+                  ? `You cleared ${difficultyLabel} Puzzle #${puzzleNumber} in ${summaryStats.moves} ${summaryStats.moves === 1 ? "move" : "moves"}.`
+                  : `You hit a mine on ${difficultyLabel} Puzzle #${puzzleNumber} after ${summaryStats.moves} moves.`}
               </p>
               <div className="jordle-summary-grid">
                 <div className="jordle-summary-stat">
