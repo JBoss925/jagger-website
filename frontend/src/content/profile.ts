@@ -7,8 +7,12 @@ import jinxPreview from "../assets/jinx-preview.jpg";
 import jordlePreview from "../assets/jordle-preview.jpg";
 import jolorPreview from "../assets/jolor-preview.jpg";
 import judokuPreview from "../assets/judoku-preview.jpg";
+import idolPreview from "../assets/idol-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
+import newReactTypingEffectDemo from "../assets/new-react-typing-effect-demo.gif";
+import renginePreview from "../assets/rengine-preview.jpg";
+import tsxlightRendererPreview from "../assets/tsxlight-renderer-preview.jpg";
 import type { ProfileContent } from "../types/content";
 
 export const headshotAsset = headshotImage;
@@ -261,17 +265,6 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "idol",
-      title: "IDOL",
-      description:
-        "An internal tools platform for Cornell DTI that bundles org operations, scheduling workflows, member data, and the team website into one TypeScript monorepo.",
-      impact:
-        "It is a strong example of the full-stack work I like most: shared types, real product surface area, business logic-heavy APIs, and software a 100+ person organization actually depends on.",
-      stack: ["TypeScript monorepo", "Next.js", "Express + Netlify", "Firebase"],
-      icon: "idol",
-      links: [{ label: "Source", href: "https://github.com/cornell-dti/idol" }]
-    },
-    {
       slug: "tsxlight-renderer",
       title: "TSXLight Renderer",
       description:
@@ -279,6 +272,7 @@ export const profileContent: ProfileContent = {
       impact:
         "This is the kind of lower-level experiment I enjoy because it forces me to think about rendering, state persistence, per-user sessions, and page transitions from first principles.",
       stack: ["TypeScript", "Custom JSX factory", "SSR + sockets", "Electron + Express"],
+      image: tsxlightRendererPreview,
       icon: "tsxlight",
       links: [{ label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }]
     },
@@ -290,6 +284,7 @@ export const profileContent: ProfileContent = {
       impact:
         "What I like about this one is that the interesting work sits below the demo: engine boundaries, update loops, renderer abstraction, and entity composition you can reason about directly.",
       stack: ["TypeScript", "Canvas rendering", "Game loops", "Entity systems"],
+      image: renginePreview,
       icon: "rengine",
       links: [{ label: "Source", href: "https://github.com/JBoss925/Rengine" }]
     },
@@ -301,10 +296,26 @@ export const profileContent: ProfileContent = {
       impact:
         "It is a smaller project, but it still shows a practical skill I value: designing a clean component API, shipping types with the library, and making customization flexible instead of bolted on.",
       stack: ["React", "TypeScript library", "Component API design", "NPM Packaging"],
+      image: newReactTypingEffectDemo,
       icon: "typing-effect",
       links: [
         { label: "NPM", href: "https://www.npmjs.com/package/new-react-typing-effect" },
         { label: "Source", href: "https://github.com/JBoss925/new-react-typing-effect" }
+      ]
+    },
+    {
+      slug: "idol",
+      title: "IDOL",
+      description:
+        "An internal tools platform for Cornell DTI that bundles org operations, scheduling workflows, member data, and the team website into one TypeScript monorepo.",
+      impact:
+        "It is a strong example of the full-stack work I like most: shared types, real product surface area, business logic-heavy APIs, and software a 100+ person organization actually depends on.",
+      stack: ["TypeScript monorepo", "Next.js", "Express + Netlify", "Firebase"],
+      image: idolPreview,
+      icon: "idol",
+      links: [
+        { label: "Open Site", href: "https://idol.cornelldti.org/" },
+        { label: "Source", href: "https://github.com/cornell-dti/idol" }
       ]
     },
     {

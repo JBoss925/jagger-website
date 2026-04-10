@@ -19,6 +19,10 @@ type ProjectCardProps = {
 function ProjectCard({ project }: ProjectCardProps) {
   function isPrimaryLink(label: string, href: string) {
     const normalized = label.toLowerCase();
+    if (normalized.includes("npm")) {
+      return true;
+    }
+
     if (normalized.includes("source") || normalized.includes("reference")) {
       return false;
     }
