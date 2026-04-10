@@ -5,7 +5,7 @@ import { gameLinks } from "./gamesData";
 
 function GamesNavigation() {
   const location = useLocation();
-  const isMobileMenuViewport = useMediaQuery("(max-width: 768px)");
+  const isMobileMenuViewport = useMediaQuery("(max-width: 966px)");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuId = useId();
 
