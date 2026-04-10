@@ -2,8 +2,11 @@ import headshotImage from "../assets/headshot.jpg";
 import domesPreview from "../assets/domes-preview.jpg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
+import jigsawPreview from "../assets/jigsaw-preview.jpg";
+import jinxPreview from "../assets/jinx-preview.jpg";
 import jordlePreview from "../assets/jordle-preview.jpg";
 import jolorPreview from "../assets/jolor-preview.jpg";
+import judokuPreview from "../assets/judoku-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
 import type { ProfileContent } from "../types/content";
@@ -271,6 +274,48 @@ export const profileContent: ProfileContent = {
       icon: "jolor",
       links: [
         { label: "Play Jolor", href: "/games/jolor" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
+      ]
+    },
+    {
+      slug: "jinx",
+      title: "Jinx",
+      description:
+        "A daily minefield puzzle that keeps the rules simple: reveal safe cells, flag mines, and read the numbers carefully.",
+      impact:
+        "This one let me build a cleaner version of that classic board logic while keeping the state, archive, and hint systems tight.",
+      stack: ["React", "Grid logic", "Daily puzzles", "Local persistence"],
+      image: jinxPreview,
+      links: [
+        { label: "Play Jinx", href: "/games/jinx" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
+      ]
+    },
+    {
+      slug: "judoku",
+      title: "Judoku",
+      description:
+        "A smaller daily sudoku built around a 6x6 grid, notes mode, and a faster solve than a full-sized board.",
+      impact:
+        "I wanted a number puzzle that still feels satisfying, but fits better on a phone and does not ask for a giant time commitment.",
+      stack: ["React", "Constraint puzzles", "State management", "Daily puzzles"],
+      image: judokuPreview,
+      links: [
+        { label: "Play Judoku", href: "/games/judoku" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
+      ]
+    },
+    {
+      slug: "jigsaw",
+      title: "Jigsaw",
+      description:
+        "A daily tile-swap picture puzzle where each board is a scrambled image you have to piece back together.",
+      impact:
+        "It added something visual to the games section and gave me a fun excuse to build image slicing, archive handling, and a simple interaction loop around it.",
+      stack: ["React", "Image puzzles", "Daily puzzles", "Interaction design"],
+      image: jigsawPreview,
+      links: [
+        { label: "Play Jigsaw", href: "/games/jigsaw" },
         { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
