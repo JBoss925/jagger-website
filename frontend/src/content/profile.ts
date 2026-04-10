@@ -157,18 +157,31 @@ export const profileContent: ProfileContent = {
     },
     {
       company: "Cornell Design & Tech Initiative",
-      role: "Developer Lead and Technical Project Manager",
-      timeframe: "2017-2021",
+      role: "Developer Lead",
+      timeframe: "2020-2021",
       location: "Cornell University",
       summary:
-        "Spent nearly four years as a full-stack developer, technical project manager, and developer lead, shipping software across platforms while also helping teams make technical decisions and onboard new developers.",
+        "Oversaw development across DTI applications and the technology around their maintenance and deployment while still staying hands-on with implementation and developer support.",
       highlights: [
-        "Built user interfaces and product functionality across web, Android, iOS, and Windows, alongside the backend APIs, databases, and deployment work needed to support them.",
-        "As Technical Project Manager for the Cue subteam, helped drive technical decisions, coordinate implementation, and keep the project moving from idea to shipped product.",
-        "As Developer Lead, oversaw development across DTI applications and the technology around their maintenance and deployment while still staying hands-on with implementation.",
-        "Did a lot of developer support work in parallel with coding: onboarding new members, teaching, unblocking contributors, and helping teams make practical architectural choices."
+        "Oversaw development across DTI apps on multiple platforms and the maintenance and deployment work around them instead of focusing on only one codebase.",
+        "Worked directly with teams to help developers get unstuck, onboard new members, and teach the engineering practices needed to contribute effectively.",
+        "Balanced leadership responsibilities with hands-on implementation, which meant keeping architectural decisions practical and close to the code."
       ],
-      tags: ["Leadership", "Full-stack", "Cross-platform", "Mentorship"]
+      tags: ["Leadership", "Mentorship", "Cross-platform", "Developer support"]
+    },
+    {
+      company: "Cornell Design & Tech Initiative",
+      role: "Technical Project Manager",
+      timeframe: "2017-2020",
+      location: "Cue subteam",
+      summary:
+        "Led the Cue app subteam while also doing full-stack product work across the interface, backend APIs, and deployment setup that kept the project moving.",
+      highlights: [
+        "Built user interfaces across web, Android, iOS, and Windows, alongside the backend systems that powered them.",
+        "Worked on dynamic webpages, backend APIs, and database work using tools like Django and Heroku rather than staying boxed into one layer.",
+        "Helped make technical decisions, coordinate developers, and keep the product moving from early implementation toward something real and usable."
+      ],
+      tags: ["Technical direction", "Full-stack", "Django", "Project leadership"]
     },
     {
       company: "Lowe’s",
