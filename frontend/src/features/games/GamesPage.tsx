@@ -3,16 +3,32 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
-import { DomesIcon, JolorIcon, JordleIcon } from "./GameIcons";
+import { DomesIcon, JigsawIcon, JinxIcon, JolorIcon, JordleIcon, JudokuIcon } from "./GameIcons";
 import { gamesPlaceholderContent } from "./gamesData";
 
-function GameCardIcon({ icon }: { icon: "domes" | "jordle" | "jolor" }) {
+function GameCardIcon({
+  icon
+}: {
+  icon: "domes" | "jordle" | "jolor" | "jinx" | "judoku" | "jigsaw";
+}) {
   if (icon === "domes") {
     return <DomesIcon />;
   }
 
   if (icon === "jordle") {
     return <JordleIcon />;
+  }
+
+  if (icon === "jinx") {
+    return <JinxIcon />;
+  }
+
+  if (icon === "judoku") {
+    return <JudokuIcon />;
+  }
+
+  if (icon === "jigsaw") {
+    return <JigsawIcon />;
   }
 
   return <JolorIcon />;
@@ -52,7 +68,7 @@ function GamesPage() {
             <div className="games-hero__copy">
               <h1 id="games-hero-title">Small games and daily puzzles.</h1>
               <p>
-                Three games so far: a word game, a color game, and a board game. Pick one and play.
+                Six games now: words, colors, logic grids, a minefield, a picture puzzle, and one board game.
               </p>
             </div>
 

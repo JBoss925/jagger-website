@@ -12,6 +12,9 @@ const GamesPage = lazy(() => import("../features/games/GamesPage"));
 const DomesPage = lazy(() => import("../features/games/DomesPage"));
 const JordlePage = lazy(() => import("../features/games/JordlePage"));
 const JolorPage = lazy(() => import("../features/games/JolorPage"));
+const JinxPage = lazy(() => import("../features/games/JinxPage"));
+const JudokuPage = lazy(() => import("../features/games/JudokuPage"));
+const JigsawPage = lazy(() => import("../features/games/JigsawPage"));
 
 function RouteLoading() {
   return (
@@ -37,6 +40,9 @@ function App() {
         <Route path="/games/domes" element={<DomesPage />} />
         <Route path="/games/jordle" element={<JordlePage />} />
         <Route path="/games/jolor" element={<JolorPage />} />
+        <Route path="/games/jinx" element={<JinxPage />} />
+        <Route path="/games/judoku" element={<JudokuPage />} />
+        <Route path="/games/jigsaw" element={<JigsawPage />} />
         <Route path="/games/jeardle" element={<Navigate to="/games/jolor" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

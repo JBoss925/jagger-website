@@ -31,6 +31,36 @@ export function JolorIcon() {
   );
 }
 
+export function JinxIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="5" />
+      <path d="M24 8v8M24 32v8M8 24h8M32 24h8" />
+      <path d="m13 13 5.5 5.5M29.5 29.5 35 35" />
+      <path d="m35 13-5.5 5.5M18.5 29.5 13 35" />
+    </svg>
+  );
+}
+
+export function JudokuIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="8" y="8" width="32" height="32" rx="6" />
+      <path d="M18.666 8v32M29.333 8v32M8 18.666h32M8 29.333h32" />
+      <path d="M13 13h1M24 13h1M34 13h1M13 24h1M24 24h1M34 24h1M13 34h1M24 34h1M34 34h1" />
+    </svg>
+  );
+}
+
+export function JigsawIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M9 16h10c0-2.8 1.7-4 4-4s4 1.2 4 4h12v10c2.8 0 4 1.7 4 4s-1.2 4-4 4v5H9z" />
+      <path d="M24 16v23M9 27h30" />
+    </svg>
+  );
+}
+
 export function GeneticIcon() {
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true">
