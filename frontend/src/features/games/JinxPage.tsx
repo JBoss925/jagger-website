@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { JinxIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
@@ -128,6 +128,21 @@ function JinxPage() {
     setPuzzleState(nextState);
 
     if (nextState.lost || isJinxSolved(puzzle, nextState)) {
+      setIsSummaryOpen(true);
+    }
+  }
+
+  function handleCellRightClick(event: MouseEvent<HTMLButtonElement>, row: number, column: number) {
+    if (mode !== "reveal" || solved || failed) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const nextState = toggleFlag(puzzleState, row, column);
+    setPuzzleState(nextState);
+
+    if (isJinxSolved(puzzle, nextState)) {
       setIsSummaryOpen(true);
     }
   }
@@ -291,6 +306,7 @@ function JinxPage() {
                         type="button"
                         className={className}
                         onClick={() => handleCellPress(row, column)}
+                        onContextMenu={(event) => handleCellRightClick(event, row, column)}
                         aria-label={`Row ${row + 1} column ${column + 1}`}
                       >
                         {isFlagged ? "!" : shouldShowMine ? "×" : adjacentCount > 0 ? adjacentCount : ""}
