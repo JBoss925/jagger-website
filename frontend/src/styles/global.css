@@ -236,14 +236,7 @@ a {
 }
 
 .games-nav-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background:
-    linear-gradient(180deg, rgba(4, 7, 18, 0.985), rgba(4, 7, 18, 0.94)),
-    radial-gradient(circle at 16% 0%, rgba(87, 208, 255, 0.12), transparent 26%),
-    radial-gradient(circle at 86% 10%, rgba(247, 169, 91, 0.1), transparent 20%);
+  content: none;
 }
 
 .games-nav-shell::after {
