@@ -236,19 +236,19 @@ a {
 }
 
 .games-nav-shell::before {
-  content: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  backdrop-filter: blur(34px);
+  -webkit-backdrop-filter: blur(34px);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.72) 58%, rgba(0, 0, 0, 0.12) 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.72) 58%, rgba(0, 0, 0, 0.12) 100%);
 }
 
 .games-nav-shell::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - 2px);
-  height: 28px;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(4, 7, 18, 0.44) 0%, rgba(4, 7, 18, 0) 100%);
+  content: none;
 }
 
 .games-nav {
