@@ -20,7 +20,7 @@ export type JinxPuzzle = JinxPuzzleData & {
 export type JinxPuzzleState = {
   revealed: JinxCell[];
   flags: JinxCell[];
-  hintUsed: boolean;
+  hintCount: number;
   moveCount: number;
   lost: boolean;
 };
@@ -72,18 +72,26 @@ export function normalizeJinxPuzzleState(value: unknown): JinxPuzzleState {
     return {
       revealed: [],
       flags: [],
-      hintUsed: false,
+      hintCount: 0,
       moveCount: 0,
       lost: false
     };
   }
 
-  const maybeState = value as Partial<JinxPuzzleState>;
+  const maybeState = value as Partial<JinxPuzzleState> & { hintUsed?: unknown };
+  const normalizedHintCount = Math.max(
+    0,
+    Number.isFinite(Number(maybeState.hintCount))
+      ? Number(maybeState.hintCount)
+      : maybeState.hintUsed
+        ? 1
+        : 0
+  );
 
   return {
     revealed: normalizeCells(maybeState.revealed),
     flags: normalizeCells(maybeState.flags),
-    hintUsed: Boolean(maybeState.hintUsed),
+    hintCount: normalizedHintCount,
     moveCount: Math.max(0, Number(maybeState.moveCount) || 0),
     lost: Boolean(maybeState.lost)
   };
@@ -218,6 +226,54 @@ export function getSafeHintCell(puzzle: JinxPuzzleData, state: JinxPuzzleState) 
   }
 
   return null;
+}
+
+export function getInitialSafeRevealCell(puzzle: JinxPuzzleData) {
+  const centerRow = (JINX_ROWS - 1) / 2;
+  const centerColumn = (JINX_COLUMNS - 1) / 2;
+  const cells = Array.from({ length: JINX_ROWS * JINX_COLUMNS }, (_, index) => {
+    const row = Math.floor(index / JINX_COLUMNS);
+    const column = index % JINX_COLUMNS;
+    const rowDistance = row - centerRow;
+    const columnDistance = column - centerColumn;
+
+    return {
+      row,
+      column,
+      distance: rowDistance * rowDistance + columnDistance * columnDistance
+    };
+  }).sort((first, second) => {
+    if (first.distance !== second.distance) {
+      return first.distance - second.distance;
+    }
+
+    if (first.row !== second.row) {
+      return first.row - second.row;
+    }
+
+    return first.column - second.column;
+  });
+
+  for (const { row, column } of cells) {
+    if (!isMine(puzzle, row, column) && getAdjacentMineCount(puzzle, row, column) === 0) {
+      return [row, column] as JinxCell;
+    }
+  }
+
+  return getSafeHintCell(puzzle, normalizeJinxPuzzleState(null));
+}
+
+export function createInitialJinxPuzzleState(puzzle: JinxPuzzleData) {
+  const openingCell = getInitialSafeRevealCell(puzzle);
+  if (!openingCell) {
+    return normalizeJinxPuzzleState(null);
+  }
+
+  const openedState = revealFromCell(puzzle, normalizeJinxPuzzleState(null), openingCell[0], openingCell[1]);
+  return {
+    ...openedState,
+    moveCount: 0
+  };
 }
 
 export function isJinxSolved(_puzzle: JinxPuzzleData, state: JinxPuzzleState) {

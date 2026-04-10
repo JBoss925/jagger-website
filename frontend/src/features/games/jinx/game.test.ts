@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  createInitialJinxPuzzleState,
   getAdjacentMineCount,
+  getInitialSafeRevealCell,
   getJinxPuzzleById,
   getSafeHintCell,
   getTodaysJinxPuzzle,
@@ -47,6 +49,54 @@ describe("jinx helpers", () => {
     expect(hint).not.toBeNull();
   });
 
+  it("migrates legacy hint usage to a hint count", () => {
+    const state = normalizeJinxPuzzleState({
+      revealed: [],
+      flags: [],
+      hintUsed: true,
+      moveCount: 3,
+      lost: false
+    });
+
+    expect(state.hintCount).toBe(1);
+  });
+
+  it("finds a safe opening cell with no adjacent mines when available", () => {
+    const puzzle = getJinxPuzzleById(0);
+    const openingCell = getInitialSafeRevealCell(puzzle);
+
+    expect(openingCell).not.toBeNull();
+    expect(openingCell).not.toBeUndefined();
+    expect(getAdjacentMineCount(puzzle, openingCell![0], openingCell![1])).toBe(0);
+  });
+
+  it("prefers zero-adjacent opening cells closest to the board center", () => {
+    const puzzle = getJinxPuzzleById(0);
+    const openingCell = getInitialSafeRevealCell(puzzle);
+    const center = 3.5;
+
+    const zeroCells = Array.from({ length: 8 * 8 }, (_, index) => [Math.floor(index / 8), index % 8] as const).filter(
+      ([row, column]) =>
+        !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column) &&
+        getAdjacentMineCount(puzzle, row, column) === 0
+    );
+
+    const openingDistance = (openingCell![0] - center) ** 2 + (openingCell![1] - center) ** 2;
+    const bestDistance = Math.min(...zeroCells.map(([row, column]) => (row - center) ** 2 + (column - center) ** 2));
+
+    expect(openingDistance).toBe(bestDistance);
+  });
+
+  it("starts a puzzle with a revealed safe region without spending a move", () => {
+    const puzzle = getJinxPuzzleById(0);
+    const state = createInitialJinxPuzzleState(puzzle);
+
+    expect(state.lost).toBe(false);
+    expect(state.moveCount).toBe(0);
+    expect(state.revealed.length).toBeGreaterThan(0);
+    expect(state.revealed.every(([row, column]) => !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column))).toBe(true);
+  });
+
   it("recognizes solved boards", () => {
     const puzzle = getJinxPuzzleById(0);
     const safeCells = [];
@@ -62,7 +112,7 @@ describe("jinx helpers", () => {
       isJinxSolved(puzzle, {
         revealed: safeCells,
         flags: [],
-        hintUsed: false,
+        hintCount: 0,
         moveCount: safeCells.length,
         lost: false
       })

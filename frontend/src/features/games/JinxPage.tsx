@@ -3,6 +3,7 @@ import { JinxIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import {
+  createInitialJinxPuzzleState,
   getAdjacentMineCount,
   getJinxPuzzleById,
   getSafeHintCell,
@@ -81,7 +82,18 @@ function cellEquals(first: JinxCell | null, second: JinxCell | null) {
 function JinxPage() {
   const isPageReady = usePageReveal();
   const todaysPuzzle = useMemo(() => getTodaysJinxPuzzle(), []);
-  const initialArchive = useMemo(() => readSavedArchive(), []);
+  const initialArchive = useMemo(() => {
+    const savedArchive = readSavedArchive();
+    const todayKey = String(todaysPuzzle.puzzleId);
+    if (savedArchive[todayKey]) {
+      return savedArchive;
+    }
+
+    return {
+      ...savedArchive,
+      [todayKey]: createInitialJinxPuzzleState(todaysPuzzle)
+    };
+  }, [todaysPuzzle]);
   const initialTodayState = initialArchive[String(todaysPuzzle.puzzleId)] ?? normalizeJinxPuzzleState(null);
   const initialTodaySolved = isJinxSolved(todaysPuzzle, initialTodayState);
   const initialTodayFailed = initialTodayState.lost;
@@ -107,6 +119,24 @@ function JinxPage() {
     const payload: JinxArchiveState = { puzzles: archive };
     window.localStorage.setItem(JINX_STORAGE_KEY, JSON.stringify(payload));
   }, [archive]);
+
+  useEffect(() => {
+    const puzzleKey = String(activePuzzleId);
+    if (archive[puzzleKey]) {
+      return;
+    }
+
+    setArchive((current) => {
+      if (current[puzzleKey]) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [puzzleKey]: createInitialJinxPuzzleState(puzzle)
+      };
+    });
+  }, [activePuzzleId, archive, puzzle]);
 
   function setPuzzleState(nextState: JinxPuzzleState) {
     setArchive((current) => ({
@@ -148,7 +178,7 @@ function JinxPage() {
   }
 
   function activateHint() {
-    if (puzzleState.hintUsed || solved || failed) {
+    if (solved || failed) {
       return;
     }
 
@@ -160,7 +190,7 @@ function JinxPage() {
     setHintCell(nextHintCell);
     setPuzzleState({
       ...puzzleState,
-      hintUsed: true
+      hintCount: puzzleState.hintCount + 1
     });
 
     window.setTimeout(() => {
@@ -190,7 +220,7 @@ function JinxPage() {
         solved: entrySolved,
         failed: entryFailed,
         moves: entryState.moveCount,
-        hintUsed: entryState.hintUsed
+        hintCount: entryState.hintCount
       };
     }).reverse();
   }, [archive, todaysPuzzle.puzzleId]);
@@ -199,7 +229,7 @@ function JinxPage() {
     revealed: puzzleState.revealed.length,
     flags: puzzleState.flags.length,
     moves: puzzleState.moveCount,
-    hint: puzzleState.hintUsed ? "Used" : "Unused"
+    hints: puzzleState.hintCount
   };
 
   return (
@@ -224,7 +254,7 @@ function JinxPage() {
             </div>
             <h1>Jinx</h1>
           </div>
-          <p>A daily minefield puzzle with no guessing if you read the board carefully.</p>
+          <p>A daily minefield puzzle that opens with a safe region and lets you use hints whenever you need one.</p>
         </section>
 
         <section className="jinx-layout">
@@ -274,9 +304,9 @@ function JinxPage() {
                 type="button"
                 className="cta-button cta-button--secondary"
                 onClick={activateHint}
-                disabled={puzzleState.hintUsed || solved || failed}
+                disabled={solved || failed}
               >
-                {puzzleState.hintUsed ? "Hint used" : "Use hint"}
+                Use hint
               </button>
             </div>
 
@@ -333,9 +363,9 @@ function JinxPage() {
               </button>
             </div>
             <div className="jordle-modal__body">
-              <p>Reveal safe cells, flag the mines, and clear the whole board without detonating one.</p>
-              <p>Numbers tell you how many mines touch that square. Read the clues and work outward.</p>
-              <p>You get one hint per board. It highlights a safe unrevealed cell for two seconds.</p>
+              <p>Each board opens with a safe region already revealed so you can start with real information.</p>
+              <p>Numbers tell you how many mines touch that square. Use them to find safe cells and flag mines.</p>
+              <p>Hints are unlimited. Each one highlights a safe unrevealed cell for two seconds.</p>
             </div>
           </div>
         </div>
@@ -424,8 +454,8 @@ function JinxPage() {
                   <strong>{summaryStats.moves}</strong>
                 </div>
                 <div className="jordle-summary-stat">
-                  <span>Hint</span>
-                  <strong>{summaryStats.hint}</strong>
+                  <span>Hints used</span>
+                  <strong>{summaryStats.hints}</strong>
                 </div>
               </div>
             </div>
