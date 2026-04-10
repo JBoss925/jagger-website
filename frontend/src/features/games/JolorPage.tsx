@@ -176,7 +176,7 @@ function JolorPage() {
     ? `${puzzle.name} · ${puzzle.hex}`
     : isComplete
       ? puzzle.hex
-      : "Tune the color by eye, or nudge it numerically.";
+      : "Adjust the color visually, or fine-tune it with the numeric controls.";
   const status = useMemo(() => {
     if (solved) {
       return `Solved in ${guesses.length} ${guesses.length === 1 ? "guess" : "guesses"}.`;
@@ -331,7 +331,7 @@ function JolorPage() {
             </div>
             <h1>Jolor</h1>
           </div>
-          <p>Name first, color second. You get the target color’s name and five guesses to dial in a match close enough to count.</p>
+          <p>You get the color name, not the swatch, and five guesses to find it.</p>
         </section>
 
         <section className="jolor-layout">

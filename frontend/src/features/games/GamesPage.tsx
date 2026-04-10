@@ -52,7 +52,7 @@ function GamesPage() {
             <div className="games-hero__copy">
               <h1 id="games-hero-title">Small games and daily puzzles.</h1>
               <p>
-                This is where I put the game-sized projects: daily rituals, strategy ideas, and things people can actually play.
+                Three games so far: a word game, a color game, and a board game. Pick one and play.
               </p>
             </div>
 

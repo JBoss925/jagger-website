@@ -12,15 +12,15 @@ export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
-  title: "Full-stack engineer working across product, platform, and language tooling.",
+  title: "Full-stack engineer across product, platform, and language tooling.",
   location: "United States",
   email: "jaggerbrulato@gmail.com",
   heroSummary:
-    "I like working on software that crosses boundaries: product work, backend systems, internal tooling, and the weird projects that force you to understand how things actually work.",
+    "I like work that makes me understand the whole system: the product surface, the backend, the tooling around it, and the operational reality once it is live.",
   heroBullets: [
-    "Most of my work has been some mix of product delivery, platform thinking, and developer-facing tooling.",
-    "I’m happiest when I get to move between the UI, the backend, and the operational side of the system.",
-    "JaggerScript is the clearest side-project example of that: language design, runtime work, and a browser experience around it."
+    "I have shipped frontend product work, backend services, internal platforms, dashboards, mobile apps, and developer-facing tooling.",
+    "I do my best work when I can move across layers instead of treating the UI, the backend, and operations like separate worlds.",
+    "The side projects here are a good sample too: interpreters, simulations, games, and backend utilities."
   ],
   metrics: [
     { label: "Main lane", value: "Full-stack" },
@@ -39,9 +39,9 @@ export const profileContent: ProfileContent = {
       id: "hero",
       label: "Intro",
       eyebrow: "Intro",
-      title: "I’m a full-stack engineer who likes technically demanding work.",
+      title: "I’m a full-stack engineer who likes work with real technical depth.",
       summary:
-        "This is the short version: the work I enjoy tends to sit somewhere between product engineering, platform work, and developer tooling.",
+        "Most of the work I’m proud of sits somewhere between product engineering, backend systems, internal tools, and the kinds of projects that force you to understand the whole stack.",
       position: [-8, 3, -1],
       camera: [-1, 1.8, 14],
       target: [-4, 1.4, 0],
@@ -51,9 +51,9 @@ export const profileContent: ProfileContent = {
       id: "impact",
       label: "Focus",
       eyebrow: "Focus",
-      title: "A lot of the work I care about is really leverage work.",
+      title: "The work I like most usually makes something easier for someone.",
       summary:
-        "Sometimes that means product features. Sometimes it means internal tools, visibility, cleaner abstractions, or a better path for the next engineer touching the code.",
+        "Sometimes that means a user-facing feature. Sometimes it means a platform, a dashboard, a reusable abstraction, or a cleaner path for the next engineer who touches the code.",
       position: [-2, 0, 1],
       camera: [2, 1.2, 12],
       target: [0, 0.2, 0],
@@ -63,9 +63,9 @@ export const profileContent: ProfileContent = {
       id: "experience",
       label: "Experience",
       eyebrow: "Experience",
-      title: "Most of my experience has been hands-on across different parts of the stack.",
+      title: "I’ve worked in startups, big companies, internal platform teams, and student-led product teams.",
       summary:
-        "These roles are the best quick read on how I work and what kinds of environments I’ve worked in.",
+        "Taken together, these roles show the range of environments I’ve worked in and the kinds of technical work I keep getting pulled toward.",
       position: [4, 1.8, -2],
       camera: [5.5, 2.1, 11],
       target: [4.2, 1, -1.5],
@@ -75,9 +75,9 @@ export const profileContent: ProfileContent = {
       id: "projects",
       label: "Projects",
       eyebrow: "Projects",
-      title: "These are the projects I’d point someone to first.",
+      title: "These are the projects that show how I think best.",
       summary:
-        "They’re the best examples of the kinds of problems I like spending time on outside of work too.",
+        "They are the strongest examples of the things I tend to build on my own: interpreters, simulations, games, utilities, and systems with real behavior instead of static demos.",
       position: [7, -1.6, 0],
       camera: [6.5, 0.6, 12.5],
       target: [6.2, -0.8, 0],
@@ -87,9 +87,9 @@ export const profileContent: ProfileContent = {
       id: "craft",
       label: "Craft",
       eyebrow: "How I work",
-      title: "I care a lot about how the technical pieces fit together.",
+      title: "I care a lot about how the pieces fit together across the whole system.",
       summary:
-        "The through-line for me is usually product sense, engineering judgment, and making the system easier to work in over time.",
+        "The through-line for me is usually the same: make the thing clearer, make it easier to change, and make it less painful for the next person who has to work in it.",
       position: [1, -3.4, -1],
       camera: [1.8, -1.1, 12.8],
       target: [1.5, -2, -0.5],
@@ -99,9 +99,9 @@ export const profileContent: ProfileContent = {
       id: "contact",
       label: "Contact",
       eyebrow: "Contact",
-      title: "If this lines up with the kind of work you need done, reach out.",
+      title: "If this sounds like the kind of engineer you need, reach out.",
       summary:
-        "Email is the easiest way to get in touch, and the rest is here if you want to look through it first.",
+        "Email is the easiest way to reach me. The resume, GitHub, and LinkedIn are here too if you want the longer version first.",
       position: [-5, -2.4, 1],
       camera: [-3.6, -0.4, 13],
       target: [-3.6, -1.2, 0],
@@ -112,70 +112,100 @@ export const profileContent: ProfileContent = {
     {
       company: "Red Ventures",
       role: "Platform Engineer",
-      timeframe: "Most recent role",
-      location: "",
+      timeframe: "2024-2025",
+      location: "Internal platform engineering",
       summary:
-        "Worked on internal platform capabilities and tooling for engineering teams.",
+        "Built internal platform capabilities that made it easier for engineering teams to launch, operate, and understand applications without rebuilding the same infrastructure each time.",
       highlights: [
-        "Worked on internal application platform work used by engineering teams.",
-        "Built better visibility into cost, availability, and process health.",
-        "Spent a lot of time in the space between platform reliability and day-to-day developer experience."
+        "Designed, prototyped, and developed flexible applications for common internal use cases so new services could be launched through a streamlined platform experience instead of bespoke setup work.",
+        "Used Terraform and platform automation to make bringing up new applications feel much closer to a product workflow than a manual infrastructure exercise.",
+        "Built internal dashboards and monitoring surfaces that gave engineers visibility into cost, availability, and process health, feeding back into architecture and operational decisions.",
+        "Worked at the seam between platform reliability and developer experience: keeping systems healthy while also making them easier for other engineers to use."
       ],
-      tags: ["Platform engineering", "Internal tools", "Observability", "Developer enablement"]
+      tags: ["Platform engineering", "Terraform", "Internal tools", "Observability"]
+    },
+    {
+      company: "Lowe’s",
+      role: "Software Engineer",
+      timeframe: "2024",
+      location: "Hybrid",
+      summary:
+        "Worked as a full-time software engineer after interning there earlier, contributing in a large enterprise environment with real production delivery expectations.",
+      highlights: [
+        "Operated in a mature enterprise setting where shipping meant working across existing systems, stakeholders, and delivery processes instead of building in isolation.",
+        "Built on earlier experience with Lowe’s merchandising and pricing systems, which gave me context for how large retail organizations structure software delivery around real business operations.",
+        "Added another production environment to my background between startup, big tech, and internal platform work, which is part of why I’m comfortable adapting to very different engineering cultures."
+      ],
+      tags: ["Enterprise software", "Production delivery", "Cross-functional work", "Retail systems"]
     },
     {
       company: "Google",
       role: "Software Engineer",
-      timeframe: "Full-time",
-      location: "",
+      timeframe: "2021-2024",
+      location: "Full-time",
       summary:
-        "Worked as a software engineer in a large production environment.",
+        "Worked as a software engineer in a high-scale production environment with strong expectations around execution quality, reliability, and collaboration.",
       highlights: [
-        "Got experience shipping in an environment with real scale and mature engineering processes.",
-        "Spent time around the kinds of reliability and quality expectations that come with that.",
-        "Worked in a place where collaboration and clean execution mattered."
+        "Shipped in an environment where engineering quality, testing, review discipline, and operational reliability were treated as baseline requirements rather than nice-to-haves.",
+        "Worked in systems large enough that scale, correctness, maintainability, and coordination all had to be part of the implementation from the start.",
+        "Built experience operating within mature engineering processes while still delivering clean, practical work in collaboration with other engineers and partner teams."
       ],
-      tags: ["Production systems", "Scale", "Collaboration", "Quality"]
+      tags: ["Production systems", "Scale", "Reliability", "Engineering quality"]
     },
     {
       company: "Cornell Design & Tech Initiative",
       role: "Developer Lead and Technical Project Manager",
-      timeframe: "University leadership",
+      timeframe: "2017-2021",
       location: "Cornell University",
       summary:
-        "Led student developers while still staying hands-on with implementation and technical direction.",
+        "Spent nearly four years as a full-stack developer, technical project manager, and developer lead, shipping software across platforms while also helping teams make technical decisions and onboard new developers.",
       highlights: [
-        "Worked across web, Android, iOS, Windows, and backend services.",
-        "Handled technical direction for the Cue subteam.",
-        "Did a lot of onboarding, unblocking, and feature work at the same time."
+        "Built user interfaces and product functionality across web, Android, iOS, and Windows, alongside the backend APIs, databases, and deployment work needed to support them.",
+        "As Technical Project Manager for the Cue subteam, helped drive technical decisions, coordinate implementation, and keep the project moving from idea to shipped product.",
+        "As Developer Lead, oversaw development across DTI applications and the technology around their maintenance and deployment while still staying hands-on with implementation.",
+        "Did a lot of developer support work in parallel with coding: onboarding new members, teaching, unblocking contributors, and helping teams make practical architectural choices."
       ],
-      tags: ["Leadership", "Full-stack", "Mentorship", "Product delivery"]
+      tags: ["Leadership", "Full-stack", "Cross-platform", "Mentorship"]
     },
     {
       company: "Lowe’s",
       role: "Software Engineering Intern",
-      timeframe: "Summer internship",
-      location: "Merchandising systems",
+      timeframe: "2019",
+      location: "Merchandising IT",
       summary:
-        "Worked on Lowe’s Central Price Master across frontend, backend services, and DevOps tooling.",
+        "Worked on Lowe’s Central Price Master, contributing across frontend, backend microservices, and the surrounding DevOps and delivery stack.",
       highlights: [
-        "Built frontend features in Angular and TypeScript.",
-        "Worked on backend APIs in Spring Boot and Java.",
-        "Used the surrounding delivery stack: GCP, Docker, Jenkins, Jira, and Bitbucket."
+        "Implemented frontend work in Angular and TypeScript for a large internal pricing system.",
+        "Built backend microservice APIs in Spring Boot and Java.",
+        "Worked with the surrounding delivery and infrastructure tooling including GCP, GCR, Docker, Jenkins, Jira, and Bitbucket, so the internship covered far more than writing feature code."
       ],
       tags: ["Angular", "Spring Boot", "Java", "DevOps"]
     },
     {
+      company: "Incite Analytics",
+      role: "Full Stack Developer",
+      timeframe: "2018-2019",
+      location: "Health tech startup",
+      summary:
+        "Worked at a cardiovascular health startup, building full-stack product functionality and helping connect frontend workflows to backend data and database management.",
+      highlights: [
+        "Built front-end UI and user-facing functionality while also working on backend systems and Django-based database management.",
+        "Worked in a smaller startup environment where communication between product behavior and backend implementation mattered just as much as the code itself.",
+        "Added early experience moving between interface work and backend/data concerns instead of being confined to one layer of the stack."
+      ],
+      tags: ["Startup", "Django", "Full-stack", "Health tech"]
+    },
+    {
       company: "Velocitor",
       role: "Software Engineer Intern",
-      timeframe: "Mobile engineering internship",
+      timeframe: "2016",
       location: "Cross-platform mobile",
       summary:
-        "Built cross-platform mobile software in C# and Xamarin for client projects.",
+        "Built cross-platform mobile software in C# and Xamarin for large-client operational applications well before that style of workflow became common.",
       highlights: [
-        "Worked on client applications for things like inventory, driver tracking, and scheduling.",
-        "Built in a cross-platform mobile stack before that workflow became more common.",
-        "Got early experience shipping software tied to real operational use cases."
+        "Used C# with Xamarin and binding libraries to support simultaneous cross-platform development.",
+        "Worked on applications for inventory management, live driver tracking, and bus scheduling, so the software was tied directly to real operational use cases.",
+        "Got early experience shipping practical software for clients in an environment where reliability and usability mattered more than novelty."
       ],
       tags: ["C#", "Xamarin", "Mobile", "Client delivery"]
     }
@@ -185,9 +215,9 @@ export const profileContent: ProfileContent = {
       slug: "jaggerscript",
       title: "JaggerScript",
       description:
-        "A small object-oriented language with its own parser, interpreter, and browser playground.",
+        "A small typed scripting language with its own parser, interpreter, and browser playground.",
       impact:
-        "This is probably the most complete example of the kind of side project I like building.",
+        "This is one of the clearest examples of how I like to work: own the language, the runtime, and the interface around it.",
       stack: ["TypeScript", "PEG parser", "Interpreter", "Browser tooling"],
       image: jaggerscriptPreview,
       icon: "jaggerscript",
@@ -200,9 +230,9 @@ export const profileContent: ProfileContent = {
       slug: "genetic-ts",
       title: "Genetic Algorithms in TypeScript",
       description:
-        "A rebuilt interactive simulation where a genetic algorithm learns the launch velocity needed to hit a target.",
+        "An interactive simulation where a genetic algorithm learns the launch velocity needed to hit a target under changing physics.",
       impact:
-        "I wanted this to feel like a real tool: tweak the physics, reroll the target, and watch the population adapt in real time.",
+        "Change gravity and wind, rerun the population, and watch the algorithm adapt in real time.",
       stack: ["TypeScript", "matter-js", "Genetic algorithms", "Interactive simulation"],
       image: geneticPreview,
       icon: "genetic",
@@ -218,9 +248,9 @@ export const profileContent: ProfileContent = {
       slug: "jordle",
       title: "Jordle",
       description:
-        "A six-letter daily word game with archives, reusable daily state, and a bigger curated dictionary behind it.",
+        "A six-letter daily word game with archives, persistent daily state, and a much larger curated word set behind it.",
       impact:
-        "I wanted at least one game on the site that people could come back to every day instead of just opening once.",
+        "I wanted at least one project on the site that people might come back to every day.",
       stack: ["React", "Daily puzzles", "Local persistence", "Game UI"],
       image: jordlePreview,
       icon: "jordle",
@@ -233,9 +263,9 @@ export const profileContent: ProfileContent = {
       slug: "jolor",
       title: "Jolor",
       description:
-        "A daily color-guessing game where the target is given by name and every guess has to get closer by eye.",
+        "A daily color-guessing game where the name is the clue and you have to dial in the actual color yourself.",
       impact:
-        "It gave me a nice way to build a more visual daily game with archives, hints, and feedback that still feels clean and intuitive.",
+        "It let me build a daily game that is much more visual than Jordle while still needing careful state, feedback, archive handling, and a clean interface.",
       stack: ["React", "Daily puzzles", "Color systems", "Game UI"],
       image: jolorPreview,
       icon: "jolor",
@@ -248,9 +278,9 @@ export const profileContent: ProfileContent = {
       slug: "domes",
       title: "Domes",
       description:
-        "A two-player strategy game inspired by Santorini, centered on positional play, sequencing, and board control.",
+        "A two-player strategy game inspired by Santorini, built around movement, tempo, and board control.",
       impact:
-        "It sits right in the overlap I like most: game rules, interaction design, and state that has to stay coherent turn after turn.",
+        "It sits right in the overlap I like most: clear game rules, interaction design, and state that has to stay coherent turn after turn.",
       stack: ["React", "Turn-based gameplay", "State machines", "Game UI"],
       image: domesPreview,
       icon: "domes",
@@ -263,9 +293,9 @@ export const profileContent: ProfileContent = {
       slug: "chains",
       title: "Chains",
       description:
-        "A small monadic pattern for wrapping a value, composing transformations, and layering side behaviors like history or undo on top.",
+        "A monadic pattern for wrapping a value, composing transformations over it, and layering side behaviors like history or undo on top.",
       impact:
-        "It shows the kind of abstraction work I like most: finding a pattern that stays simple at the surface while opening up more expressive behavior underneath.",
+        "It is the kind of abstraction work I enjoy most: simple at the call site, but strong enough to support richer behavior underneath.",
       stack: ["TypeScript", "Monads", "Composable abstractions", "API design"],
       image: monadPreview,
       links: [
@@ -279,9 +309,9 @@ export const profileContent: ProfileContent = {
       slug: "materialize",
       title: "materialize()",
       description:
-        "A Firestore utility for resolving reference-heavy data into something easier to consume.",
+        "A Firestore utility for turning reference-heavy data into something easier to read and use.",
       impact:
-        "It’s a small example, but it shows the kind of backend utility work I enjoy writing.",
+        "It is a small utility, but it captures a kind of backend work I genuinely enjoy: taking something awkward and making it simple enough to use everywhere.",
       stack: ["TypeScript", "Firestore", "Backend utilities", "Data shaping"],
       image: materializePreview,
       icon: "materialize",
@@ -297,7 +327,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Working with a team",
       summary:
-        "I tend to end up in roles where I’m writing code, helping make decisions, and unblocking other people at the same time.",
+        "I usually end up doing some mix of implementation, technical direction, and unblocking other people at the same time.",
       items: [
         "Technical leadership",
         "Developer onboarding",
@@ -309,7 +339,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Systems and platform work",
       summary:
-        "A lot of the backend work I enjoy ends up around reliability, observability, and internal architecture.",
+        "A lot of the backend work I enjoy sits around reliability, observability, internal platforms, and the infrastructure that makes product teams faster.",
       items: [
         "Distributed systems",
         "Platform engineering",
@@ -321,7 +351,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Range",
       summary:
-        "I like not being boxed into one layer of the stack.",
+        "I like being able to move between layers instead of getting stuck in only one of them.",
       items: [
         "Frontend engineering",
         "Backend APIs",
@@ -334,11 +364,11 @@ export const profileContent: ProfileContent = {
   jaggerscriptIntro: {
     headline: "A language project I built all the way through.",
     summary:
-      "JaggerScript is a browser-runnable interpreter for a small strongly typed scripting language. I built it because I wanted a project that forced me to own the parser, runtime, and the experience around it.",
+      "JaggerScript is a browser-runnable interpreter for a small typed scripting language. I built it because I wanted a project that forced me to own the parser, the runtime, and the actual interface people would use to explore it.",
     bullets: [
-      "The parser, compiler stage, and interpreter are all real parts of the project.",
-      "The examples come from the language repo itself.",
-      "I wanted the browser route to feel more like a tool than a code sample."
+      "The parser, compiler stage, and interpreter are all real parts of the project, not placeholders.",
+      "The examples are actual language programs from the repo, not fake demo text.",
+      "I wanted the browser route to be interactive and useful, not a static demo."
     ]
   }
 };

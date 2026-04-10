@@ -378,7 +378,7 @@ function JordlePage() {
             </div>
             <h1>Jordle</h1>
           </div>
-          <p>A six-letter daily word game. Same family as Wordle, just slightly roomier.</p>
+          <p>A six-letter daily word game. Six guesses, one word, new board tomorrow.</p>
         </section>
 
         <section className="jordle-layout">

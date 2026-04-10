@@ -85,7 +85,7 @@ function DomesPage() {
             <h1 id="domes-title">Domes</h1>
           </div>
           <p>
-            A clean two-player take on Santorini. Place your builders, climb one level at a time, and be the first to step onto the third level before the board closes up around you.
+            A two-player strategy game inspired by Santorini. Move, build, close off space, and try to step onto the third level before the other player can stop you.
           </p>
         </section>
 

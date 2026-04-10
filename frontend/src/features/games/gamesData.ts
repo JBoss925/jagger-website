@@ -13,26 +13,26 @@ export const gamesPlaceholderContent = {
         title: "Domes",
         icon: "domes",
         href: "/games/domes",
-        text: "A head-to-head strategy game inspired by Santorini. Climb, build, and cut off the other player before they reach the third level."
+        text: "A head-to-head strategy game inspired by Santorini. Climb, build, trap space, and try to reach the third level first."
       },
       {
         title: "Jordle",
         icon: "jordle",
         href: "/games/jordle",
-        text: "A six-letter daily word game. Same basic intuition as Wordle, just with a slightly different space."
+        text: "A six-letter daily word game. Guess the word, come back tomorrow, or dig through the archive."
       },
       {
         title: "Jolor",
         icon: "jolor",
         href: "/games/jolor",
-        text: "A daily color-guessing game where the name is the clue and your eye has to do the rest."
+        text: "A daily color game. You get the name, not the swatch, and have to find the color yourself."
       }
     ]
   },
   "/games/jolor": {
     title: "Jolor",
     summary:
-      "A daily color puzzle where you tune a guess by eye until it matches the named target closely enough.",
+      "A daily color puzzle where the name is the clue and the match is up to you.",
     cards: [
       {
         title: "Status",

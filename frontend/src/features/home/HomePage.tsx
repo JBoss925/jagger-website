@@ -189,7 +189,7 @@ function HomePage() {
         <SectionShell
           id="impact"
           eyebrow="Focus"
-          title="The work I’m most drawn to usually creates leverage somewhere."
+          title="The work I’m most drawn to usually makes something simpler, clearer, or easier to use."
           summary="That can mean product features, platform work, developer tooling, or just making a system easier for the next person to work in."
         >
           <div className="impact-grid">
