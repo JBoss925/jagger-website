@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { JigsawIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
+import { formatGameDateLabel } from "./dateLabel";
 import {
   getJigsawPuzzleById,
   getTodaysJigsawPuzzle,
@@ -80,14 +81,6 @@ function readSavedArchive() {
   } catch {
     return {};
   }
-}
-
-function formatDateLabel(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(date);
 }
 
 function JigsawPage() {
@@ -172,7 +165,7 @@ function JigsawPage() {
       return {
         puzzleId,
         label: `Puzzle #${puzzleId + 1}`,
-        dateLabel: formatDateLabel(entryPuzzle.date),
+        dateLabel: formatGameDateLabel(entryPuzzle.date),
         title: entryPuzzle.title,
         solved: entryState.solved,
         moveCount: entryState.moveCount
@@ -233,7 +226,7 @@ function JigsawPage() {
                 </div>
               </div>
               <p>
-                {formatDateLabel(puzzle.date)}
+                {formatGameDateLabel(puzzle.date)}
                 <span className="jordle-board-card__meta-divider">·</span>
                 {solved ? "Solved." : `${puzzleState.moveCount} moves`}
               </p>

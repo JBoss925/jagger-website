@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import GamesNavigation from "./GamesNavigation";
 import { JolorIcon } from "./GameIcons";
+import { formatGameDateLabel } from "./dateLabel";
 import {
   clampRgbValue,
   getBestDistance,
@@ -138,15 +139,7 @@ function JolorPage() {
     return () => window.clearTimeout(timeoutId);
   }, [hintCountdown]);
 
-  const puzzleDateLabel = useMemo(
-    () =>
-      new Intl.DateTimeFormat(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }).format(puzzle.date),
-    [puzzle.date]
-  );
+  const puzzleDateLabel = useMemo(() => formatGameDateLabel(puzzle.date), [puzzle.date]);
 
   const guessResults = useMemo(
     () =>
@@ -232,11 +225,7 @@ function JolorPage() {
       entries.push({
         puzzleId: id,
         label: `Puzzle #${id + 1}`,
-        dateLabel: new Intl.DateTimeFormat(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        }).format(target.date),
+        dateLabel: formatGameDateLabel(target.date),
         solved: entrySolved,
         failed: entryFailed,
         guesses: archiveEntry.guesses.length,

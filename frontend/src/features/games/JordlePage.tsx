@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import { JordleIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
+import { formatGameDateLabel } from "./dateLabel";
 import {
   evaluateGuess,
   getJordlePuzzleById,
@@ -268,15 +269,7 @@ function JordlePage() {
   });
 
   const puzzleNumber = puzzleId + 1;
-  const puzzleDateLabel = useMemo(
-    () =>
-      new Intl.DateTimeFormat(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }).format(date),
-    [date]
-  );
+  const puzzleDateLabel = useMemo(() => formatGameDateLabel(date), [date]);
   const status = useMemo(() => {
     if (solved) {
       return `Solved in ${guesses.length} ${guesses.length === 1 ? "guess" : "guesses"}.`;
@@ -341,11 +334,7 @@ function JordlePage() {
       entries.push({
         puzzleId: id,
         label: `Puzzle #${id + 1}`,
-        dateLabel: new Intl.DateTimeFormat(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        }).format(puzzle.date),
+        dateLabel: formatGameDateLabel(puzzle.date),
         guesses: entryGuesses.length,
         solved: entrySolved,
         failed: entryFailed

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } fro
 import { JinxIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
+import { formatGameDateLabel } from "./dateLabel";
 import {
   createInitialJinxPuzzleState,
   getAdjacentMineCount,
@@ -71,14 +72,6 @@ function readSavedArchive() {
   } catch {
     return {};
   }
-}
-
-function formatDateLabel(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(date);
 }
 
 function cellEquals(first: JinxCell | null, second: JinxCell | null) {
@@ -236,7 +229,7 @@ function JinxPage() {
       return {
         puzzleId,
         label: `${difficultyLabel} Puzzle #${puzzleId + 1}`,
-        dateLabel: formatDateLabel(entryPuzzle.date),
+        dateLabel: formatGameDateLabel(entryPuzzle.date),
         solved: entrySolved,
         failed: entryFailed,
         moves: entryState.moveCount,
@@ -305,7 +298,7 @@ function JinxPage() {
                 </div>
               </div>
               <p>
-                {formatDateLabel(puzzle.date)}
+                {formatGameDateLabel(puzzle.date)}
                 <span className="jordle-board-card__meta-divider">·</span>
                 {status}
               </p>

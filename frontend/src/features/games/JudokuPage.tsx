@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { JudokuIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
+import { formatGameDateLabel } from "./dateLabel";
 import {
   getCellValue,
   getFilledCount,
@@ -66,14 +67,6 @@ function readSavedArchive() {
   } catch {
     return {};
   }
-}
-
-function formatDateLabel(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(date);
 }
 
 function cellKey(row: number, column: number) {
@@ -193,7 +186,7 @@ function JudokuPage() {
       return {
         puzzleId,
         label: `Puzzle #${puzzleId + 1}`,
-        dateLabel: formatDateLabel(entryPuzzle.date),
+        dateLabel: formatGameDateLabel(entryPuzzle.date),
         solved: entryState.solved,
         filled: getFilledCount(entryState)
       };
@@ -266,7 +259,7 @@ function JudokuPage() {
                 </div>
               </div>
               <p>
-                {formatDateLabel(puzzle.date)}
+                {formatGameDateLabel(puzzle.date)}
                 <span className="jordle-board-card__meta-divider">·</span>
                 {status}
               </p>
