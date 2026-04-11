@@ -10,10 +10,10 @@ describe("jordle helpers", () => {
     expect(first.answer).toBe(second.answer);
   });
 
-  it("accepts any six-letter alphabetical guess", () => {
+  it("requires guesses to be valid six-letter dictionary words", () => {
     expect(isValidJordleGuess("planet")).toBe(true);
     expect(isValidJordleGuess("abc")).toBe(false);
-    expect(isValidJordleGuess("zzzzzz")).toBe(true);
+    expect(isValidJordleGuess("zzzzzz")).toBe(false);
   });
 
   it("evaluates repeated letters correctly", () => {

@@ -13,9 +13,20 @@ class MockIntersectionObserver implements IntersectionObserver {
   unobserve(): void {}
 }
 
+class MockResizeObserver implements ResizeObserver {
+  disconnect(): void {}
+  observe(): void {}
+  unobserve(): void {}
+}
+
 Object.defineProperty(window, "IntersectionObserver", {
   writable: true,
   value: MockIntersectionObserver
+});
+
+Object.defineProperty(window, "ResizeObserver", {
+  writable: true,
+  value: MockResizeObserver
 });
 
 Object.defineProperty(window, "matchMedia", {
@@ -30,4 +41,9 @@ Object.defineProperty(window, "matchMedia", {
     removeEventListener: () => {},
     dispatchEvent: () => false
   })
+});
+
+Object.defineProperty(window, "scrollTo", {
+  writable: true,
+  value: () => {}
 });

@@ -28,10 +28,10 @@ describe("HomePage", () => {
   });
 
   it("uses an immediate scroll on initial hash loads", () => {
-    const scrollIntoView = vi.fn();
-    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    const scrollTo = vi.fn();
+    const originalScrollTo = window.scrollTo;
 
-    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    window.scrollTo = scrollTo;
 
     render(
       <MemoryRouter initialEntries={["/#projects"]}>
@@ -39,12 +39,12 @@ describe("HomePage", () => {
       </MemoryRouter>
     );
 
-    expect(scrollIntoView).toHaveBeenCalledWith({
+    expect(scrollTo).toHaveBeenCalledWith({
+      top: 0,
       behavior: "auto",
-      block: "start"
     });
 
-    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+    window.scrollTo = originalScrollTo;
   });
 
   it("does not trigger an extra programmatic jump on an initial hero hash load", () => {
