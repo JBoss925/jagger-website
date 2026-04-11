@@ -1,9 +1,9 @@
 [submodule "jaggerscript"]
 	path = jaggerscript
 	url = https://github.com/JBoss925/JaggerScript
-[submodule "genetic_ts"]
-	path = genetic_ts
-	url = https://github.com/JBoss925/GeneticTS
 [submodule "rengine"]
 	path = rengine
 	url = https://github.com/JBoss925/Rengine
+[submodule "genetic_ts"]
+	path = genetic_ts
+	url = https://github.com/JBoss925/GeneticTS
