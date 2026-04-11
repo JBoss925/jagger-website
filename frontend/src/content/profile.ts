@@ -286,7 +286,10 @@ export const profileContent: ProfileContent = {
       stack: ["TypeScript", "Canvas rendering", "Game loops", "Entity systems"],
       image: renginePreview,
       icon: "rengine",
-      links: [{ label: "Source", href: "https://github.com/JBoss925/Rengine" }]
+      links: [
+        { label: "Open Demo", href: "/rengine" },
+        { label: "Source", href: "https://github.com/JBoss925/Rengine" }
+      ]
     },
     {
       slug: "new-react-typing-effect",

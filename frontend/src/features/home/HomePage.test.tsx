@@ -20,6 +20,11 @@ describe("HomePage", () => {
       screen.getByRole("heading", { name: /^JaggerScript$/i })
     ).toBeInTheDocument();
     expect(
+      screen
+        .getAllByRole("link", { name: /Open Demo/i })
+        .some((link) => link.getAttribute("href") === "/rengine")
+    ).toBe(true);
+    expect(
       screen.getAllByRole("link", { name: /Resume/i })[0]
     ).toHaveAttribute("href", "/files/resume.pdf");
     expect(

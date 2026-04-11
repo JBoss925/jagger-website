@@ -1,0 +1,7 @@
+{
+  "name": "jagger-website",
+  "private": true,
+  "scripts": {
+    "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && (cd frontend && npm install && npm run build)"
+  }
+}
