@@ -26,55 +26,152 @@ function formatRotation(rotation: number) {
   return `${rotation.toFixed(2)} rad`;
 }
 
-function RuntimeTreeNodeView({ node }: { node: RuntimeTreeNode }) {
+function RuntimeTreeNodeView({
+  node,
+  nodeSpace,
+  localSpaceNodeIds,
+  collapsedNodeIds,
+  onToggleNode,
+  onToggleNodeSpace
+}: {
+  node: RuntimeTreeNode;
+  nodeSpace: "local" | "world";
+  localSpaceNodeIds: Set<string>;
+  collapsedNodeIds: Set<string>;
+  onToggleNode: (nodeId: string) => void;
+  onToggleNodeSpace: (nodeId: string) => void;
+}) {
+  const isCollapsible = node.children.length > 0;
+  const isCollapsed = collapsedNodeIds.has(node.id);
+  const transform = nodeSpace === "local" ? node.local : node.world;
+
   return (
     <li className="rengine-tree__item">
       <div className="rengine-tree__node">
         <div className="rengine-tree__node-header">
-          <div>
-            <strong>{node.label}</strong>
-            <span>{node.kind === "folder" ? "Folder" : "Box"}</span>
+          <div className="rengine-tree__node-title">
+            <div className="rengine-tree__node-heading">
+              <strong>{node.label}</strong>
+              {isCollapsible ? (
+                <button
+                  type="button"
+                  className={isCollapsed ? "rengine-tree__toggle is-collapsed" : "rengine-tree__toggle"}
+                  onClick={() => onToggleNode(node.id)}
+                  aria-expanded={!isCollapsed}
+                  aria-label={isCollapsed ? `Expand ${node.label}` : `Collapse ${node.label}`}
+                >
+                  <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                    <path
+                      d="M5.5 3.5 10 8l-4.5 4.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              ) : null}
+            </div>
+            <div className="rengine-tree__node-kind">
+              <span>{node.kind === "folder" ? "Folder" : "Box"}</span>
+            </div>
           </div>
-          <span className="rengine-tree__node-id">{node.id}</span>
+          <div className="rengine-tree__node-meta">
+            {isCollapsible ? (
+              <span className="rengine-tree__node-children">
+                {node.children.length} child{node.children.length === 1 ? "" : "ren"}
+              </span>
+            ) : null}
+            <span className="rengine-tree__node-id">{node.id}</span>
+          </div>
         </div>
 
-        {node.componentLabels.length > 0 ? (
-          <div className="chip-row rengine-tree__chips">
-            {node.componentLabels.map((label) => (
-              <span key={label} className="chip chip--muted">
-                {label}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="rengine-tree__summary">
+          {node.componentLabels.length > 0 ? (
+            <div className="chip-row rengine-tree__chips">
+              {node.componentLabels.map((label) => (
+                <span key={label} className="chip chip--muted">
+                  {label}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span className="rengine-tree__summary-empty">No runtime components</span>
+          )}
 
-        <div className="rengine-tree__metrics">
-          <section className="rengine-tree__metric-group">
-            <span className="rengine-tree__metric-label">Local</span>
-            <span>position {formatVector(node.local.position)}</span>
-            <span>anchor {formatVector(node.local.anchor)}</span>
-            <span>rotation {formatRotation(node.local.rotation)}</span>
-            <span>scale {formatVector(node.local.scale)}</span>
-          </section>
-          <section className="rengine-tree__metric-group">
-            <span className="rengine-tree__metric-label">World</span>
-            <span>position {formatVector(node.world.position)}</span>
-            <span>anchor {formatVector(node.world.anchor)}</span>
-            <span>rotation {formatRotation(node.world.rotation)}</span>
-            <span>scale {formatVector(node.world.scale)}</span>
-          </section>
+          {node.color ? (
+            <span
+              className="rengine-tree__color"
+              style={{ ["--tree-node-color" as string]: node.color }}
+            >
+              color
+            </span>
+          ) : null}
+        </div>
+
+        <div className="rengine-tree__metrics" aria-label={`${nodeSpace} transform values`}>
+          <button
+            type="button"
+            className="rengine-tree__space-toggle"
+            onClick={() => onToggleNodeSpace(node.id)}
+            aria-pressed={nodeSpace === "world"}
+            aria-label={`Switch ${node.label} to ${nodeSpace === "world" ? "local" : "world"} space`}
+          >
+            {nodeSpace === "world" ? "World" : "Local"}
+          </button>
+          <div className="rengine-tree__metric-strip">
+            <span className="rengine-tree__metric-pill rengine-tree__metric-pill--position">
+              <span>pos</span>
+              <strong>{formatVector(transform.position)}</strong>
+            </span>
+            <span className="rengine-tree__metric-pill rengine-tree__metric-pill--anchor">
+              <span>anchor</span>
+              <strong>{formatVector(transform.anchor)}</strong>
+            </span>
+            <span className="rengine-tree__metric-pill rengine-tree__metric-pill--rotation">
+              <span>rot</span>
+              <strong>{formatRotation(transform.rotation)}</strong>
+            </span>
+            <span className="rengine-tree__metric-pill rengine-tree__metric-pill--scale">
+              <span>scale</span>
+              <strong>{formatVector(transform.scale)}</strong>
+            </span>
+          </div>
         </div>
       </div>
 
-      {node.children.length > 0 ? (
+      {isCollapsible && !isCollapsed ? (
         <ul className="rengine-tree__branch">
           {node.children.map((child) => (
-            <RuntimeTreeNodeView key={child.id} node={child} />
+            <RuntimeTreeNodeView
+              key={child.id}
+              node={child}
+              nodeSpace={localSpaceNodeIds.has(child.id) ? "local" : "world"}
+              localSpaceNodeIds={localSpaceNodeIds}
+              collapsedNodeIds={collapsedNodeIds}
+              onToggleNode={onToggleNode}
+              onToggleNodeSpace={onToggleNodeSpace}
+            />
           ))}
         </ul>
       ) : null}
     </li>
   );
+}
+
+function collectCollapsibleNodeIds(node: RuntimeTreeNode): string[] {
+  return [
+    ...(node.children.length > 0 ? [node.id] : []),
+    ...node.children.flatMap((child) => collectCollapsibleNodeIds(child))
+  ];
+}
+
+function collectNodeIds(node: RuntimeTreeNode): string[] {
+  return [
+    node.id,
+    ...node.children.flatMap((child) => collectNodeIds(child))
+  ];
 }
 
 function RenginePage() {
@@ -93,6 +190,8 @@ function RenginePage() {
   const [treeSnapshot, setTreeSnapshot] = useState<RuntimeTreeNode>(() =>
     getRuntimeTreeSnapshot(sceneRef.current)
   );
+  const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(() => new Set());
+  const [localSpaceNodeIds, setLocalSpaceNodeIds] = useState<Set<string>>(() => new Set());
 
   const selectedDemo = useMemo(
     () => rengineDemos.find((demo) => demo.id === selectedDemoId) ?? rengineDemos[0],
@@ -115,7 +214,67 @@ function RenginePage() {
     previousTimestampRef.current = null;
     lastTreeSyncRef.current = 0;
     setTreeSnapshot(getRuntimeTreeSnapshot(sceneRef.current));
+    setCollapsedNodeIds(new Set());
+    setLocalSpaceNodeIds(new Set());
   }, [selectedDemoId]);
+
+  useEffect(() => {
+    setCollapsedNodeIds((current) => {
+      const validIds = new Set(collectCollapsibleNodeIds(treeSnapshot));
+      const next = new Set<string>();
+
+      current.forEach((nodeId) => {
+        if (validIds.has(nodeId)) {
+          next.add(nodeId);
+        }
+      });
+
+      return next;
+    });
+  }, [treeSnapshot]);
+
+  const toggleNode = (nodeId: string) => {
+    setCollapsedNodeIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    setLocalSpaceNodeIds((current) => {
+      const validIds = new Set(collectNodeIds(treeSnapshot));
+      const next = new Set<string>();
+
+      current.forEach((nodeId) => {
+        if (validIds.has(nodeId)) {
+          next.add(nodeId);
+        }
+      });
+
+      return next;
+    });
+  }, [treeSnapshot]);
+
+  const toggleNodeSpace = (nodeId: string) => {
+    setLocalSpaceNodeIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+
+      return next;
+    });
+  };
 
   const scrollSelectedDemoIntoView = (behavior: ScrollBehavior) => {
     const rail = exampleRailRef.current;
@@ -397,12 +556,21 @@ function RenginePage() {
             <header className="ide-panel__header">
               <div>
                 <h3>Live Component Tree</h3>
-                <span>Local and world transforms update live so you can trace how parents affect children.</span>
+                <span>
+                  Swap individual nodes between local and world space to compare inherited transforms in context.
+                </span>
               </div>
             </header>
             <div className="rengine-tree-shell">
               <ul className="rengine-tree" role="tree" aria-label="Live component tree">
-                <RuntimeTreeNodeView node={treeSnapshot} />
+                <RuntimeTreeNodeView
+                  node={treeSnapshot}
+                  nodeSpace={localSpaceNodeIds.has(treeSnapshot.id) ? "local" : "world"}
+                  localSpaceNodeIds={localSpaceNodeIds}
+                  collapsedNodeIds={collapsedNodeIds}
+                  onToggleNode={toggleNode}
+                  onToggleNodeSpace={toggleNodeSpace}
+                />
               </ul>
             </div>
           </article>

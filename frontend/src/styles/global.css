@@ -3956,6 +3956,7 @@ button:hover {
 
 .rengine-legend__swatch--relationship {
   background: #141414;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.92);
 }
 
 .rengine-tree-panel {
@@ -3972,7 +3973,7 @@ button:hover {
 .rengine-tree {
   list-style: none;
   margin: 0;
-  padding: 20px;
+  padding: 14px;
   border-radius: 18px;
   border: 1px solid rgba(87, 208, 255, 0.14);
   background: rgba(5, 12, 21, 0.92);
@@ -3980,8 +3981,8 @@ button:hover {
 
 .rengine-tree__branch {
   list-style: none;
-  margin: 12px 0 0 14px;
-  padding: 0 0 0 18px;
+  margin: 8px 0 0 10px;
+  padding: 0 0 0 12px;
   border-left: 1px solid rgba(87, 208, 255, 0.14);
 }
 
@@ -3992,13 +3993,13 @@ button:hover {
 }
 
 .rengine-tree__item + .rengine-tree__item {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .rengine-tree__node {
   display: grid;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 7px;
+  padding: 10px 12px;
   border-radius: 16px;
   border: 1px solid rgba(126, 173, 228, 0.12);
   background: rgba(255, 255, 255, 0.03);
@@ -4006,9 +4007,63 @@ button:hover {
 
 .rengine-tree__node-header {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
+}
+
+.rengine-tree__node-title,
+.rengine-tree__node-meta {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.rengine-tree__node-title {
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rengine-tree__node-heading {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.rengine-tree__node-kind {
+  display: flex;
+  min-width: 0;
+}
+
+.rengine-tree__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.rengine-tree__toggle:hover {
+  border-color: rgba(87, 208, 255, 0.32);
+  background: rgba(87, 208, 255, 0.08);
+}
+
+.rengine-tree__toggle.is-collapsed svg {
+  transform: rotate(-90deg);
+}
+
+.rengine-tree__toggle svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 160ms ease;
 }
 
 .rengine-tree__node-header strong,
@@ -4018,43 +4073,163 @@ button:hover {
 
 .rengine-tree__node-header > div {
   display: grid;
-  gap: 4px;
+  gap: 1px;
+  min-width: 0;
 }
 
 .rengine-tree__node-header > div > span,
-.rengine-tree__node-id {
+.rengine-tree__node-id,
+.rengine-tree__node-children {
   color: var(--text-dim);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .rengine-tree__node-id {
   font-family: "IBM Plex Mono", monospace;
 }
 
-.rengine-tree__chips {
+.rengine-tree__summary {
+  display: flex;
   gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rengine-tree__chips {
+  gap: 6px;
+}
+
+.rengine-tree__chips .chip {
+  padding: 7px 10px;
+  font-size: 0.82rem;
+}
+
+.rengine-tree__summary-empty {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+}
+
+.rengine-tree__color {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  text-transform: lowercase;
+}
+
+.rengine-tree__color::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--tree-node-color);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .rengine-tree__metrics {
-  display: grid;
+  display: flex;
   gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.rengine-tree__metric-group {
-  display: grid;
-  gap: 5px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-dim);
-  font: 0.88rem/1.45 "IBM Plex Mono", monospace;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .rengine-tree__metric-label {
-  margin-bottom: 2px;
   color: var(--accent-3);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.rengine-tree__metric-strip {
+  display: flex;
+  gap: 8px;
+  flex: 1 1 420px;
+  flex-wrap: wrap;
+}
+
+.rengine-tree__space-toggle,
+.rengine-tree__metric-pill {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 9px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-dim);
+  font: 0.82rem/1.35 "IBM Plex Mono", monospace;
+}
+
+.rengine-tree__space-toggle {
+  align-items: center;
+  border: 1px solid rgba(126, 173, 228, 0.18);
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.rengine-tree__space-toggle:hover {
+  border-color: rgba(87, 208, 255, 0.28);
+  background: rgba(87, 208, 255, 0.08);
+}
+
+.rengine-tree__metric-pill strong {
+  font-weight: 500;
+  color: #d9e8ff;
+}
+
+.rengine-tree__metric-pill--position {
+  color: #7db3ff;
+}
+
+.rengine-tree__metric-pill--anchor {
+  color: #ff8090;
+}
+
+.rengine-tree__metric-pill--rotation {
+  color: #d9dce4;
+}
+
+.rengine-tree__metric-pill--scale {
+  color: #ffb34d;
+}
+
+.rengine-tree__metric-pill--position::before,
+.rengine-tree__metric-pill--anchor::before,
+.rengine-tree__metric-pill--rotation::before,
+.rengine-tree__metric-pill--scale::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  align-self: center;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.rengine-tree__metric-pill--position::before {
+  background: #3f9dff;
+}
+
+.rengine-tree__metric-pill--anchor::before {
+  background: #ff5b6f;
+}
+
+.rengine-tree__metric-pill--rotation::before {
+  background: #141414;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.92);
+}
+
+.rengine-tree__metric-pill--scale::before {
+  background: #f6a53c;
+}
+
+@media (max-width: 760px) {
+  .rengine-tree__node-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rengine-tree__node-meta {
+    align-items: center;
+  }
 }
