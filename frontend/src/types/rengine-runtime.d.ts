@@ -38,6 +38,14 @@ declare module "@rengine/runtime/demoRuntime" {
     };
   };
 
+  export type RuntimeSetupOptions = {
+    wireframeColors?: Partial<{
+      anchor: string;
+      position: string;
+      relationship: string;
+    }>;
+  };
+
   export type RuntimeDemoDefinition = {
     id: string;
     title: string;
@@ -50,7 +58,8 @@ declare module "@rengine/runtime/demoRuntime" {
   export function createRuntimeScene(
     demoId: string,
     canvas?: HTMLCanvasElement,
-    viewport?: Dimensions
+    viewport?: Dimensions,
+    options?: RuntimeSetupOptions
   ): RuntimeScene;
 
   export function getRuntimeTreeSnapshot(runtime: RuntimeScene): RuntimeTreeNode;
