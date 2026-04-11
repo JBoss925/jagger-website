@@ -16,7 +16,7 @@ import {
   rengineDemos,
   type RuntimeTreeNode,
   type Vector2
-} from "./rengineRuntime";
+} from "@rengine/runtime/demoRuntime";
 
 function formatVector(vector: Vector2) {
   return `(${vector.x.toFixed(1)}, ${vector.y.toFixed(1)})`;

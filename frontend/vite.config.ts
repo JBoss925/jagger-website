@@ -25,7 +25,8 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
     alias: [
       { find: /^util$/, replacement: utilShim },
-      { find: "@", replacement: path.resolve(frontendRoot, "src") }
+      { find: "@", replacement: path.resolve(frontendRoot, "src") },
+      { find: "@rengine", replacement: path.resolve(workspaceRoot, "rengine/src") }
     ]
   },
   define: {
