@@ -3835,6 +3835,11 @@ button:hover {
 
 .rengine-workspace__body {
   grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.7fr);
+  align-items: start;
+}
+
+.rengine-workspace__body > .ide-panel {
+  height: auto;
 }
 
 .rengine-panel__actions {
@@ -3869,6 +3874,7 @@ button:hover {
   grid-template-rows: auto auto;
   align-content: start;
   height: auto;
+  min-height: 0;
 }
 
 .rengine-detail-shell {
@@ -3950,4 +3956,105 @@ button:hover {
 
 .rengine-legend__swatch--relationship {
   background: #141414;
+}
+
+.rengine-tree-panel {
+  margin-top: 12px;
+  grid-template-rows: auto auto;
+  align-content: start;
+  height: auto;
+}
+
+.rengine-tree-shell {
+  padding: 8px;
+}
+
+.rengine-tree {
+  list-style: none;
+  margin: 0;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(87, 208, 255, 0.14);
+  background: rgba(5, 12, 21, 0.92);
+}
+
+.rengine-tree__branch {
+  list-style: none;
+  margin: 12px 0 0 14px;
+  padding: 0 0 0 18px;
+  border-left: 1px solid rgba(87, 208, 255, 0.14);
+}
+
+.rengine-tree__item {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.rengine-tree__item + .rengine-tree__item {
+  margin-top: 12px;
+}
+
+.rengine-tree__node {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(126, 173, 228, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rengine-tree__node-header {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.rengine-tree__node-header strong,
+.rengine-tree__metric-label {
+  display: block;
+}
+
+.rengine-tree__node-header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.rengine-tree__node-header > div > span,
+.rengine-tree__node-id {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.rengine-tree__node-id {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.rengine-tree__chips {
+  gap: 8px;
+}
+
+.rengine-tree__metrics {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rengine-tree__metric-group {
+  display: grid;
+  gap: 5px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-dim);
+  font: 0.88rem/1.45 "IBM Plex Mono", monospace;
+}
+
+.rengine-tree__metric-label {
+  margin-bottom: 2px;
+  color: var(--accent-3);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }

@@ -11,9 +11,71 @@ import { usePageReveal } from "../../hooks/usePageReveal";
 import {
   advanceRuntimeScene,
   createRuntimeScene,
+  getRuntimeTreeSnapshot,
   renderRuntimeScene,
-  rengineDemos
+  rengineDemos,
+  type RuntimeTreeNode,
+  type Vector2
 } from "./rengineRuntime";
+
+function formatVector(vector: Vector2) {
+  return `(${vector.x.toFixed(1)}, ${vector.y.toFixed(1)})`;
+}
+
+function formatRotation(rotation: number) {
+  return `${rotation.toFixed(2)} rad`;
+}
+
+function RuntimeTreeNodeView({ node }: { node: RuntimeTreeNode }) {
+  return (
+    <li className="rengine-tree__item">
+      <div className="rengine-tree__node">
+        <div className="rengine-tree__node-header">
+          <div>
+            <strong>{node.label}</strong>
+            <span>{node.kind === "folder" ? "Folder" : "Box"}</span>
+          </div>
+          <span className="rengine-tree__node-id">{node.id}</span>
+        </div>
+
+        {node.componentLabels.length > 0 ? (
+          <div className="chip-row rengine-tree__chips">
+            {node.componentLabels.map((label) => (
+              <span key={label} className="chip chip--muted">
+                {label}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="rengine-tree__metrics">
+          <section className="rengine-tree__metric-group">
+            <span className="rengine-tree__metric-label">Local</span>
+            <span>position {formatVector(node.local.position)}</span>
+            <span>anchor {formatVector(node.local.anchor)}</span>
+            <span>rotation {formatRotation(node.local.rotation)}</span>
+            <span>scale {formatVector(node.local.scale)}</span>
+          </section>
+          <section className="rengine-tree__metric-group">
+            <span className="rengine-tree__metric-label">World</span>
+            <span>position {formatVector(node.world.position)}</span>
+            <span>anchor {formatVector(node.world.anchor)}</span>
+            <span>rotation {formatRotation(node.world.rotation)}</span>
+            <span>scale {formatVector(node.world.scale)}</span>
+          </section>
+        </div>
+      </div>
+
+      {node.children.length > 0 ? (
+        <ul className="rengine-tree__branch">
+          {node.children.map((child) => (
+            <RuntimeTreeNodeView key={child.id} node={child} />
+          ))}
+        </ul>
+      ) : null}
+    </li>
+  );
+}
 
 function RenginePage() {
   const isPageReady = usePageReveal();
@@ -22,11 +84,15 @@ function RenginePage() {
   const animationFrameRef = useRef<number | null>(null);
   const previousTimestampRef = useRef<number | null>(null);
   const sceneRef = useRef(createRuntimeScene(rengineDemos[0].id));
+  const lastTreeSyncRef = useRef(0);
   const exampleRailRef = useRef<HTMLDivElement | null>(null);
   const hasInitializedExampleRail = useRef(false);
   const [selectedDemoId, setSelectedDemoId] = useState(rengineDemos[0].id);
   const [showWireframes, setShowWireframes] = useState(true);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const [treeSnapshot, setTreeSnapshot] = useState<RuntimeTreeNode>(() =>
+    getRuntimeTreeSnapshot(sceneRef.current)
+  );
 
   const selectedDemo = useMemo(
     () => rengineDemos.find((demo) => demo.id === selectedDemoId) ?? rengineDemos[0],
@@ -47,6 +113,8 @@ function RenginePage() {
   useEffect(() => {
     sceneRef.current = createRuntimeScene(selectedDemoId);
     previousTimestampRef.current = null;
+    lastTreeSyncRef.current = 0;
+    setTreeSnapshot(getRuntimeTreeSnapshot(sceneRef.current));
   }, [selectedDemoId]);
 
   const scrollSelectedDemoIntoView = (behavior: ScrollBehavior) => {
@@ -163,6 +231,11 @@ function RenginePage() {
         showWireframes
       );
 
+      if (timestamp - lastTreeSyncRef.current >= 120) {
+        lastTreeSyncRef.current = timestamp;
+        setTreeSnapshot(getRuntimeTreeSnapshot(sceneRef.current));
+      }
+
       animationFrameRef.current = window.requestAnimationFrame(frame);
     };
 
@@ -256,7 +329,7 @@ function RenginePage() {
               <header className="ide-panel__header">
                 <div>
                   <h3>Canvas Demo</h3>
-                  <span>Interactive scene output with optional transform markers.</span>
+                  <span>Interactive scene.</span>
                 </div>
                 <div className="ide-panel__actions rengine-panel__actions">
                   <button
@@ -319,6 +392,20 @@ function RenginePage() {
               </div>
             </article>
           </div>
+
+          <article className="ide-panel rengine-tree-panel">
+            <header className="ide-panel__header">
+              <div>
+                <h3>Live Component Tree</h3>
+                <span>Local and world transforms update live so you can trace how parents affect children.</span>
+              </div>
+            </header>
+            <div className="rengine-tree-shell">
+              <ul className="rengine-tree" role="tree" aria-label="Live component tree">
+                <RuntimeTreeNodeView node={treeSnapshot} />
+              </ul>
+            </div>
+          </article>
         </section>
       </main>
     </div>

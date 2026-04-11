@@ -52,6 +52,8 @@ describe("RenginePage", () => {
     expect(screen.getByRole("heading", { name: /Rengine/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Wireframes: On/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Purple Cube 1 canvas/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Live Component Tree/i })).toBeInTheDocument();
+    expect(screen.getByText(/Root/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Previous demo/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Next demo/i })).toBeEnabled();
   });

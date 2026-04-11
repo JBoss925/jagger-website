@@ -1,14 +1,14 @@
-type Vector2 = {
+export type Vector2 = {
   x: number;
   y: number;
 };
 
-type Dimensions = {
+export type Dimensions = {
   width: number;
   height: number;
 };
 
-type TransformProps = {
+export type TransformProps = {
   position: Vector2;
   anchor: Vector2;
   rotation: number;
@@ -16,23 +16,29 @@ type TransformProps = {
   size: Dimensions;
 };
 
-type BoxNode = {
-  kind: "box";
-  color: string;
+type RuntimeComponent = {
+  label: string;
+  update: (deltaMs: number, node: RuntimeNode, scene: RuntimeScene) => void;
+};
+
+type RuntimeNodeBase = {
+  id: string;
+  label: string;
   properties: TransformProps;
   components: RuntimeComponent[];
 };
 
-type FolderNode = {
+type BoxNode = RuntimeNodeBase & {
+  kind: "box";
+  color: string;
+};
+
+type FolderNode = RuntimeNodeBase & {
   kind: "folder";
-  properties: TransformProps;
-  components: RuntimeComponent[];
   children: RuntimeNode[];
 };
 
 type RuntimeNode = BoxNode | FolderNode;
-
-type RuntimeComponent = (deltaMs: number, node: RuntimeNode, scene: RuntimeScene) => void;
 
 type RuntimeDemoDefinition = {
   id: string;
@@ -43,7 +49,7 @@ type RuntimeDemoDefinition = {
   tick?: (deltaMs: number, scene: RuntimeScene) => void;
 };
 
-type RuntimeScene = {
+export type RuntimeScene = {
   root: FolderNode;
   elapsedMs: number;
   framesSinceStartup: number;
@@ -52,8 +58,48 @@ type RuntimeScene = {
   };
 };
 
+export type RuntimeTreeNode = {
+  id: string;
+  label: string;
+  kind: RuntimeNode["kind"];
+  color?: string;
+  componentLabels: string[];
+  local: TransformProps;
+  world: TransformProps;
+  children: RuntimeTreeNode[];
+};
+
 const MAGENTA = "rgba(255, 0, 255, 1)";
 const BLUE = "rgba(0, 0, 255, 1)";
+
+let nodeIdCounter = 0;
+
+function resetRuntimeCounters() {
+  nodeIdCounter = 0;
+}
+
+function nextNodeId(prefix: string) {
+  nodeIdCounter += 1;
+  return `${prefix}-${nodeIdCounter}`;
+}
+
+function cloneVector(vector: Vector2): Vector2 {
+  return { x: vector.x, y: vector.y };
+}
+
+function cloneDimensions(dimensions: Dimensions): Dimensions {
+  return { width: dimensions.width, height: dimensions.height };
+}
+
+function cloneTransform(properties: TransformProps): TransformProps {
+  return {
+    position: cloneVector(properties.position),
+    anchor: cloneVector(properties.anchor),
+    rotation: properties.rotation,
+    scale: cloneVector(properties.scale),
+    size: cloneDimensions(properties.size)
+  };
+}
 
 function rotatePositionAboutPoint(rotation: number, about: Vector2, position: Vector2): Vector2 {
   const cos = Math.cos(rotation);
@@ -75,13 +121,23 @@ function multiply(v1: Vector2, v2: Vector2): Vector2 {
   return { x: v1.x * v2.x, y: v1.y * v2.y };
 }
 
+function createComponent(
+  label: string,
+  update: RuntimeComponent["update"]
+): RuntimeComponent {
+  return { label, update };
+}
+
 function createBox(
   properties: Partial<TransformProps>,
   components: RuntimeComponent[],
-  color = MAGENTA
+  color = MAGENTA,
+  label = "Box"
 ): BoxNode {
   return {
+    id: nextNodeId("box"),
     kind: "box",
+    label,
     color,
     components,
     properties: {
@@ -98,10 +154,13 @@ function createBox(
 function createFolder(
   children: RuntimeNode[],
   properties: Partial<TransformProps> = {},
-  components: RuntimeComponent[] = []
+  components: RuntimeComponent[] = [],
+  label = "Folder"
 ): FolderNode {
   return {
+    id: nextNodeId("folder"),
     kind: "folder",
+    label,
     children,
     components,
     properties: {
@@ -116,27 +175,36 @@ function createFolder(
 }
 
 function createRoot(children: RuntimeNode[]): FolderNode {
-  return createFolder(children, {
-    position: { x: 0, y: 0 },
-    anchor: { x: 0, y: 0 },
-    rotation: 0,
-    scale: { x: 1, y: 1 }
-  });
+  return createFolder(
+    children,
+    {
+      position: { x: 0, y: 0 },
+      anchor: { x: 0, y: 0 },
+      rotation: 0,
+      scale: { x: 1, y: 1 }
+    },
+    [],
+    "Root"
+  );
 }
 
 function rotationComponent(direction: 1 | -1, turnsPerSecond: number): RuntimeComponent {
-  return (deltaMs, node) => {
+  const label = `rotate ${direction > 0 ? "+" : "-"}${turnsPerSecond.toFixed(1)}pi/s`;
+
+  return createComponent(label, (deltaMs, node) => {
     node.properties.rotation += direction * turnsPerSecond * (deltaMs / 1000) * Math.PI;
-  };
+  });
 }
 
 function velocityComponent(xPerSecond: number, yPerSecond: number): RuntimeComponent {
-  return (deltaMs, node) => {
+  const label = `velocity (${xPerSecond}, ${yPerSecond})`;
+
+  return createComponent(label, (deltaMs, node) => {
     node.properties.position = {
       x: node.properties.position.x + (xPerSecond * deltaMs) / 1000,
       y: node.properties.position.y + (yPerSecond * deltaMs) / 1000
     };
-  };
+  });
 }
 
 function createPurpleCube1Scene(): RuntimeScene {
@@ -145,11 +213,13 @@ function createPurpleCube1Scene(): RuntimeScene {
       position: { x: 50, y: 50 },
       anchor: { x: 0, y: 0 }
     },
-    [rotationComponent(1, 0.4)]
+    [rotationComponent(1, 0.4)],
+    MAGENTA,
+    "Cube"
   );
-  const folder = createFolder([box], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)]);
-  const folder2 = createFolder([folder], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)]);
-  const folder3 = createFolder([folder2], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)]);
+  const folder = createFolder([box], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)], "Inner Pivot");
+  const folder2 = createFolder([folder], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)], "Middle Pivot");
+  const folder3 = createFolder([folder2], { position: { x: 100, y: 100 } }, [rotationComponent(1, 0.4)], "Outer Pivot");
 
   return {
     root: createRoot([folder3]),
@@ -165,13 +235,16 @@ function createPurpleCube2Scene(): RuntimeScene {
       position: { x: 50, y: 50 },
       anchor: { x: 0, y: 0 }
     },
-    [rotationComponent(-1, 1), velocityComponent(10, 10)]
+    [rotationComponent(-1, 1), velocityComponent(10, 10)],
+    MAGENTA,
+    "Counter-Rotating Cube"
   );
-  const folder = createFolder([box], { position: { x: 100, y: 100 } });
+  const folder = createFolder([box], { position: { x: 100, y: 100 } }, [], "Parent Pivot");
   const folder2 = createFolder(
     [folder],
     { position: { x: 100, y: 100 } },
-    [rotationComponent(1, 1), velocityComponent(-25, -25)]
+    [rotationComponent(1, 1), velocityComponent(-25, -25)],
+    "Moving Pivot"
   );
 
   return {
@@ -188,17 +261,21 @@ function createPurpleCube3Scene(): RuntimeScene {
       position: { x: 50, y: 50 },
       anchor: { x: 0, y: 0 }
     },
-    [rotationComponent(-1, 3)]
+    [rotationComponent(-1, 3)],
+    MAGENTA,
+    "Fast Cube"
   );
   const folder = createFolder(
     [box],
     { position: { x: 100, y: 100 } },
-    [rotationComponent(1, 1), velocityComponent(-25, -25)]
+    [rotationComponent(1, 1), velocityComponent(-25, -25)],
+    "Inner Moving Pivot"
   );
   const folder2 = createFolder(
     [folder],
     { position: { x: 100, y: 100 } },
-    [rotationComponent(1, 1), velocityComponent(-25, -25)]
+    [rotationComponent(1, 1), velocityComponent(-25, -25)],
+    "Outer Moving Pivot"
   );
 
   return {
@@ -216,7 +293,9 @@ function createMultiCubeInLineScene(amount = 20): RuntimeScene {
         position: { x: index * 25, y: index * 25 },
         anchor: { x: 0, y: 0 }
       },
-      [rotationComponent(1, 0.3)]
+      [rotationComponent(1, 0.3)],
+      MAGENTA,
+      `Cube ${index + 1}`
     )
   );
 
@@ -235,7 +314,9 @@ function createMultiCubeInPlaceScene(amount = 20): RuntimeScene {
         position: { x: index * 25, y: index * 25 },
         anchor: { x: index * 25, y: index * 25 }
       },
-      [rotationComponent(1, 1)]
+      [rotationComponent(1, 1)],
+      MAGENTA,
+      `Local Pivot Cube ${index + 1}`
     )
   );
 
@@ -255,7 +336,9 @@ function createTimeDifScene(): RuntimeScene {
           position: { x: 100, y: 100 },
           anchor: { x: 0, y: 0 }
         },
-        [rotationComponent(1, 1)]
+        [rotationComponent(1, 1)],
+        MAGENTA,
+        "Primary Box"
       )
     ]),
     elapsedMs: 0,
@@ -272,7 +355,8 @@ function addSecondBox(scene: RuntimeScene) {
         anchor: { x: 0, y: 0 }
       },
       [rotationComponent(1, 1)],
-      BLUE
+      BLUE,
+      "Late Box"
     )
   );
 }
@@ -329,66 +413,48 @@ export const rengineDemos: RuntimeDemoDefinition[] = [
 ];
 
 function tickNode(node: RuntimeNode, deltaMs: number, scene: RuntimeScene) {
-  node.components.forEach((component) => component(deltaMs, node, scene));
+  node.components.forEach((component) => component.update(deltaMs, node, scene));
 
   if (node.kind === "folder") {
     node.children.forEach((child) => tickNode(child, deltaMs, scene));
   }
 }
 
-type DerivedNode = {
-  kind: RuntimeNode["kind"];
-  color?: string;
-  properties: TransformProps;
-  children?: DerivedNode[];
-};
-
-function deriveNode(node: RuntimeNode, parent?: DerivedNode): DerivedNode {
+function deriveWorldTransform(node: RuntimeNode, parent?: TransformProps): TransformProps {
   if (!parent) {
-    const base = {
-      kind: node.kind,
-      color: node.kind === "box" ? node.color : undefined,
-      properties: { ...node.properties }
-    };
-
-    if (node.kind === "folder") {
-      return {
-        ...base,
-        children: node.children.map((child) => deriveNode(child, base))
-      };
-    }
-
-    return base;
+    return cloneTransform(node.properties);
   }
 
   const offset = rotatePositionAboutPoint(
-    -parent.properties.rotation,
-    parent.properties.anchor,
-    parent.properties.position
+    -parent.rotation,
+    parent.anchor,
+    parent.position
   );
 
-  const nextProperties: TransformProps = {
+  return {
     position: add(node.properties.position, offset),
     anchor: add(node.properties.anchor, offset),
-    rotation: node.properties.rotation + parent.properties.rotation,
-    scale: multiply(node.properties.scale, parent.properties.scale),
-    size: { ...node.properties.size }
+    rotation: node.properties.rotation + parent.rotation,
+    scale: multiply(node.properties.scale, parent.scale),
+    size: cloneDimensions(node.properties.size)
   };
+}
 
-  const derivedBase = {
+function createTreeSnapshot(node: RuntimeNode, parentWorld?: TransformProps): RuntimeTreeNode {
+  const world = deriveWorldTransform(node, parentWorld);
+
+  return {
+    id: node.id,
+    label: node.label,
     kind: node.kind,
     color: node.kind === "box" ? node.color : undefined,
-    properties: nextProperties
+    componentLabels: node.components.map((component) => component.label),
+    local: cloneTransform(node.properties),
+    world,
+    children: node.kind === "folder"
+      ? node.children.map((child) => createTreeSnapshot(child, world))
+      : []
   };
-
-  if (node.kind === "folder") {
-    return {
-      ...derivedBase,
-      children: node.children.map((child) => deriveNode(child, derivedBase))
-    };
-  }
-
-  return derivedBase;
 }
 
 function drawDebugMarkers(
@@ -429,58 +495,63 @@ function drawDebugMarkers(
   ctx.restore();
 }
 
-function drawNode(
+function drawTreeNode(
   ctx: CanvasRenderingContext2D,
-  node: DerivedNode,
+  node: RuntimeTreeNode,
   viewport: Dimensions,
   showWireframes: boolean
 ) {
   if (node.kind === "box") {
-    const { properties } = node;
+    const { world } = node;
     const finalPosition = rotatePositionAboutPoint(
-      -properties.rotation,
-      properties.anchor,
-      properties.position
+      -world.rotation,
+      world.anchor,
+      world.position
     );
     const translation = {
-      x: finalPosition.x - properties.anchor.x,
-      y: finalPosition.y - properties.anchor.y
+      x: finalPosition.x - world.anchor.x,
+      y: finalPosition.y - world.anchor.y
     };
     const anchor = {
-      x: viewport.width / 2 + properties.anchor.x,
-      y: viewport.height / 2 + properties.anchor.y
+      x: viewport.width / 2 + world.anchor.x,
+      y: viewport.height / 2 + world.anchor.y
     };
 
     ctx.save();
     ctx.fillStyle = node.color ?? MAGENTA;
     ctx.translate(anchor.x, anchor.y);
     ctx.translate(translation.x, translation.y);
-    ctx.rotate(properties.rotation);
+    ctx.rotate(world.rotation);
     ctx.fillRect(
-      -(properties.size.width * properties.scale.x) / 2,
-      -(properties.size.height * properties.scale.y) / 2,
-      properties.size.width * properties.scale.x,
-      properties.size.height * properties.scale.y
+      -(world.size.width * world.scale.x) / 2,
+      -(world.size.height * world.scale.y) / 2,
+      world.size.width * world.scale.x,
+      world.size.height * world.scale.y
     );
     ctx.restore();
 
     if (showWireframes) {
-      drawDebugMarkers(ctx, properties, viewport);
+      drawDebugMarkers(ctx, world, viewport);
     }
 
     return;
   }
 
   if (showWireframes) {
-    drawDebugMarkers(ctx, node.properties, viewport);
+    drawDebugMarkers(ctx, node.world, viewport);
   }
 
-  node.children?.forEach((child) => drawNode(ctx, child, viewport, showWireframes));
+  node.children.forEach((child) => drawTreeNode(ctx, child, viewport, showWireframes));
 }
 
 export function createRuntimeScene(demoId: string): RuntimeScene {
+  resetRuntimeCounters();
   const demo = rengineDemos.find((entry) => entry.id === demoId) ?? rengineDemos[0];
   return demo.createScene();
+}
+
+export function getRuntimeTreeSnapshot(scene: RuntimeScene): RuntimeTreeNode {
+  return createTreeSnapshot(scene.root);
 }
 
 export function advanceRuntimeScene(demoId: string, scene: RuntimeScene, deltaMs: number) {
@@ -501,8 +572,8 @@ export function renderRuntimeScene(
   ctx.fillStyle = "#f8fbff";
   ctx.fillRect(0, 0, viewport.width, viewport.height);
 
-  const derivedRoot = deriveNode(scene.root);
-  derivedRoot.children?.forEach((child) =>
-    drawNode(ctx, child, viewport, showWireframes)
+  const treeSnapshot = getRuntimeTreeSnapshot(scene);
+  treeSnapshot.children.forEach((child) =>
+    drawTreeNode(ctx, child, viewport, showWireframes)
   );
 }
