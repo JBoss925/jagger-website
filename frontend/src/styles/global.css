@@ -3966,6 +3966,21 @@ button:hover {
   height: auto;
 }
 
+@media (max-width: 1180px) {
+  .rengine-workspace__body {
+    grid-template-columns: 1fr;
+  }
+
+  .rengine-detail-copy {
+    height: auto;
+    min-height: 0;
+  }
+
+  .rengine-detail-section--legend {
+    margin-top: 8px;
+  }
+}
+
 .rengine-tree-shell {
   padding: 8px;
 }
