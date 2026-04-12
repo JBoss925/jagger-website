@@ -1,5 +1,12 @@
 import { useEffect, Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import GamesPage from "../features/games/GamesPage";
+import DomesPage from "../features/games/DomesPage";
+import JordlePage from "../features/games/JordlePage";
+import JolorPage from "../features/games/JolorPage";
+import JinxPage from "../features/games/JinxPage";
+import JudokuPage from "../features/games/JudokuPage";
+import JigsawPage from "../features/games/JigsawPage";
 
 const HomePage = lazy(() => import("../features/home/HomePage"));
 const JaggerScriptPage = lazy(
@@ -9,13 +16,6 @@ const GeneticTsRoute = lazy(
   () => import("../features/genetic-ts/GeneticTsRoute")
 );
 const RenginePage = lazy(() => import("../features/rengine/RenginePage"));
-const GamesPage = lazy(() => import("../features/games/GamesPage"));
-const DomesPage = lazy(() => import("../features/games/DomesPage"));
-const JordlePage = lazy(() => import("../features/games/JordlePage"));
-const JolorPage = lazy(() => import("../features/games/JolorPage"));
-const JinxPage = lazy(() => import("../features/games/JinxPage"));
-const JudokuPage = lazy(() => import("../features/games/JudokuPage"));
-const JigsawPage = lazy(() => import("../features/games/JigsawPage"));
 
 function RouteLoading() {
   return (
