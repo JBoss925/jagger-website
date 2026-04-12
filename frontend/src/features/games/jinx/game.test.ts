@@ -64,6 +64,42 @@ describe("jinx helpers", () => {
     expect(getSafeHintCell(hardPuzzle, normalizeJinxPuzzleState(null, "hard"))).not.toBeNull();
   });
 
+  it("chooses hint cells from the full safe pool instead of scanning top left first", () => {
+    const puzzle = getJinxPuzzleById(0, "easy");
+    const state = normalizeJinxPuzzleState(
+      {
+        revealed: [[0, 0]],
+        flags: [[0, 1]],
+        hintCount: 0,
+        moveCount: 0,
+        lost: false
+      },
+      "easy"
+    );
+    const safeCells = Array.from({ length: puzzle.rows * puzzle.columns }, (_, index) => {
+      const row = Math.floor(index / puzzle.columns);
+      const column = index % puzzle.columns;
+      return [row, column] as const;
+    }).filter(([row, column]) => {
+      return (
+        !state.revealed.some(([revealedRow, revealedColumn]) => revealedRow === row && revealedColumn === column) &&
+        !state.flags.some(([flagRow, flagColumn]) => flagRow === row && flagColumn === column) &&
+        !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column)
+      );
+    });
+
+    const originalRandom = Math.random;
+    Math.random = () => 0.999999;
+
+    try {
+      const hintCell = getSafeHintCell(puzzle, state);
+      expect(hintCell).not.toBeNull();
+      expect(hintCell).toEqual(safeCells[safeCells.length - 1]);
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
   it("migrates legacy hint usage to a hint count", () => {
     const state = normalizeJinxPuzzleState(
       {

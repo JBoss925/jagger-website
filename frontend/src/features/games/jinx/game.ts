@@ -323,17 +323,22 @@ export function toggleFlag(state: JinxPuzzleState, row: number, column: number) 
 export function getSafeHintCell(puzzle: JinxPuzzleData, state: JinxPuzzleState) {
   const revealed = new Set(state.revealed.map(([r, c]) => keyForCell(r, c)));
   const flags = new Set(state.flags.map(([r, c]) => keyForCell(r, c)));
+  const candidates: JinxCell[] = [];
 
   for (let row = 0; row < puzzle.rows; row += 1) {
     for (let column = 0; column < puzzle.columns; column += 1) {
       const key = keyForCell(row, column);
       if (!revealed.has(key) && !flags.has(key) && !isMine(puzzle, row, column)) {
-        return [row, column] as JinxCell;
+        candidates.push([row, column] as JinxCell);
       }
     }
   }
 
-  return null;
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  return candidates[Math.floor(Math.random() * candidates.length)] ?? null;
 }
 
 export function getInitialSafeRevealCell(puzzle: JinxPuzzleData) {
