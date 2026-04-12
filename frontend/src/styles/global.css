@@ -1309,6 +1309,8 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  width: fit-content;
+  max-width: 100%;
   padding: 6px;
   border-radius: 999px;
   background: rgba(8, 14, 24, 0.82);
@@ -1571,7 +1573,6 @@ a {
     align-items: stretch;
   }
 
-  .jinx-mode-toggle,
   .jinx-difficulty-toggle,
   .judoku-pad {
     width: 100%;
