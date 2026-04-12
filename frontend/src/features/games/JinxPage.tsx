@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { JinxIcon } from "./GameIcons";
 import GamesNavigation from "./GamesNavigation";
 import { usePageReveal } from "../../hooks/usePageReveal";
@@ -109,6 +109,7 @@ function JinxPage() {
   const [isSummaryOpen, setIsSummaryOpen] = useState(initialTodaySolved || initialTodayFailed);
   const [mode, setMode] = useState<"reveal" | "flag">("reveal");
   const [hintCell, setHintCell] = useState<JinxCell | null>(null);
+  const hintTimeoutRef = useRef<number | null>(null);
 
   const todaysPuzzle = useMemo(() => getJinxPuzzleById(todaysPuzzleId, difficulty), [difficulty, todaysPuzzleId]);
   const activePuzzleKey = useMemo(() => getJinxArchiveKey(difficulty, activePuzzleId), [activePuzzleId, difficulty]);
@@ -134,6 +135,14 @@ function JinxPage() {
   }, [archive]);
 
   useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current !== null) {
+        window.clearTimeout(hintTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const puzzleKey = getJinxArchiveKey(difficulty, activePuzzleId);
     if (archive[puzzleKey]) {
       return;
@@ -156,6 +165,15 @@ function JinxPage() {
       ...current,
       [activePuzzleKey]: nextState
     }));
+  }
+
+  function clearHint() {
+    if (hintTimeoutRef.current !== null) {
+      window.clearTimeout(hintTimeoutRef.current);
+      hintTimeoutRef.current = null;
+    }
+
+    setHintCell(null);
   }
 
   function handleCellPress(row: number, column: number) {
@@ -200,14 +218,16 @@ function JinxPage() {
       return;
     }
 
+    clearHint();
     setHintCell(nextHintCell);
     setPuzzleState({
       ...puzzleState,
       hintCount: puzzleState.hintCount + 1
     });
 
-    window.setTimeout(() => {
+    hintTimeoutRef.current = window.setTimeout(() => {
       setHintCell(null);
+      hintTimeoutRef.current = null;
     }, 2000);
   }
 
@@ -313,7 +333,7 @@ function JinxPage() {
                     className={difficulty === entryDifficulty ? "is-active" : ""}
                     onClick={() => {
                       setDifficulty(entryDifficulty);
-                      setHintCell(null);
+                      clearHint();
                       setIsSummaryOpen(false);
                     }}
                   >
@@ -428,7 +448,7 @@ function JinxPage() {
                     onClick={() => {
                       setIsHelpOpen(false);
                       setIsSummaryOpen(false);
-                      setHintCell(null);
+                      clearHint();
                       setActivePuzzleId(entry.puzzleId);
                       setIsArchiveOpen(false);
                     }}
