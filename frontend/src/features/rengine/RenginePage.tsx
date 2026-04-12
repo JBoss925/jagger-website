@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -44,6 +45,43 @@ function RuntimeTreeNodeView({
   const isCollapsible = node.children.length > 0;
   const isCollapsed = collapsedNodeIds.has(node.id);
   const transform = nodeSpace === "local" ? node.local : node.world;
+  const [shouldRenderChildren, setShouldRenderChildren] = useState(!isCollapsed);
+  const [isBranchVisuallyCollapsed, setIsBranchVisuallyCollapsed] = useState(isCollapsed);
+
+  useEffect(() => {
+    if (!isCollapsible) {
+      return;
+    }
+
+    if (!isCollapsed) {
+      setShouldRenderChildren(true);
+      setIsBranchVisuallyCollapsed(true);
+
+      let innerFrameId: number | null = null;
+      const outerFrameId = window.requestAnimationFrame(() => {
+        innerFrameId = window.requestAnimationFrame(() => {
+          setIsBranchVisuallyCollapsed(false);
+        });
+      });
+
+      return () => {
+        window.cancelAnimationFrame(outerFrameId);
+        if (innerFrameId !== null) {
+          window.cancelAnimationFrame(innerFrameId);
+        }
+      };
+    }
+
+    setIsBranchVisuallyCollapsed(true);
+
+    const timeoutId = window.setTimeout(() => {
+      setShouldRenderChildren(false);
+    }, 220);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isCollapsed, isCollapsible]);
 
   return (
     <li className="rengine-tree__item">
@@ -141,20 +179,25 @@ function RuntimeTreeNodeView({
         </div>
       </div>
 
-      {isCollapsible && !isCollapsed ? (
-        <ul className="rengine-tree__branch">
-          {node.children.map((child) => (
-            <RuntimeTreeNodeView
-              key={child.id}
-              node={child}
-              nodeSpace={localSpaceNodeIds.has(child.id) ? "local" : "world"}
-              localSpaceNodeIds={localSpaceNodeIds}
-              collapsedNodeIds={collapsedNodeIds}
-              onToggleNode={onToggleNode}
-              onToggleNodeSpace={onToggleNodeSpace}
-            />
-          ))}
-        </ul>
+      {isCollapsible && shouldRenderChildren ? (
+        <div
+          className={isBranchVisuallyCollapsed ? "rengine-tree__branch-shell is-collapsed" : "rengine-tree__branch-shell"}
+          aria-hidden={isBranchVisuallyCollapsed}
+        >
+          <ul className="rengine-tree__branch">
+            {node.children.map((child) => (
+              <RuntimeTreeNodeView
+                key={child.id}
+                node={child}
+                nodeSpace={localSpaceNodeIds.has(child.id) ? "local" : "world"}
+                localSpaceNodeIds={localSpaceNodeIds}
+                collapsedNodeIds={collapsedNodeIds}
+                onToggleNode={onToggleNode}
+                onToggleNodeSpace={onToggleNodeSpace}
+              />
+            ))}
+          </ul>
+        </div>
       ) : null}
     </li>
   );
@@ -186,6 +229,7 @@ function RenginePage() {
   const hasInitializedExampleRail = useRef(false);
   const [selectedDemoId, setSelectedDemoId] = useState(rengineDemos[0].id);
   const [showWireframes, setShowWireframes] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [treeSnapshot, setTreeSnapshot] = useState<RuntimeTreeNode>(() =>
     getRuntimeTreeSnapshot(sceneRef.current)
@@ -198,6 +242,8 @@ function RenginePage() {
     [selectedDemoId]
   );
   const selectedDemoIndex = rengineDemos.findIndex((demo) => demo.id === selectedDemoId);
+  const canZoomOut = zoomLevel > 0.1;
+  const canZoomIn = zoomLevel < 2;
 
   useLayoutEffect(() => {
     const previousScrollBehavior = document.documentElement.style.scrollBehavior;
@@ -206,6 +252,18 @@ function RenginePage() {
 
     requestAnimationFrame(() => {
       document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    });
+  }, []);
+
+  const handleZoom = useCallback((direction: "in" | "out") => {
+    setZoomLevel((current) => {
+      const step = 0.1;
+
+      if (direction === "in") {
+        return Math.min(2, Number((current + step).toFixed(2)));
+      }
+
+      return Math.max(0.1, Number((current - step).toFixed(2)));
     });
   }, []);
 
@@ -371,23 +429,25 @@ function RenginePage() {
     }
 
     const devicePixelRatio = window.devicePixelRatio || 1;
-    canvas.width = Math.round(stageSize.width * devicePixelRatio);
-    canvas.height = Math.round(stageSize.height * devicePixelRatio);
+    const oversample = Math.max(1, zoomLevel);
+    canvas.width = Math.round(stageSize.width * devicePixelRatio * oversample);
+    canvas.height = Math.round(stageSize.height * devicePixelRatio * oversample);
     canvas.style.width = `${stageSize.width}px`;
     canvas.style.height = `${stageSize.height}px`;
-    context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
 
     const frame = (timestamp: number) => {
       const previousTimestamp = previousTimestampRef.current ?? timestamp;
       const deltaMs = Math.min(32, timestamp - previousTimestamp || 1);
       previousTimestampRef.current = timestamp;
+      context.setTransform(devicePixelRatio * oversample, 0, 0, devicePixelRatio * oversample, 0, 0);
 
       advanceRuntimeScene(selectedDemoId, sceneRef.current, deltaMs);
       renderRuntimeScene(
         context,
         sceneRef.current,
         stageSize,
-        showWireframes
+        showWireframes,
+        { zoom: zoomLevel }
       );
 
       if (timestamp - lastTreeSyncRef.current >= 120) {
@@ -407,7 +467,7 @@ function RenginePage() {
       animationFrameRef.current = null;
       previousTimestampRef.current = null;
     };
-  }, [selectedDemoId, showWireframes, stageSize]);
+  }, [selectedDemoId, showWireframes, stageSize, zoomLevel]);
 
   return (
     <div
@@ -491,9 +551,34 @@ function RenginePage() {
                   <span>Interactive scene.</span>
                 </div>
                 <div className="ide-panel__actions rengine-panel__actions">
+                  <div className="rengine-zoom-controls" role="group" aria-label="Canvas zoom">
+                    <button
+                      type="button"
+                      className="cta-button cta-button--secondary"
+                      onClick={() => handleZoom("out")}
+                      disabled={!canZoomOut}
+                      aria-label="Zoom out"
+                    >
+                      -
+                    </button>
+                    <span>{Math.round(zoomLevel * 100)}%</span>
+                    <button
+                      type="button"
+                      className="cta-button cta-button--secondary"
+                      onClick={() => handleZoom("in")}
+                      disabled={!canZoomIn}
+                      aria-label="Zoom in"
+                    >
+                      +
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    className={showWireframes ? "ide-run-button" : "cta-button cta-button--secondary"}
+                    className={
+                      showWireframes
+                        ? "ide-run-button rengine-wireframe-toggle"
+                        : "cta-button cta-button--secondary rengine-wireframe-toggle"
+                    }
                     onClick={() => setShowWireframes((current) => !current)}
                     aria-pressed={showWireframes}
                   >
@@ -538,7 +623,7 @@ function RenginePage() {
                       <div className="rengine-legend__item">
                         <span className="rengine-legend__swatch rengine-legend__swatch--position" />
                         <strong>Position</strong>
-                        <span>Blue square showing the entity’s translated origin.</span>
+                        <span>Warm gold square showing the entity’s translated origin.</span>
                       </div>
                       <div className="rengine-legend__item">
                         <span className="rengine-legend__swatch rengine-legend__swatch--relationship" />

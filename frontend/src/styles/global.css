@@ -3165,6 +3165,12 @@ button:hover {
   outline-offset: 3px;
 }
 
+.rengine-wireframe-toggle {
+  min-width: 9.9rem;
+  justify-content: center;
+  white-space: nowrap;
+}
+
 .ide-run-button__icon {
   display: inline-flex;
   width: 1rem;
@@ -3845,6 +3851,26 @@ button:hover {
 
 .rengine-panel__actions {
   align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rengine-zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rengine-zoom-controls > span {
+  min-width: 52px;
+  color: var(--text-dim);
+  font: 0.84rem/1.2 "IBM Plex Mono", monospace;
+  text-align: center;
+}
+
+.rengine-zoom-controls .cta-button {
+  min-width: 42px;
+  padding-inline: 0;
 }
 
 .rengine-stage-shell {
@@ -3952,7 +3978,7 @@ button:hover {
 }
 
 .rengine-legend__swatch--position {
-  background: #3f9dff;
+  background: #f4d35e;
 }
 
 .rengine-legend__swatch--relationship {
@@ -4000,6 +4026,23 @@ button:hover {
   margin: 8px 0 0 10px;
   padding: 0 0 0 12px;
   border-left: 1px solid rgba(87, 208, 255, 0.14);
+}
+
+.rengine-tree__branch-shell {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 220ms ease, opacity 220ms ease;
+}
+
+.rengine-tree__branch-shell.is-collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.rengine-tree__branch-shell > .rengine-tree__branch {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .rengine-tree__item {
@@ -4072,14 +4115,15 @@ button:hover {
   background: rgba(87, 208, 255, 0.08);
 }
 
-.rengine-tree__toggle.is-collapsed svg {
-  transform: rotate(-90deg);
-}
-
 .rengine-tree__toggle svg {
   width: 12px;
   height: 12px;
+  transform: rotate(90deg);
   transition: transform 160ms ease;
+}
+
+.rengine-tree__toggle.is-collapsed svg {
+  transform: rotate(0deg);
 }
 
 .rengine-tree__node-header strong,

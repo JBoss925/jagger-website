@@ -46,6 +46,10 @@ declare module "@rengine/runtime/demoRuntime" {
     }>;
   };
 
+  export type RuntimeRenderOptions = {
+    zoom?: number;
+  };
+
   export type RuntimeDemoDefinition = {
     id: string;
     title: string;
@@ -74,6 +78,7 @@ declare module "@rengine/runtime/demoRuntime" {
     ctx: CanvasRenderingContext2D,
     runtime: RuntimeScene,
     viewport: Dimensions,
-    showWireframes: boolean
+    showWireframes: boolean,
+    options?: RuntimeRenderOptions
   ): void;
 }
