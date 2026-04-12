@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import HomePage from "./HomePage";
 
@@ -32,7 +32,7 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
   });
 
-  it("uses an immediate scroll on initial hash loads", () => {
+  it("smoothly scrolls on initial hash loads", () => {
     const scrollTo = vi.fn();
     const originalScrollTo = window.scrollTo;
 
@@ -45,8 +45,51 @@ describe("HomePage", () => {
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
+      top: expect.any(Number),
+      behavior: "smooth",
+    });
+
+    window.scrollTo = originalScrollTo;
+  });
+
+  it("resets to the top on plain homepage navigation", () => {
+    const scrollTo = vi.fn();
+    const originalScrollTo = window.scrollTo;
+
+    window.scrollTo = scrollTo;
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
       top: 0,
       behavior: "auto",
+    });
+
+    window.scrollTo = originalScrollTo;
+  });
+
+  it("smoothly scrolls to the hero when the brand is clicked on the homepage", () => {
+    const scrollTo = vi.fn();
+    const originalScrollTo = window.scrollTo;
+
+    window.scrollTo = scrollTo;
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    scrollTo.mockClear();
+    fireEvent.click(screen.getByRole("link", { name: /Jagger Brulato/i }));
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: "smooth",
     });
 
     window.scrollTo = originalScrollTo;

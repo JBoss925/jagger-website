@@ -67,6 +67,12 @@ function HomePage() {
   }
 
   useLayoutEffect(() => {
+    if (location.pathname === "/" && !location.hash) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [location.pathname, location.hash]);
+
+  useLayoutEffect(() => {
     if (!location.hash) {
       hasHandledInitialHash.current = true;
       return;
@@ -78,37 +84,9 @@ function HomePage() {
       return;
     }
 
-    const shouldAnimateScroll =
-      hasHandledInitialHash.current && !prefersReducedMotion;
-
     hasHandledInitialHash.current = true;
 
-    if (!shouldAnimateScroll) {
-      if (targetId === "hero") {
-        return;
-      }
-
-      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
-      document.documentElement.style.scrollBehavior = "auto";
-      const top = Math.max(
-        0,
-        window.scrollY + element.getBoundingClientRect().top - getHeaderScrollOffset()
-      );
-
-      window.scrollTo({
-        top,
-        behavior: "auto"
-      });
-
-      requestAnimationFrame(() => {
-        document.documentElement.style.scrollBehavior = previousScrollBehavior;
-      });
-
-      return;
-    }
-
     if (targetId === "hero") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -119,7 +97,7 @@ function HomePage() {
 
     window.scrollTo({
       top,
-      behavior: "smooth"
+      behavior: prefersReducedMotion ? "auto" : "smooth"
     });
   }, [location.hash, prefersReducedMotion]);
 
