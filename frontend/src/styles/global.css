@@ -3849,6 +3849,14 @@ button:hover {
   height: auto;
 }
 
+.rengine-workspace__body > .ide-panel > .ide-panel__header {
+  align-items: end;
+}
+
+.rengine-workspace__body > .ide-panel > .ide-panel__header > div {
+  align-self: end;
+}
+
 .rengine-panel__actions {
   align-items: center;
   gap: 10px;
