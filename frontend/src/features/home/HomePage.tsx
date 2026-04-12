@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExperienceCard from "../../components/ExperienceCard";
 import ProjectCard from "../../components/ProjectCard";
@@ -25,6 +25,7 @@ function HomePage() {
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
   const hasHandledInitialHash = useRef(false);
+  const hasSyncedSectionUrl = useRef(false);
   const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
   const nextSectionId =
     activeSectionIndex >= 0 && activeSectionIndex < sectionOrder.length - 1
@@ -100,6 +101,20 @@ function HomePage() {
       behavior: prefersReducedMotion ? "auto" : "smooth"
     });
   }, [location.hash, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      hasSyncedSectionUrl.current = false;
+      return;
+    }
+
+    if (!hasSyncedSectionUrl.current) {
+      hasSyncedSectionUrl.current = true;
+      return;
+    }
+
+    window.history.replaceState(null, "", `/#${activeSectionId}`);
+  }, [activeSectionId, location.pathname]);
 
   return (
     <div className={isPageReady ? "page-shell page-shell--ready" : "page-shell page-shell--entering"}>

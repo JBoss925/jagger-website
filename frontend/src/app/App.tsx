@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 const HomePage = lazy(() => import("../features/home/HomePage"));
@@ -31,6 +31,19 @@ function RouteLoading() {
 }
 
 function App() {
+  useEffect(() => {
+    if (!("scrollRestoration" in window.history)) {
+      return;
+    }
+
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
   return (
     <Suspense fallback={<RouteLoading />}>
       <Routes>
