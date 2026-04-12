@@ -161,6 +161,9 @@ function JolorPage() {
 
   const bestDistance = useMemo(() => getBestDistance(guesses, puzzle.hex), [guesses, puzzle.hex]);
   const latestDistance = guessResults.at(-1)?.distance ?? null;
+  const normalizedDraftHex = normalizeHex(hexInput);
+  const lastGuessHex = guesses.at(-1) ?? null;
+  const isSameAsLastGuess = Boolean(normalizedDraftHex && lastGuessHex && normalizedDraftHex === lastGuessHex);
   const isComplete = solved || failed;
   const previewHex = isHintVisible || isComplete ? puzzle.hex : draftHex;
   const previewLabel = isHintVisible ? null : isComplete ? "Actual color" : "Current guess";
@@ -195,7 +198,7 @@ function JolorPage() {
       return `Best distance so far: ${Math.round(bestDistance ?? latestDistance)}.`;
     }
 
-    return "Dial in a color and get within 24 RGB points.";
+    return "Dial in a color and get within 32 RGB points.";
   }, [bestDistance, failed, guesses.length, hintCountdown, isHintVisible, latestDistance, puzzle.name, solved, validationMessage]);
 
   const summaryStats = useMemo(() => {
@@ -250,7 +253,7 @@ function JolorPage() {
   }
 
   function submitGuess() {
-    if (solved || failed) {
+    if (solved || failed || isSameAsLastGuess) {
       return;
     }
 
@@ -320,7 +323,7 @@ function JolorPage() {
             </div>
             <h1>Jolor</h1>
           </div>
-          <p>You get the color name, not the swatch, and five guesses to find it.</p>
+          <p>You get the color name, not the swatch, and eight guesses to find it.</p>
         </section>
 
         <section className="jolor-layout">
@@ -467,7 +470,7 @@ function JolorPage() {
                 type="button"
                 className="cta-button"
                 onClick={submitGuess}
-                disabled={solved || failed}
+                disabled={solved || failed || isSameAsLastGuess}
               >
                 Submit guess
               </button>
@@ -525,9 +528,9 @@ function JolorPage() {
               </button>
             </div>
             <div className="jordle-modal__body">
-              <p>You get the name of a color and five guesses to match it closely enough.</p>
+              <p>You get the name of a color and eight guesses to match it closely enough.</p>
               <p>Use the color picker, RGB values, or hex field to build a guess, then submit it.</p>
-              <p>A guess counts as solved when it lands within 24 RGB distance of the target color.</p>
+              <p>A guess counts as solved when it lands within 32 RGB points of the target color.</p>
               <p>You can use one hint per puzzle. After a 3-second countdown, the true color flashes for one second.</p>
             </div>
           </div>
@@ -570,7 +573,7 @@ function JolorPage() {
                       ) : entry.failed ? (
                         <span className="jordle-archive-chip is-failed">Finished</span>
                       ) : entry.guesses > 0 ? (
-                        <span className="jordle-archive-chip is-progress">{entry.guesses}/5 guesses</span>
+                        <span className="jordle-archive-chip is-progress">{entry.guesses}/8 guesses</span>
                       ) : (
                         <span className="jordle-archive-chip">Unplayed</span>
                       )}
