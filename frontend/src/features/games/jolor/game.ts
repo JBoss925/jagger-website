@@ -2,8 +2,8 @@ import allColors from "./all_colors.json";
 import shuffledColors from "./shuffled_colors.json";
 
 export const JOLOR_STORAGE_KEY = "jolor-state";
-export const JOLOR_MAX_GUESSES = 5;
-export const JOLOR_RGB_THRESHOLD = 24;
+export const JOLOR_MAX_GUESSES = 8;
+export const JOLOR_RGB_THRESHOLD = 32;
 const JOLOR_EPOCH = Date.UTC(2026, 0, 1);
 
 export type JolorColor = {

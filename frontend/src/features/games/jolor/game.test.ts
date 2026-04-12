@@ -27,8 +27,8 @@ describe("jolor helpers", () => {
   });
 
   it("uses rgb distance threshold for solved guesses", () => {
-    expect(isSolvedGuess("#000000", "#000010")).toBe(true);
-    expect(isSolvedGuess("#000000", "#000030")).toBe(false);
+    expect(isSolvedGuess("#000000", "#000020")).toBe(true);
+    expect(isSolvedGuess("#000000", "#000021")).toBe(false);
   });
 
   it("computes distance correctly", () => {
