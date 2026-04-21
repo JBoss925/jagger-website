@@ -2623,6 +2623,14 @@ button:hover {
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
+.experience-card__summary {
+  color: var(--text);
+}
+
+.experience-card .detail-list {
+  color: var(--text-dim);
+}
+
 .hero-panel__portrait-wrap {
   width: min(100%, 470px);
   margin-left: auto;
