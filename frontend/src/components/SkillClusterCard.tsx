@@ -1,5 +1,4 @@
 import type { SkillCluster } from "../types/content";
-import { inferChipTone } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
 
 type SkillClusterCardProps = {
@@ -13,7 +12,7 @@ function SkillClusterCard({ cluster }: SkillClusterCardProps) {
       <p>{renderInlineEmphasis(cluster.summary)}</p>
       <div className="chip-row">
         {cluster.items.map((item) => (
-          <span key={item} className={`chip chip--${inferChipTone(item)}`}>
+          <span key={item} className="chip">
             {item}
           </span>
         ))}

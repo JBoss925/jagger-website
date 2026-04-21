@@ -56,6 +56,38 @@ export function inferChipTone(label: string) {
   return "domain";
 }
 
+const chipToneOrder = {
+  language: 0,
+  framework: 1,
+  infrastructure: 2,
+  practice: 3,
+  domain: 4
+} as const;
+
+export function sortChipItems<T extends { label: string; tone: keyof typeof chipToneOrder }>(items: T[]) {
+  return [...items].sort((left, right) => {
+    const toneDelta = chipToneOrder[left.tone] - chipToneOrder[right.tone];
+    if (toneDelta !== 0) {
+      return toneDelta;
+    }
+
+    return left.label.localeCompare(right.label);
+  });
+}
+
+export function sortChipLabels(labels: string[]) {
+  return [...labels].sort((left, right) => {
+    const leftTone = inferChipTone(left);
+    const rightTone = inferChipTone(right);
+    const toneDelta = chipToneOrder[leftTone] - chipToneOrder[rightTone];
+    if (toneDelta !== 0) {
+      return toneDelta;
+    }
+
+    return left.localeCompare(right);
+  });
+}
+
 export function getLinkToneClass(label: string, href: string, primary = false) {
   const normalizedLabel = label.toLowerCase();
   const normalizedHref = href.toLowerCase();

@@ -1,4 +1,5 @@
 import type { ExperienceEntry } from "../types/content";
+import { sortChipItems } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
 
 type ExperienceCardProps = {
@@ -46,7 +47,7 @@ function ExperienceCard({ entry }: ExperienceCardProps) {
         ))}
       </ul>
       <div className="chip-row">
-        {entry.tags.map((tag) => (
+        {sortChipItems(entry.tags).map((tag) => (
           <span key={tag.label} className={`chip chip--${tag.tone}`}>
             {tag.label}
           </span>

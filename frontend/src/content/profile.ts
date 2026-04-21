@@ -1,5 +1,6 @@
 import headshotImage from "../assets/headshot.jpg";
 import cornellDtiLogo from "../assets/company-logos/cornell-dti.svg";
+import cornellUniversityLogo from "../assets/company-logos/cornell-university.svg";
 import googleLogo from "../assets/company-logos/google.png";
 import lowesLogo from "../assets/company-logos/lowes.png";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
@@ -137,6 +138,7 @@ export const profileContent: ProfileContent = {
         "Worked at the seam between **platform reliability** and **developer experience**, keeping systems healthy while also making them easier for other engineers to use."
       ],
       tags: [
+        { label: "TypeScript", tone: "language" },
         { label: "Platform engineering", tone: "domain" },
         { label: "Terraform", tone: "infrastructure" },
         { label: "Internal tools", tone: "framework" },
@@ -160,6 +162,7 @@ export const profileContent: ProfileContent = {
         "Added another **production environment** to my background between startup, big tech, and internal platform work, which is part of why I’m comfortable adapting to very different engineering cultures."
       ],
       tags: [
+        { label: "Java", tone: "language" },
         { label: "Enterprise software", tone: "domain" },
         { label: "Production delivery", tone: "practice" },
         { label: "Cross-functional work", tone: "practice" },
@@ -183,6 +186,7 @@ export const profileContent: ProfileContent = {
         "Built experience operating within **mature engineering processes** while still delivering clean, practical work in collaboration with other engineers and partner teams."
       ],
       tags: [
+        { label: "Java", tone: "language" },
         { label: "Production systems", tone: "domain" },
         { label: "Scale", tone: "practice" },
         { label: "Reliability", tone: "practice" },
@@ -206,12 +210,36 @@ export const profileContent: ProfileContent = {
         "Balanced **leadership responsibilities** with hands-on implementation, which meant keeping architectural decisions practical and close to the code."
       ],
       tags: [
+        { label: "TypeScript", tone: "language" },
         { label: "Leadership", tone: "practice" },
         { label: "Mentorship", tone: "practice" },
         { label: "Cross-platform", tone: "practice" },
         { label: "Developer support", tone: "practice" },
         { label: "Deployment", tone: "infrastructure" },
         { label: "Team enablement", tone: "practice" }
+      ]
+    },
+    {
+      company: "Google",
+      role: "SWE Intern",
+      timeframe: "2020",
+      location: "Internship",
+      logo: googleLogo,
+      logoAlt: "Google logo",
+      summary:
+        "Created an **open-source scheduler and roster organizer** for Alvin Ailey Dance Company in NYC, building a **multi-user full-stack experience** shaped closely with clients and stakeholders.",
+      highlights: [
+        "Held **weekly meetings with clients and stakeholders** to design and refine the product around the company’s real scheduling and operational needs.",
+        "Built **custom user interfaces and data structures** for workflows like drag-and-drop roster editing, administration tools, and dancer self-service time-off requests.",
+        "Implemented product features including **mobile notifications**, **automatic roster backup rotations**, and collaboration-friendly scheduling flows for a multi-user environment."
+      ],
+      tags: [
+        { label: "TypeScript", tone: "language" },
+        { label: "Full-stack", tone: "practice" },
+        { label: "Open source", tone: "practice" },
+        { label: "Scheduling software", tone: "domain" },
+        { label: "Multi-user systems", tone: "domain" },
+        { label: "Stakeholder collaboration", tone: "practice" }
       ]
     },
     {
@@ -229,11 +257,36 @@ export const profileContent: ProfileContent = {
         "Helped make **technical decisions**, coordinate developers, and keep the product moving from early implementation toward something real and usable."
       ],
       tags: [
+        { label: "Python", tone: "language" },
         { label: "Technical direction", tone: "practice" },
         { label: "Full-stack", tone: "practice" },
         { label: "Django", tone: "framework" },
         { label: "Project leadership", tone: "practice" },
         { label: "Heroku", tone: "infrastructure" },
+        { label: "Mobile apps", tone: "domain" }
+      ]
+    },
+    {
+      company: "Cornell Design & Tech Initiative",
+      role: "Full Stack Developer",
+      timeframe: "2017-2019",
+      location: "Project team",
+      logo: cornellDtiLogo,
+      logoAlt: "Cornell Design and Tech Initiative logo",
+      summary:
+        "Worked as a **full-stack developer** on a Cornell DTI project team, building **user interfaces across web, Android, iOS, and Windows** along with the backend systems that powered them.",
+      highlights: [
+        "Developed **dynamic webpages and UIs** on a variety of platforms instead of staying confined to one frontend surface.",
+        "Built and maintained **backend APIs and databases** that supported the product experience and the surrounding application logic.",
+        "Contributed across both frontend and backend responsibilities, which strengthened the **full-stack workflow** that later carried into team leadership work."
+      ],
+      tags: [
+        { label: "Python", tone: "language" },
+        { label: "Full-stack", tone: "practice" },
+        { label: "User interfaces", tone: "practice" },
+        { label: "Backend APIs", tone: "infrastructure" },
+        { label: "Databases", tone: "infrastructure" },
+        { label: "Cross-platform", tone: "practice" },
         { label: "Mobile apps", tone: "domain" }
       ]
     },
@@ -266,6 +319,8 @@ export const profileContent: ProfileContent = {
       role: "Full Stack Developer",
       timeframe: "2018-2019",
       location: "Health tech startup",
+      logo: cornellUniversityLogo,
+      logoAlt: "Cornell University logo",
       summary:
         "Worked at a **cardiovascular health startup**, building **full-stack product functionality** and helping connect frontend workflows to backend data and database management.",
       highlights: [
@@ -274,6 +329,7 @@ export const profileContent: ProfileContent = {
         "Added early experience moving between **interface work and backend/data concerns** instead of being confined to one layer of the stack."
       ],
       tags: [
+        { label: "Python", tone: "language" },
         { label: "Startup", tone: "domain" },
         { label: "Django", tone: "framework" },
         { label: "Full-stack", tone: "practice" },
@@ -447,6 +503,7 @@ export const profileContent: ProfileContent = {
       impact:
         "I wanted at least one project on the site that people might come back to every day.",
       stack: [
+        "TypeScript",
         "React",
         "Daily puzzles",
         "Local persistence",
@@ -469,6 +526,7 @@ export const profileContent: ProfileContent = {
       impact:
         "It let me build a daily game that is much more visual than Jordle while still needing careful state, feedback, archive handling, and a clean interface.",
       stack: [
+        "TypeScript",
         "React",
         "Daily puzzles",
         "Color systems",
@@ -491,6 +549,7 @@ export const profileContent: ProfileContent = {
       impact:
         "This one let me build a cleaner version of that classic board logic while keeping the state, archive, and hint systems tight.",
       stack: [
+        "TypeScript",
         "React",
         "Grid logic",
         "Daily puzzles",
@@ -512,6 +571,7 @@ export const profileContent: ProfileContent = {
       impact:
         "I wanted a number puzzle that still feels satisfying, but fits better on a phone and does not ask for a giant time commitment.",
       stack: [
+        "TypeScript",
         "React",
         "Constraint puzzles",
         "State management",
@@ -533,6 +593,7 @@ export const profileContent: ProfileContent = {
       impact:
         "It added something visual to the games section and gave me a fun excuse to build image slicing, archive handling, and a simple interaction loop around it.",
       stack: [
+        "TypeScript",
         "React",
         "Image puzzles",
         "Daily puzzles",
@@ -554,6 +615,7 @@ export const profileContent: ProfileContent = {
       impact:
         "It sits right in the overlap I like most: clear game rules, interaction design, and state that has to stay coherent turn after turn.",
       stack: [
+        "TypeScript",
         "React",
         "Turn-based gameplay",
         "State machines",

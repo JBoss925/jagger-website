@@ -2837,6 +2837,10 @@ button:hover {
   gap: 16px;
 }
 
+.project-card__content {
+  gap: 12px;
+}
+
 .experience-card__header,
 .ide-panel__header,
 .ide-toolbar {
@@ -2963,6 +2967,8 @@ button:hover {
 }
 
 .project-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -3012,14 +3018,16 @@ button:hover {
 
 .project-card__content {
   flex-direction: column;
-  padding: 22px;
+  flex: 1 1 auto;
+  padding: 22px 22px 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
     rgba(9, 18, 31, 0.24);
 }
 
 .project-card__impact {
-  padding-top: 8px;
+  margin-top: 2px;
+  padding-top: 6px;
   border-top: 1px solid var(--line);
 }
 
@@ -3070,15 +3078,15 @@ button:hover {
 }
 
 .pill-link--email {
-  background: rgba(87, 208, 255, 0.16) !important;
-  border-color: rgba(87, 208, 255, 0.3) !important;
-  color: #dff8ff !important;
+  background: rgba(234, 67, 53, 0.82) !important;
+  border-color: rgba(255, 161, 152, 0.34) !important;
+  color: #fff4f2 !important;
 }
 
 .pill-link--resume {
-  background: rgba(87, 208, 255, 0.16) !important;
-  border-color: rgba(87, 208, 255, 0.3) !important;
-  color: #dff8ff !important;
+  background: rgba(245, 239, 228, 0.9) !important;
+  border-color: rgba(255, 250, 240, 0.72) !important;
+  color: #3a3126 !important;
 }
 
 .pill-link--npm {
@@ -3091,6 +3099,12 @@ button:hover {
   background: rgba(216, 122, 255, 0.16) !important;
   border-color: rgba(216, 122, 255, 0.28) !important;
   color: #f4ddff !important;
+}
+
+.project-card__links {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
 
 .project-card__link--primary {

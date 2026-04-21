@@ -1,5 +1,5 @@
 import type { ProjectEntry } from "../types/content";
-import { getLinkToneClass, inferChipTone } from "./pillTones";
+import { getLinkToneClass, inferChipTone, sortChipLabels } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
 import {
   DomesIcon,
@@ -79,7 +79,7 @@ function ProjectCard({ project }: ProjectCardProps) {
         <p>{renderInlineEmphasis(project.description)}</p>
         <p className="project-card__impact">{renderInlineEmphasis(project.impact)}</p>
         <div className="chip-row">
-          {project.stack.map((item) => (
+          {sortChipLabels(project.stack).map((item) => (
             <span key={item} className={`chip chip--${inferChipTone(item)}`}>
               {item}
             </span>

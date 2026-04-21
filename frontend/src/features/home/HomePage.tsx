@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExperienceCard from "../../components/ExperienceCard";
-import { getLinkToneClass } from "../../components/pillTones";
 import ProjectCard from "../../components/ProjectCard";
 import { renderInlineEmphasis } from "../../components/renderInlineEmphasis";
 import SectionShell from "../../components/SectionShell";
@@ -274,7 +273,7 @@ function HomePage() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={getLinkToneClass(link.label, link.href)}
+                  className="pill-link--neutral"
                   target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
                 >
