@@ -2669,6 +2669,8 @@ button:hover {
 .project-card,
 .example-card {
   padding: 18px;
+  display: flex;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -2923,7 +2925,13 @@ button:hover {
 }
 
 .experience-card .chip-row {
-  margin-top: 22px;
+  margin-top: auto;
+  padding-top: 22px;
+}
+
+.project-card .chip-row {
+  margin-top: auto;
+  padding-top: 22px;
 }
 
 .chip {
@@ -3039,7 +3047,7 @@ button:hover {
 
 .project-card__impact {
   margin-top: 2px;
-  padding-top: 6px;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
 }
 
@@ -3114,7 +3122,6 @@ button:hover {
 }
 
 .project-card__links {
-  margin-top: auto;
   padding-top: 18px;
   border-top: 1px solid var(--line);
 }
