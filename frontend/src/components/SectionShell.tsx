@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { renderInlineEmphasis } from "./renderInlineEmphasis";
 
 type SectionShellProps = {
   id: string;
@@ -13,8 +14,8 @@ function SectionShell({ id, eyebrow, title, summary, children }: SectionShellPro
     <section id={id} className="content-section">
       <div className="section-heading">
         <span className="section-heading__eyebrow">{eyebrow}</span>
-        <h2>{title}</h2>
-        {summary ? <p>{summary}</p> : null}
+        <h2>{renderInlineEmphasis(title)}</h2>
+        {summary ? <p>{renderInlineEmphasis(summary)}</p> : null}
       </div>
       {children}
     </section>

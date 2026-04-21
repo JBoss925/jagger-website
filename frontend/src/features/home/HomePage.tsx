@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExperienceCard from "../../components/ExperienceCard";
+import { getLinkToneClass } from "../../components/pillTones";
 import ProjectCard from "../../components/ProjectCard";
+import { renderInlineEmphasis } from "../../components/renderInlineEmphasis";
 import SectionShell from "../../components/SectionShell";
 import SiteNavigation from "../../components/SiteNavigation";
 import SkillClusterCard from "../../components/SkillClusterCard";
@@ -134,11 +136,11 @@ function HomePage() {
           <div className="hero-panel__copy">
             <span className="hero-panel__eyebrow">{profileContent.sceneSections[0].eyebrow}</span>
             <h1>{profileContent.name}</h1>
-            <p className="hero-panel__title">{profileContent.title}</p>
-            <p className="hero-panel__summary">{profileContent.heroSummary}</p>
+            <p className="hero-panel__title">{renderInlineEmphasis(profileContent.title)}</p>
+            <p className="hero-panel__summary">{renderInlineEmphasis(profileContent.heroSummary)}</p>
             <ul className="detail-list detail-list--hero">
               {profileContent.heroBullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
+                <li key={bullet}>{renderInlineEmphasis(bullet)}</li>
               ))}
             </ul>
           </div>
@@ -182,26 +184,32 @@ function HomePage() {
         <SectionShell
           id="impact"
           eyebrow="Focus"
-          title="The work I’m most drawn to usually makes something simpler, clearer, or easier to use."
-          summary="That can mean product features, platform work, developer tooling, or just making a system easier for the next person to work in."
+          title="The work I’m most drawn to usually makes something **simpler, clearer, or easier to use**."
+          summary="That can mean **product features, platform work, developer tooling**, or just making a system easier for the next person to work in."
         >
           <div className="impact-grid">
             <article className="glass-card feature-card">
               <h3>Own the whole path</h3>
               <p>
-                I like being able to follow a problem from the interface all the way down to the backend and operational details.
+                {renderInlineEmphasis(
+                  "I like being able to follow a problem from the **interface** all the way down to the **backend and operational details**."
+                )}
               </p>
             </article>
             <article className="glass-card feature-card">
               <h3>Bring systems thinking into product work</h3>
               <p>
-                A lot of what I’ve learned from systems and platform work shows up in how I build product software too.
+                {renderInlineEmphasis(
+                  "A lot of what I’ve learned from **systems and platform work** shows up in how I build product software too."
+                )}
               </p>
             </article>
             <article className="glass-card feature-card">
               <h3>Build things other engineers use</h3>
               <p>
-                Some of the most satisfying work for me is tooling, visibility, onboarding, and internal abstractions.
+                {renderInlineEmphasis(
+                  "Some of the most satisfying work for me is **tooling, visibility, onboarding, and internal abstractions**."
+                )}
               </p>
             </article>
           </div>
@@ -210,8 +218,8 @@ function HomePage() {
         <SectionShell
           id="experience"
           eyebrow="Experience"
-          title="This is the fastest way to get a feel for the kinds of work I’ve done."
-          summary="It spans product engineering, platform work, and leading teams while still staying close to the code."
+          title="This is the fastest way to get a feel for the kinds of **work I’ve done**."
+          summary="It spans **product engineering, platform work, and leading teams** while still staying close to the code."
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -224,7 +232,7 @@ function HomePage() {
           id="projects"
           eyebrow="Projects"
           title="These projects fill in the rest of the picture."
-          summary="They’re the ones that say the most about what I like building when nobody is assigning it to me."
+          summary="They’re the ones that say the most about **what I like building when nobody is assigning it to me**."
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
@@ -236,8 +244,8 @@ function HomePage() {
         <SectionShell
           id="craft"
           eyebrow="How I work"
-          title="The stack matters less to me than how the pieces connect."
-          summary="I care a lot about good boundaries, good defaults, and making software easier to work in over time."
+          title="The stack matters less to me than **how the pieces connect**."
+          summary="I care a lot about **good boundaries, good defaults, and making software easier to work in over time**."
         >
           <div className="skill-grid">
             {profileContent.skillClusters.map((cluster) => (
@@ -250,18 +258,26 @@ function HomePage() {
           id="contact"
           eyebrow="Contact"
           title="If this looks like the kind of background you need, reach out."
-          summary="I’m especially interested in work where product thinking and technical ownership both matter."
+          summary="I’m especially interested in work where **product thinking and technical ownership** both matter."
         >
           <div className="glass-card contact-card">
             <div>
               <h3>Reach out</h3>
               <p>
-                Email is easiest, but the resume, GitHub, and LinkedIn are here too if you want to look around first.
+                {renderInlineEmphasis(
+                  "Email is easiest, but the **resume, GitHub, and LinkedIn** are here too if you want to look around first."
+                )}
               </p>
             </div>
             <div className="contact-links">
               {profileContent.links.map((link) => (
-                <a key={link.href} href={link.href} target={link.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={getLinkToneClass(link.label, link.href)}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
+                  rel="noreferrer"
+                >
                   {link.label}
                 </a>
               ))}

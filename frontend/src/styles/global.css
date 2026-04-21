@@ -2560,7 +2560,6 @@ button:hover {
 
 .hero-panel__eyebrow,
 .section-heading__eyebrow,
-.project-card__slug,
 .experience-card__company {
   display: inline-block;
   text-transform: uppercase;
@@ -2599,6 +2598,15 @@ button:hover {
 .hero-panel__summary {
   max-width: 40rem;
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.hero-panel__title strong,
+.hero-panel__summary strong,
+.section-heading strong,
+.experience-card__summary strong,
+.detail-list strong {
+  color: #f5fbff;
+  font-weight: 700;
 }
 
 .detail-list {
@@ -2653,8 +2661,58 @@ button:hover {
 .project-card,
 .example-card {
   padding: 18px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   background: rgba(11, 22, 38, 0.7);
   border: 1px solid var(--line);
+}
+
+.metric-card::before,
+.feature-card::before,
+.skill-card::before,
+.experience-card::before,
+.project-card::before,
+.example-card::before {
+  content: "";
+  position: absolute;
+  top: -112px;
+  left: -112px;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--card-glow, rgba(87, 208, 255, 0.08)) 0%, transparent 68%);
+  filter: blur(58px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.metric-card > *,
+.feature-card > *,
+.skill-card > *,
+.experience-card > *,
+.project-card > *,
+.example-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.metric-grid > :nth-child(1) { --card-glow: rgba(87, 208, 255, 0.1); }
+.metric-grid > :nth-child(2) { --card-glow: rgba(141, 231, 193, 0.1); }
+.metric-grid > :nth-child(3) { --card-glow: rgba(247, 169, 91, 0.1); }
+.metric-grid > :nth-child(4) { --card-glow: rgba(223, 125, 255, 0.1); }
+
+.impact-grid > :nth-child(1) { --card-glow: rgba(87, 208, 255, 0.09); }
+.impact-grid > :nth-child(2) { --card-glow: rgba(141, 231, 193, 0.09); }
+.impact-grid > :nth-child(3) { --card-glow: rgba(255, 211, 111, 0.09); }
+
+.skill-grid > :nth-child(1) { --card-glow: rgba(87, 208, 255, 0.085); }
+.skill-grid > :nth-child(2) { --card-glow: rgba(141, 231, 193, 0.085); }
+.skill-grid > :nth-child(3) { --card-glow: rgba(223, 125, 255, 0.085); }
+
+.contact-card {
+  --card-glow: rgba(255, 140, 168, 0.085);
 }
 
 .metric-card {
@@ -2744,6 +2802,14 @@ button:hover {
   font-size: clamp(1.9rem, 4vw, 3rem);
 }
 
+.feature-card h3,
+.skill-card h3,
+.contact-card h3,
+.project-card h3,
+.experience-card h3 {
+  margin: 0;
+}
+
 .impact-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -2775,7 +2841,61 @@ button:hover {
 .ide-panel__header,
 .ide-toolbar {
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
+}
+
+.experience-card__brand {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 2px;
+}
+
+.experience-card__brand h3,
+.experience-card__brand .experience-card__company {
+  grid-column: 2;
+}
+
+.experience-card__brand h3 {
+  margin: 0;
+  padding-top: 2px;
+  line-height: 1.2;
+}
+
+.experience-card__company {
+  margin: 0;
+}
+
+.experience-card__logo-shell {
+  grid-row: 1 / span 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  align-self: center;
+  background:
+    radial-gradient(circle at top, rgba(87, 208, 255, 0.2), rgba(87, 208, 255, 0) 72%),
+    linear-gradient(180deg, rgba(17, 31, 50, 0.9), rgba(8, 17, 30, 0.78));
+  border: 1px solid rgba(126, 173, 228, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.experience-card__logo {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.22));
+}
+
+.experience-card__logo-fallback {
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #d9f4ff;
 }
 
 .experience-card__meta {
@@ -2799,6 +2919,42 @@ button:hover {
   border: 1px solid rgba(87, 208, 255, 0.18);
   color: var(--text);
   font-size: 0.92rem;
+}
+
+.chip--language {
+  background: rgba(85, 170, 255, 0.16);
+  border-color: rgba(85, 170, 255, 0.34);
+  color: #d8edff;
+}
+
+.chip--framework {
+  background: rgba(94, 214, 153, 0.16);
+  border-color: rgba(94, 214, 153, 0.34);
+  color: #d9ffe9;
+}
+
+.chip--infrastructure {
+  background: rgba(245, 169, 90, 0.16);
+  border-color: rgba(245, 169, 90, 0.3);
+  color: #ffe9d1;
+}
+
+.chip--domain {
+  background: rgba(216, 122, 255, 0.16);
+  border-color: rgba(216, 122, 255, 0.32);
+  color: #f4ddff;
+}
+
+.chip--practice {
+  background: rgba(255, 221, 102, 0.14);
+  border-color: rgba(255, 221, 102, 0.28);
+  color: #fff2be;
+}
+
+.chip--brand {
+  background: rgba(140, 149, 163, 0.14);
+  border-color: rgba(140, 149, 163, 0.28);
+  color: #e4e9f0;
 }
 
 .chip--muted {
@@ -2857,6 +3013,9 @@ button:hover {
 .project-card__content {
   flex-direction: column;
   padding: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
+    rgba(9, 18, 31, 0.24);
 }
 
 .project-card__impact {
@@ -2864,11 +3023,74 @@ button:hover {
   border-top: 1px solid var(--line);
 }
 
+.project-card__impact strong,
+.feature-card strong,
+.skill-card strong,
+.contact-card strong {
+  color: #f5fbff;
+  font-weight: 700;
+}
+
 .project-card__links a,
 .contact-links a {
   padding: 10px 14px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--line);
+  border-radius: 999px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.project-card__links a:hover,
+.project-card__links a:focus-visible,
+.contact-links a:hover,
+.contact-links a:focus-visible {
+  transform: translateY(-1px);
+}
+
+.pill-link--neutral {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+.pill-link--github {
+  background: rgba(33, 38, 45, 0.82) !important;
+  border-color: rgba(110, 118, 129, 0.32) !important;
+  color: #f0f6fc !important;
+}
+
+.pill-link--linkedin {
+  background: rgba(10, 102, 194, 0.82) !important;
+  border-color: rgba(120, 185, 255, 0.34) !important;
+  color: #eff7ff !important;
+}
+
+.pill-link--email {
+  background: rgba(87, 208, 255, 0.16) !important;
+  border-color: rgba(87, 208, 255, 0.3) !important;
+  color: #dff8ff !important;
+}
+
+.pill-link--resume {
+  background: rgba(87, 208, 255, 0.16) !important;
+  border-color: rgba(87, 208, 255, 0.3) !important;
+  color: #dff8ff !important;
+}
+
+.pill-link--npm {
+  background: rgba(203, 56, 55, 0.8) !important;
+  border-color: rgba(255, 154, 153, 0.3) !important;
+  color: #fff3f3 !important;
+}
+
+.pill-link--reference {
+  background: rgba(216, 122, 255, 0.16) !important;
+  border-color: rgba(216, 122, 255, 0.28) !important;
+  color: #f4ddff !important;
 }
 
 .project-card__link--primary {
@@ -3671,6 +3893,10 @@ button:hover {
     justify-items: stretch;
   }
 
+  .experience-card__header {
+    gap: 18px;
+  }
+
   .ide-run-button {
     justify-self: stretch;
   }
@@ -3688,6 +3914,17 @@ button:hover {
   .experience-card__meta {
     justify-items: start;
     text-align: left;
+  }
+
+  .experience-card__brand {
+    grid-template-columns: 52px 1fr;
+    column-gap: 12px;
+  }
+
+  .experience-card__logo-shell {
+    width: 52px;
+    height: 52px;
+    padding: 8px;
   }
 }
 

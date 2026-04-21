@@ -22,9 +22,14 @@ export type ExperienceEntry = {
   role: string;
   timeframe: string;
   location: string;
+  logo?: string;
+  logoAlt?: string;
   summary: string;
   highlights: string[];
-  tags: string[];
+  tags: {
+    label: string;
+    tone: "language" | "framework" | "infrastructure" | "domain" | "practice";
+  }[];
 };
 
 export type ProjectEntry = {

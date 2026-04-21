@@ -1,4 +1,6 @@
 import type { ProjectEntry } from "../types/content";
+import { getLinkToneClass, inferChipTone } from "./pillTones";
+import { renderInlineEmphasis } from "./renderInlineEmphasis";
 import {
   DomesIcon,
   GeneticIcon,
@@ -73,13 +75,12 @@ function ProjectCard({ project }: ProjectCardProps) {
         </div>
       )}
       <div className="project-card__content">
-        <p className="project-card__slug">{project.slug}</p>
         <h3>{project.title}</h3>
-        <p>{project.description}</p>
-        <p className="project-card__impact">{project.impact}</p>
+        <p>{renderInlineEmphasis(project.description)}</p>
+        <p className="project-card__impact">{renderInlineEmphasis(project.impact)}</p>
         <div className="chip-row">
           {project.stack.map((item) => (
-            <span key={item} className="chip">
+            <span key={item} className={`chip chip--${inferChipTone(item)}`}>
               {item}
             </span>
           ))}
@@ -89,7 +90,11 @@ function ProjectCard({ project }: ProjectCardProps) {
             <a
               key={link.href}
               href={link.href}
-              className={isPrimaryLink(link.label, link.href) ? "project-card__link project-card__link--primary" : "project-card__link"}
+              className={`project-card__link ${getLinkToneClass(
+                link.label,
+                link.href,
+                isPrimaryLink(link.label, link.href)
+              )}`}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel="noreferrer"
             >
