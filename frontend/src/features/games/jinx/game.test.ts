@@ -64,19 +64,20 @@ describe("jinx helpers", () => {
     expect(getSafeHintCell(hardPuzzle, normalizeJinxPuzzleState(null, "hard"))).not.toBeNull();
   });
 
-  it("chooses hint cells from the full safe pool instead of scanning top left first", () => {
+  it("prioritizes unrevealed zero-clue cells for hints", () => {
     const puzzle = getJinxPuzzleById(0, "easy");
     const state = normalizeJinxPuzzleState(
       {
         revealed: [[0, 0]],
         flags: [[0, 1]],
         hintCount: 0,
+        lastRevealed: [0, 0],
         moveCount: 0,
         lost: false
       },
       "easy"
     );
-    const safeCells = Array.from({ length: puzzle.rows * puzzle.columns }, (_, index) => {
+    const zeroSafeCells = Array.from({ length: puzzle.rows * puzzle.columns }, (_, index) => {
       const row = Math.floor(index / puzzle.columns);
       const column = index % puzzle.columns;
       return [row, column] as const;
@@ -84,20 +85,61 @@ describe("jinx helpers", () => {
       return (
         !state.revealed.some(([revealedRow, revealedColumn]) => revealedRow === row && revealedColumn === column) &&
         !state.flags.some(([flagRow, flagColumn]) => flagRow === row && flagColumn === column) &&
-        !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column)
+        !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column) &&
+        getAdjacentMineCount(puzzle, row, column) === 0
       );
     });
 
-    const originalRandom = Math.random;
-    Math.random = () => 0.999999;
+    const hintCell = getSafeHintCell(puzzle, state);
+    expect(hintCell).not.toBeNull();
+    expect(zeroSafeCells).toContainEqual(hintCell!);
+  });
 
-    try {
-      const hintCell = getSafeHintCell(puzzle, state);
-      expect(hintCell).not.toBeNull();
-      expect(hintCell).toEqual(safeCells[safeCells.length - 1]);
-    } finally {
-      Math.random = originalRandom;
-    }
+  it("falls back to the nearest safe cell using Euclidean distance when no zero-clue hints remain", () => {
+    const puzzle = getJinxPuzzleById(5, "easy");
+    const lastRevealed = [2, 3] as const;
+    const nonMineCells = Array.from({ length: puzzle.rows * puzzle.columns }, (_, index) => {
+      const row = Math.floor(index / puzzle.columns);
+      const column = index % puzzle.columns;
+      return [row, column] as const;
+    }).filter(([row, column]) => !puzzle.mines.some(([mineRow, mineColumn]) => mineRow === row && mineColumn === column));
+    const zeroCells = nonMineCells.filter(([row, column]) => getAdjacentMineCount(puzzle, row, column) === 0);
+    const positiveCells = nonMineCells.filter(
+      ([row, column]) =>
+        getAdjacentMineCount(puzzle, row, column) > 0 &&
+        !(row === lastRevealed[0] && column === lastRevealed[1])
+    );
+
+    expect(zeroCells.length).toBeGreaterThan(0);
+
+    const state = normalizeJinxPuzzleState(
+      {
+        revealed: [...zeroCells, lastRevealed],
+        flags: [],
+        hintCount: 0,
+        lastRevealed,
+        moveCount: 1,
+        lost: false
+      },
+      "easy"
+    );
+
+    const expected = positiveCells.reduce((best, candidate) => {
+      const bestDistance = Math.hypot(best[0] - lastRevealed[0], best[1] - lastRevealed[1]);
+      const candidateDistance = Math.hypot(candidate[0] - lastRevealed[0], candidate[1] - lastRevealed[1]);
+
+      if (candidateDistance !== bestDistance) {
+        return candidateDistance < bestDistance ? candidate : best;
+      }
+
+      if (candidate[0] !== best[0]) {
+        return candidate[0] < best[0] ? candidate : best;
+      }
+
+      return candidate[1] < best[1] ? candidate : best;
+    });
+
+    expect(getSafeHintCell(puzzle, state)).toEqual(expected);
   });
 
   it("migrates legacy hint usage to a hint count", () => {
@@ -185,6 +227,7 @@ describe("jinx helpers", () => {
         revealed: easySafeCells,
         flags: [],
         hintCount: 0,
+        lastRevealed: null,
         moveCount: easySafeCells.length,
         lost: false
       })
@@ -195,6 +238,7 @@ describe("jinx helpers", () => {
         revealed: hardSafeCells,
         flags: [],
         hintCount: 0,
+        lastRevealed: null,
         moveCount: hardSafeCells.length,
         lost: false
       })

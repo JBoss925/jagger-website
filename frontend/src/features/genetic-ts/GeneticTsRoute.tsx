@@ -1,7 +1,7 @@
 import SiteNavigation from "../../components/SiteNavigation";
 import { profileContent } from "../../content/profile";
 import { usePageReveal } from "../../hooks/usePageReveal";
-import { GeneticTsPage } from "../../../../genetic_ts/src";
+import { GeneticTsPage } from "@genetic-ts";
 
 function GeneticTsRoute() {
   const isPageReady = usePageReveal();

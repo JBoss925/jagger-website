@@ -2,6 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import HomePage from "./HomePage";
 
+vi.mock("./SceneBackdrop", () => ({
+  default: () => <div data-testid="scene-backdrop" aria-hidden="true" />
+}));
+
 describe("HomePage", () => {
   it("renders the hero and key project sections", () => {
     render(
@@ -13,6 +17,7 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", { name: /Jagger Brulato/i })
     ).toBeInTheDocument();
+    expect(screen.getByTestId("scene-backdrop")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /These projects fill in the rest of the picture/i })
     ).toBeInTheDocument();

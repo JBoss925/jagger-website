@@ -26,6 +26,7 @@ export type JinxPuzzle = JinxPuzzleData & {
 export type JinxPuzzleState = {
   flags: JinxCell[];
   hintCount: number;
+  lastRevealed: JinxCell | null;
   lost: boolean;
   moveCount: number;
   revealed: JinxCell[];
@@ -105,6 +106,10 @@ function normalizeCells(value: unknown, settings: JinxDifficultySettings) {
   return cells;
 }
 
+function normalizeCell(value: unknown, settings: JinxDifficultySettings) {
+  return normalizeCells([value], settings)[0] ?? null;
+}
+
 function createSeededRandom(seed: number) {
   let value = seed >>> 0;
 
@@ -174,6 +179,7 @@ export function normalizeJinxPuzzleState(value: unknown, difficulty: JinxDifficu
       revealed: [],
       flags: [],
       hintCount: 0,
+      lastRevealed: null,
       moveCount: 0,
       lost: false
     };
@@ -193,6 +199,7 @@ export function normalizeJinxPuzzleState(value: unknown, difficulty: JinxDifficu
     revealed: normalizeCells(maybeState.revealed, settings),
     flags: normalizeCells(maybeState.flags, settings),
     hintCount: normalizedHintCount,
+    lastRevealed: normalizeCell((maybeState as { lastRevealed?: unknown }).lastRevealed, settings),
     moveCount: Math.max(0, Number(maybeState.moveCount) || 0),
     lost: Boolean(maybeState.lost)
   };
@@ -262,6 +269,7 @@ export function revealFromCell(puzzle: JinxPuzzleData, state: JinxPuzzleState, r
     return {
       ...state,
       revealed: [...state.revealed, [row, column] as JinxCell],
+      lastRevealed: [row, column] as JinxCell,
       moveCount: state.moveCount + 1,
       lost: true
     };
@@ -288,6 +296,7 @@ export function revealFromCell(puzzle: JinxPuzzleData, state: JinxPuzzleState, r
 
   return {
     ...state,
+    lastRevealed: [row, column] as JinxCell,
     revealed: nextRevealed,
     moveCount: state.moveCount + 1
   };
@@ -324,21 +333,47 @@ export function getSafeHintCell(puzzle: JinxPuzzleData, state: JinxPuzzleState) 
   const revealed = new Set(state.revealed.map(([r, c]) => keyForCell(r, c)));
   const flags = new Set(state.flags.map(([r, c]) => keyForCell(r, c)));
   const candidates: JinxCell[] = [];
+  const zeroCandidates: JinxCell[] = [];
 
   for (let row = 0; row < puzzle.rows; row += 1) {
     for (let column = 0; column < puzzle.columns; column += 1) {
       const key = keyForCell(row, column);
       if (!revealed.has(key) && !flags.has(key) && !isMine(puzzle, row, column)) {
-        candidates.push([row, column] as JinxCell);
+        const candidate = [row, column] as JinxCell;
+        candidates.push(candidate);
+
+        if (getAdjacentMineCount(puzzle, row, column) === 0) {
+          zeroCandidates.push(candidate);
+        }
       }
     }
   }
 
-  if (candidates.length === 0) {
+  const prioritizedCandidates = zeroCandidates.length > 0 ? zeroCandidates : candidates;
+
+  if (prioritizedCandidates.length === 0) {
     return null;
   }
 
-  return candidates[Math.floor(Math.random() * candidates.length)] ?? null;
+  if (!state.lastRevealed) {
+    return prioritizedCandidates[0] ?? null;
+  }
+
+  const [lastRow, lastColumn] = state.lastRevealed;
+  return prioritizedCandidates.reduce((best, candidate) => {
+    const bestDistance = Math.hypot(best[0] - lastRow, best[1] - lastColumn);
+    const candidateDistance = Math.hypot(candidate[0] - lastRow, candidate[1] - lastColumn);
+
+    if (candidateDistance !== bestDistance) {
+      return candidateDistance < bestDistance ? candidate : best;
+    }
+
+    if (candidate[0] !== best[0]) {
+      return candidate[0] < best[0] ? candidate : best;
+    }
+
+    return candidate[1] < best[1] ? candidate : best;
+  });
 }
 
 export function getInitialSafeRevealCell(puzzle: JinxPuzzleData) {
@@ -385,6 +420,7 @@ export function createInitialJinxPuzzleState(puzzle: JinxPuzzleData) {
   const openedState = revealFromCell(puzzle, normalizeJinxPuzzleState(null, puzzle.difficulty), openingCell[0], openingCell[1]);
   return {
     ...openedState,
+    lastRevealed: null,
     moveCount: 0
   };
 }

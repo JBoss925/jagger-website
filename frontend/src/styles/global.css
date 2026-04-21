@@ -2837,6 +2837,10 @@ button:hover {
   gap: 16px;
 }
 
+.experience-card__header {
+  width: 100%;
+}
+
 .project-card__content {
   gap: 12px;
 }
@@ -3664,8 +3668,14 @@ button:hover {
   }
 
   .content-shell {
-    width: min(100vw - 28px, 1000px);
+    width: min(100vw, 1000px);
+    margin: 0;
     padding-top: 24px;
+  }
+
+  .games-page .content-shell {
+    padding-inline: 20px;
+    box-sizing: border-box;
   }
 
   .domes-hero h1,
@@ -3884,9 +3894,13 @@ button:hover {
     padding: 22px;
   }
 
+  .hero-panel {
+    padding-inline: 22px;
+  }
+
   .hero-panel__copy,
   .hero-panel__aside {
-    padding: 0 10px;
+    padding: 0;
   }
 
   .hero-panel__portrait-wrap {
@@ -3908,7 +3922,11 @@ button:hover {
   }
 
   .experience-card__header {
-    gap: 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    justify-content: stretch;
+    align-items: stretch;
   }
 
   .ide-run-button {
@@ -3926,11 +3944,22 @@ button:hover {
   }
 
   .experience-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    width: 100%;
     justify-items: start;
     text-align: left;
   }
 
+  .experience-card__meta span:last-child {
+    margin-left: auto;
+    text-align: right;
+  }
+
   .experience-card__brand {
+    width: 100%;
     grid-template-columns: 52px 1fr;
     column-gap: 12px;
   }
@@ -3939,6 +3968,16 @@ button:hover {
     width: 52px;
     height: 52px;
     padding: 8px;
+  }
+
+  .contact-card {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .contact-links {
+    justify-content: flex-start;
+    justify-self: start;
   }
 }
 
