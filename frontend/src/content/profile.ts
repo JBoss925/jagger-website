@@ -42,7 +42,7 @@ export const profileContent: ProfileContent = {
     { label: "Favorite Project", value: "JaggerScript" }
   ],
   links: [
-    { label: "Email", href: "mailto:jaggerbrulato@gmail.com" },
+    { label: "Email", href: "mailto:jagger@jaggerbrulato.com" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/jaggerbrulato/" },
     { label: "GitHub", href: "https://github.com/JBoss925" },
     { label: "Resume", href: "/files/resume.pdf" }
