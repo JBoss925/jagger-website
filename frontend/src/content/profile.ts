@@ -27,7 +27,7 @@ export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
   title: "Full-stack engineer across product, platform, and language tooling.",
   location: "United States",
-  email: "jaggerbrulato@gmail.com",
+  email: "jagger@jaggerbrulato.com",
   heroSummary:
     "I like work that makes me understand the **whole system**: the product surface, the backend, the tooling around it, and the operational reality once it is live.",
   heroBullets: [
