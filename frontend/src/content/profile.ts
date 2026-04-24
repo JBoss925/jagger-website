@@ -123,6 +123,7 @@ export const profileContent: ProfileContent = {
   ],
   experience: [
     {
+      slug: "red-ventures-platform-engineer",
       company: "Red Ventures",
       role: "Platform Engineer",
       timeframe: "2024-2025",
@@ -152,6 +153,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "lowes-software-engineer",
       company: "Lowe’s",
       role: "Software Engineer",
       timeframe: "2024",
@@ -179,6 +181,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "google-software-engineer",
       company: "Google",
       role: "Software Engineer",
       timeframe: "2021-2024",
@@ -207,6 +210,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "cornell-dti-developer-lead",
       company: "Cornell Design & Tech Initiative",
       role: "Developer Lead",
       timeframe: "2020-2021",
@@ -243,6 +247,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "google-swe-intern",
       company: "Google",
       role: "SWE Intern",
       timeframe: "2020",
@@ -272,6 +277,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "cornell-dti-technical-project-manager",
       company: "Cornell Design & Tech Initiative",
       role: "Technical Project Manager",
       timeframe: "2017-2020",
@@ -306,6 +312,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "cornell-dti-full-stack-developer",
       company: "Cornell Design & Tech Initiative",
       role: "Full Stack Developer",
       timeframe: "2017-2019",
@@ -339,6 +346,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "lowes-software-engineering-intern",
       company: "Lowe’s",
       role: "Software Engineering Intern",
       timeframe: "2019",
@@ -367,6 +375,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "incite-analytics-full-stack-developer",
       company: "Incite Analytics",
       role: "Full Stack Developer",
       timeframe: "2018-2019",
@@ -394,6 +403,7 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "velocitor-software-engineer-intern",
       company: "Velocitor",
       role: "Software Engineer Intern",
       timeframe: "2016",

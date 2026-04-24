@@ -16,9 +16,10 @@ import {
 
 type ProjectCardProps = {
   project: ProjectEntry;
+  id?: string;
 };
 
-function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({ project, id }: ProjectCardProps) {
   function isPrimaryLink(label: string, href: string) {
     const normalized = label.toLowerCase();
     if (normalized.includes("npm")) {
@@ -66,7 +67,7 @@ function ProjectCard({ project }: ProjectCardProps) {
   }
 
   return (
-    <article className="project-card">
+    <article id={id} className="project-card">
       {project.image ? (
         <img src={project.image} alt={`${project.title} preview`} className="project-card__image" />
       ) : (

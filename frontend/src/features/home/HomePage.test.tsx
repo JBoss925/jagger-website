@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import HomePage from "./HomePage";
 
@@ -7,6 +7,10 @@ vi.mock("./SceneBackdrop", () => ({
 }));
 
 describe("HomePage", () => {
+  beforeEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
   it("renders the hero and key project sections", () => {
     render(
       <MemoryRouter>
@@ -37,11 +41,14 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
   });
 
-  it("smoothly scrolls on initial hash loads", () => {
+  it("smoothly scrolls on initial hash loads", async () => {
     const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
     const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
 
     window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
       <MemoryRouter initialEntries={["/#projects"]}>
@@ -49,19 +56,77 @@ describe("HomePage", () => {
       </MemoryRouter>
     );
 
-    expect(scrollTo).toHaveBeenCalledWith({
-      top: expect.any(Number),
-      behavior: "smooth",
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "start",
+        behavior: "smooth",
+      });
     });
 
     window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  });
+
+  it("smoothly scrolls on initial experience card hash loads", async () => {
+    const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
+    const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+
+    window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    render(
+      <MemoryRouter initialEntries={["/#experience/red-ventures-platform-engineer"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "start",
+        behavior: "smooth",
+      });
+    });
+
+    window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  });
+
+  it("smoothly scrolls on initial project card hash loads", async () => {
+    const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
+    const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+
+    window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    render(
+      <MemoryRouter initialEntries={["/#projects/jaggerscript"]}>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "start",
+        behavior: "smooth",
+      });
+    });
+
+    window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
   });
 
   it("resets to the top on plain homepage navigation", () => {
     const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
     const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
 
     window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -75,13 +140,17 @@ describe("HomePage", () => {
     });
 
     window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
   });
 
   it("smoothly scrolls to the hero when the brand is clicked on the homepage", () => {
     const scrollTo = vi.fn();
+    const scrollIntoView = vi.fn();
     const originalScrollTo = window.scrollTo;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
 
     window.scrollTo = scrollTo;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -98,6 +167,7 @@ describe("HomePage", () => {
     });
 
     window.scrollTo = originalScrollTo;
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
   });
 
   it("does not trigger an extra programmatic jump on an initial hero hash load", () => {

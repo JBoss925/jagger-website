@@ -18,6 +18,7 @@ export type NavLinkItem = {
 };
 
 export type ExperienceEntry = {
+  slug: string;
   company: string;
   role: string;
   timeframe: string;

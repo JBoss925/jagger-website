@@ -12,6 +12,11 @@ import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useSectionSpy } from "../../hooks/useSectionSpy";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import SceneBackdrop from "./SceneBackdrop";
+import {
+  getExperienceCardElementId,
+  getProjectCardElementId,
+  parseHomeHash
+} from "./homeAnchors";
 
 const sectionOrder = profileContent.sceneSections.map((section) => section.id);
 const ENABLE_MOBILE_STATIC_SCENE = false;
@@ -25,7 +30,6 @@ function HomePage() {
     prefersReducedMotion || (ENABLE_MOBILE_STATIC_SCENE && isCompactViewport);
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
-  const hasHandledInitialHash = useRef(false);
   const hasSyncedSectionUrl = useRef(false);
   const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
   const nextSectionId =
@@ -68,6 +72,40 @@ function HomePage() {
     });
   }
 
+  function scrollToElement(targetElementId: string) {
+    const element = document.getElementById(targetElementId);
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({
+      block: "start",
+      behavior: prefersReducedMotion ? "auto" : "smooth"
+    });
+  }
+
+  function handleHashNavigation(hash: string) {
+    if (!hash) {
+      return;
+    }
+
+    const parsedHash = parseHomeHash(hash);
+    if (!parsedHash) {
+      return;
+    }
+
+    const element = document.getElementById(parsedHash.targetElementId);
+    if (!element) {
+      return;
+    }
+
+    if (parsedHash.targetElementId === "hero") {
+      return;
+    }
+
+    scrollToElement(parsedHash.targetElementId);
+  }
+
   useLayoutEffect(() => {
     if (location.pathname === "/" && !location.hash) {
       window.scrollTo({ top: 0, behavior: "auto" });
@@ -75,33 +113,28 @@ function HomePage() {
   }, [location.pathname, location.hash]);
 
   useLayoutEffect(() => {
-    if (!location.hash) {
-      hasHandledInitialHash.current = true;
+    if (location.pathname !== "/") {
       return;
     }
 
-    const targetId = location.hash.slice(1);
-    const element = document.getElementById(targetId);
-    if (!element) {
+    handleHashNavigation(location.hash || window.location.hash);
+  }, [location.hash, location.pathname, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
       return;
     }
 
-    hasHandledInitialHash.current = true;
+    const onHashChange = () => {
+      handleHashNavigation(window.location.hash);
+    };
 
-    if (targetId === "hero") {
-      return;
-    }
+    window.addEventListener("hashchange", onHashChange);
 
-    const top = Math.max(
-      0,
-      window.scrollY + element.getBoundingClientRect().top - getHeaderScrollOffset()
-    );
-
-    window.scrollTo({
-      top,
-      behavior: prefersReducedMotion ? "auto" : "smooth"
-    });
-  }, [location.hash, prefersReducedMotion]);
+    return () => {
+      window.removeEventListener("hashchange", onHashChange);
+    };
+  }, [location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -222,7 +255,11 @@ function HomePage() {
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
-              <ExperienceCard key={`${entry.company}-${entry.role}`} entry={entry} />
+              <ExperienceCard
+                key={`${entry.company}-${entry.role}`}
+                id={getExperienceCardElementId(entry)}
+                entry={entry}
+              />
             ))}
           </div>
         </SectionShell>
@@ -235,7 +272,11 @@ function HomePage() {
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
+              <ProjectCard
+                key={project.slug}
+                id={getProjectCardElementId(project)}
+                project={project}
+              />
             ))}
           </div>
         </SectionShell>

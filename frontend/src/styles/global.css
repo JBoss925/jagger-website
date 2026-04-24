@@ -2678,6 +2678,11 @@ button:hover {
   border: 1px solid var(--line);
 }
 
+.experience-card,
+.project-card {
+  scroll-margin-top: calc(var(--section-scroll-offset) + 14px);
+}
+
 .metric-card::before,
 .feature-card::before,
 .skill-card::before,

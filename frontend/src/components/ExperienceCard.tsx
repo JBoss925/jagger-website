@@ -4,6 +4,7 @@ import { renderInlineEmphasis } from "./renderInlineEmphasis";
 
 type ExperienceCardProps = {
   entry: ExperienceEntry;
+  id?: string;
 };
 
 function getCompanyInitials(company: string) {
@@ -15,9 +16,9 @@ function getCompanyInitials(company: string) {
   return words.slice(0, 2).map((word) => word[0]?.toUpperCase() ?? "").join("");
 }
 
-function ExperienceCard({ entry }: ExperienceCardProps) {
+function ExperienceCard({ entry, id }: ExperienceCardProps) {
   return (
-    <article className="experience-card">
+    <article id={id} className="experience-card">
       <div className="experience-card__header">
         <div className="experience-card__brand">
           <div className="experience-card__logo-shell" aria-hidden={entry.logo ? undefined : true}>
