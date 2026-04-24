@@ -21,6 +21,9 @@ import {
 const sectionOrder = profileContent.sceneSections.map((section) => section.id);
 const ENABLE_MOBILE_STATIC_SCENE = false;
 const HEADER_SCROLL_GAP = 16;
+const CARD_HASH_GAP = 14;
+const INITIAL_SECTION_HASH_CORRECTION = 14;
+const INITIAL_CARD_HASH_CORRECTION = 28;
 
 function HomePage() {
   const location = useLocation();
@@ -31,6 +34,9 @@ function HomePage() {
   const activeSectionId = useSectionSpy(sectionOrder, profileContent.sceneSections[0].id);
   const isPageReady = usePageReveal();
   const hasSyncedSectionUrl = useRef(false);
+  const initialHashPending = useRef(
+    location.pathname === "/" && Boolean(location.hash || window.location.hash)
+  );
   const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
   const nextSectionId =
     activeSectionIndex >= 0 && activeSectionIndex < sectionOrder.length - 1
@@ -72,19 +78,7 @@ function HomePage() {
     });
   }
 
-  function scrollToElement(targetElementId: string) {
-    const element = document.getElementById(targetElementId);
-    if (!element) {
-      return;
-    }
-
-    element.scrollIntoView({
-      block: "start",
-      behavior: prefersReducedMotion ? "auto" : "smooth"
-    });
-  }
-
-  function handleHashNavigation(hash: string) {
+  function scrollToHashTarget(hash: string, options?: { initialLoad?: boolean }) {
     if (!hash) {
       return;
     }
@@ -100,10 +94,28 @@ function HomePage() {
     }
 
     if (parsedHash.targetElementId === "hero") {
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
       return;
     }
 
-    scrollToElement(parsedHash.targetElementId);
+    const initialCorrection = options?.initialLoad
+      ? parsedHash.cardSlug
+        ? INITIAL_CARD_HASH_CORRECTION
+        : INITIAL_SECTION_HASH_CORRECTION
+      : 0;
+    const targetOffset =
+      getHeaderScrollOffset() +
+      (parsedHash.cardSlug ? CARD_HASH_GAP : 0) +
+      initialCorrection;
+    const top = Math.max(
+      0,
+      window.scrollY + element.getBoundingClientRect().top - targetOffset
+    );
+
+    window.scrollTo({
+      top,
+      behavior: prefersReducedMotion ? "auto" : "smooth"
+    });
   }
 
   useLayoutEffect(() => {
@@ -114,11 +126,24 @@ function HomePage() {
 
   useLayoutEffect(() => {
     if (location.pathname !== "/") {
+      initialHashPending.current = false;
       return;
     }
 
-    handleHashNavigation(location.hash || window.location.hash);
-  }, [location.hash, location.pathname, prefersReducedMotion]);
+    const hash = location.hash || window.location.hash;
+    if (!hash) {
+      initialHashPending.current = false;
+      return;
+    }
+
+    const isInitialLoad = initialHashPending.current;
+    if (isInitialLoad && !isPageReady) {
+      return;
+    }
+
+    initialHashPending.current = false;
+    scrollToHashTarget(hash, { initialLoad: isInitialLoad });
+  }, [isPageReady, location.hash, location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -126,7 +151,8 @@ function HomePage() {
     }
 
     const onHashChange = () => {
-      handleHashNavigation(window.location.hash);
+      initialHashPending.current = false;
+      scrollToHashTarget(window.location.hash);
     };
 
     window.addEventListener("hashchange", onHashChange);

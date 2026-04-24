@@ -57,8 +57,8 @@ describe("HomePage", () => {
     );
 
     await waitFor(() => {
-      expect(scrollIntoView).toHaveBeenCalledWith({
-        block: "start",
+      expect(scrollTo).toHaveBeenCalledWith({
+        top: expect.any(Number),
         behavior: "smooth",
       });
     });
@@ -83,8 +83,8 @@ describe("HomePage", () => {
     );
 
     await waitFor(() => {
-      expect(scrollIntoView).toHaveBeenCalledWith({
-        block: "start",
+      expect(scrollTo).toHaveBeenCalledWith({
+        top: expect.any(Number),
         behavior: "smooth",
       });
     });
@@ -109,8 +109,8 @@ describe("HomePage", () => {
     );
 
     await waitFor(() => {
-      expect(scrollIntoView).toHaveBeenCalledWith({
-        block: "start",
+      expect(scrollTo).toHaveBeenCalledWith({
+        top: expect.any(Number),
         behavior: "smooth",
       });
     });
@@ -170,7 +170,7 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
   });
 
-  it("does not trigger an extra programmatic jump on an initial hero hash load", () => {
+  it("scrolls directly to the hero on an initial hero hash load", async () => {
     const scrollTo = vi.fn();
     const scrollIntoView = vi.fn();
     const originalScrollTo = window.scrollTo;
@@ -185,7 +185,12 @@ describe("HomePage", () => {
       </MemoryRouter>
     );
 
-    expect(scrollTo).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(scrollTo).toHaveBeenCalledWith({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
     expect(scrollIntoView).not.toHaveBeenCalled();
 
     window.scrollTo = originalScrollTo;
