@@ -13,10 +13,12 @@ import jinxPreview from "../assets/jinx-preview.jpg";
 import jordlePreview from "../assets/jordle-preview.jpg";
 import jolorPreview from "../assets/jolor-preview.jpg";
 import judokuPreview from "../assets/judoku-preview.jpg";
+import jetstreamPreview from "../assets/jetstream-preview.jpg";
 import idolPreview from "../assets/idol-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
 import newReactTypingEffectDemo from "../assets/new-react-typing-effect-demo.gif";
+import portfolioPreview from "../assets/portfolio-preview.jpg";
 import renginePreview from "../assets/rengine-preview.jpg";
 import tsxlightRendererPreview from "../assets/tsxlight-renderer-preview.jpg";
 import type { ProfileContent } from "../types/content";
@@ -517,6 +519,52 @@ export const profileContent: ProfileContent = {
       links: [
         { label: "Open Demo", href: "/rengine" },
         { label: "Source", href: "https://github.com/JBoss925/Rengine" }
+      ]
+    },
+    {
+      slug: "jetstream",
+      title: "JetStream",
+      description:
+        "A production-oriented weather app that uses **Open-Meteo data**, a React/Vite dashboard, a NestJS backend-for-frontend, and an installable PWA shell.",
+      impact:
+        "The useful work is in the quality-of-life details: **saved preferences, live and deterministic test modes, direct or backend data paths, rich weather instruments, and service-worker caching** that make it feel like a real app.",
+      stack: [
+        "TypeScript",
+        "React",
+        "Vite",
+        "NestJS",
+        "Open-Meteo",
+        "PWA",
+        "Service workers",
+        "Vitest"
+      ],
+      image: jetstreamPreview,
+      links: [
+        { label: "Open App", href: "https://jetstream.jaggerbrulato.com/" },
+        { label: "Source", href: "https://github.com/JBoss925/JetStream" }
+      ]
+    },
+    {
+      slug: "portfolio-site",
+      title: "Portfolio Site",
+      description:
+        "This site: a React/Vite portfolio built around a **3D section backdrop, project deep links, resume delivery, embedded demos, and daily games**.",
+      impact:
+        "It is the connective tissue for the rest of the work here, combining **frontend polish, routing, responsive project cards, test coverage, and subproject integrations** into one deployable portfolio.",
+      stack: [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Three.js",
+        "React Router",
+        "Vitest",
+        "Playwright",
+        "Responsive UI"
+      ],
+      image: portfolioPreview,
+      links: [
+        { label: "Open Site", href: "https://jaggerbrulato.com/" },
+        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
     {
