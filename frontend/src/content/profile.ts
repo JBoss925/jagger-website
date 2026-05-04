@@ -164,7 +164,7 @@ export const profileContent: ProfileContent = {
         "Worked as a full-time software engineer after interning there earlier, contributing in a large enterprise environment with real production delivery expectations.",
       highlights: [
         "Built and maintained enterprise retail systems using Java, Spring, Spring Boot, and Kafka in a mature production environment with established delivery processes.",
-        "Maintained a suite of 25+ microservices, updating Docker images and runtimes, upgrading Alpine base versions, and addressing security vulnerabilities across the service fleet.",
+        "Maintained a suite of 20+ microservices, updating Docker images and runtimes, upgrading Alpine base versions, and addressing security vulnerabilities across the service fleet.",
         "Worked across existing systems, stakeholders, and release workflows rather than building in isolation, which meant shipping changes that fit into a much larger operational environment.",
         "Built on earlier experience with Lowe's merchandising and pricing systems, adding more depth in large-scale backend delivery and enterprise software coordination."
       ],
