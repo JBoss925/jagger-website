@@ -136,10 +136,10 @@ export const profileContent: ProfileContent = {
       summary:
         "Senior software engineering role focused on the Palmetto app and the backend services behind its home-energy product experience.",
       highlights: [
-        "Working across the MERN stack with a backend/API emphasis, building scalable Node and Express services, MongoDB integrations, React surfaces, and testable product flows.",
+        "Working across the MERN stack, building scalable Node and Express services, MongoDB integrations, React surfaces, and testable product flows.",
         "Contributing to app features around solar production, electricity usage, grid exports, utility connections, daily/weekly/monthly energy trends, and the newer Solar and Electricity usage experience.",
         "Supporting customer-facing workflows such as the marketplace, gamification through rewards and quests, personalized recommendations, badges, referrals, support, Learning Center/news content, and project/onboarding requirements like utility bills, HOA details, and virtual site surveys.",
-        "Working on software that has to make messy home-energy data feel reliable and useful: utility authentication, account state, energy history/statistics, and integrations across iOS, Android, and web-backed services."
+        "Working on software that has to make messy home-energy data feel reliable and useful: utility authentication, account state, energy history/statistics, and integrations across iOS, Android, and web clients."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
