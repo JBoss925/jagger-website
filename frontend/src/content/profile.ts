@@ -3,6 +3,7 @@ import cornellDtiLogo from "../assets/company-logos/cornell-dti.svg";
 import cornellUniversityLogo from "../assets/company-logos/cornell-university.svg";
 import googleLogo from "../assets/company-logos/google.png";
 import lowesLogo from "../assets/company-logos/lowes.png";
+import palmettoLogo from "../assets/company-logos/palmetto.svg";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
 import velocitorLogo from "../assets/company-logos/velocitor.png";
 import domesPreview from "../assets/domes-preview.jpg";
@@ -124,6 +125,41 @@ export const profileContent: ProfileContent = {
     }
   ],
   experience: [
+    {
+      slug: "palmetto-software-development-engineer-iii",
+      company: "Palmetto",
+      role: "Software Development Engineer III",
+      timeframe: "2026-Present",
+      location: "Charlotte, NC",
+      logo: palmettoLogo,
+      logoAlt: "Palmetto logo",
+      summary:
+        "Senior software engineering role focused on the Palmetto app and the backend services behind its home-energy product experience.",
+      highlights: [
+        "Working across the MERN stack with a backend/API emphasis, building scalable Node and Express services, MongoDB integrations, React surfaces, and testable product flows.",
+        "Contributing to app features around solar production, electricity usage, grid exports, utility connections, daily/weekly/monthly energy trends, and the newer Solar and Electricity usage experience.",
+        "Supporting customer-facing workflows such as the marketplace, rewards and quests, personalized recommendations, badges, referrals, support, Learning Center/news content, and project/onboarding requirements like utility bills, HOA details, and virtual site surveys.",
+        "Working on software that has to make messy home-energy data feel reliable and useful: utility authentication, 2FA improvements, account state, deep links, push notifications, app performance, and integrations across iOS, Android, and web-backed services."
+      ],
+      tags: [
+        { label: "TypeScript", tone: "language" },
+        { label: "JavaScript", tone: "language" },
+        { label: "React", tone: "framework" },
+        { label: "Node.js", tone: "framework" },
+        { label: "Express", tone: "framework" },
+        { label: "MongoDB", tone: "infrastructure" },
+        { label: "REST APIs", tone: "framework" },
+        { label: "Full-stack", tone: "practice" },
+        { label: "Authentication", tone: "practice" },
+        { label: "Testing", tone: "practice" },
+        { label: "Backend systems", tone: "domain" },
+        { label: "Consumer apps", tone: "domain" },
+        { label: "Mobile apps", tone: "domain" },
+        { label: "Energy data", tone: "domain" },
+        { label: "Clean energy", tone: "domain" },
+        { label: "Senior engineering", tone: "practice" }
+      ]
+    },
     {
       slug: "red-ventures-platform-engineer",
       company: "Red Ventures",
