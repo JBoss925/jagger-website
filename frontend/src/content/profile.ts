@@ -165,7 +165,7 @@ export const profileContent: ProfileContent = {
       company: "Red Ventures",
       role: "Platform Engineer",
       timeframe: "2024-2025",
-      location: "Internal platform engineering",
+      location: "Fort Mill, SC",
       logo: redVenturesLogo,
       logoAlt: "Red Ventures logo",
       summary:
@@ -195,7 +195,7 @@ export const profileContent: ProfileContent = {
       company: "Lowe’s",
       role: "Software Engineer",
       timeframe: "2024",
-      location: "Hybrid",
+      location: "Charlotte, NC",
       logo: lowesLogo,
       logoAlt: "Lowe's logo",
       summary:
@@ -223,7 +223,7 @@ export const profileContent: ProfileContent = {
       company: "Google",
       role: "Software Engineer",
       timeframe: "2021-2024",
-      location: "Full-time",
+      location: "Sunnyvale, CA",
       logo: googleLogo,
       logoAlt: "Google logo",
       summary:
@@ -289,7 +289,7 @@ export const profileContent: ProfileContent = {
       company: "Google",
       role: "SWE Intern",
       timeframe: "2020",
-      location: "Internship",
+      location: "Remote",
       logo: googleLogo,
       logoAlt: "Google logo",
       summary:
@@ -319,7 +319,7 @@ export const profileContent: ProfileContent = {
       company: "Cornell Design & Tech Initiative",
       role: "Technical Project Manager",
       timeframe: "2017-2020",
-      location: "Cue subteam",
+      location: "Cornell University",
       logo: cornellDtiLogo,
       logoAlt: "Cornell Design and Tech Initiative logo",
       summary:
@@ -354,7 +354,7 @@ export const profileContent: ProfileContent = {
       company: "Cornell Design & Tech Initiative",
       role: "Full Stack Developer",
       timeframe: "2017-2019",
-      location: "Project team",
+      location: "Cornell University",
       logo: cornellDtiLogo,
       logoAlt: "Cornell Design and Tech Initiative logo",
       summary:
@@ -388,7 +388,7 @@ export const profileContent: ProfileContent = {
       company: "Lowe’s",
       role: "Software Engineering Intern",
       timeframe: "2019",
-      location: "Merchandising IT",
+      location: "Mooresville, NC",
       logo: lowesLogo,
       logoAlt: "Lowe's logo",
       summary:
@@ -417,7 +417,7 @@ export const profileContent: ProfileContent = {
       company: "Incite Analytics",
       role: "Full Stack Developer",
       timeframe: "2018-2019",
-      location: "Health tech startup",
+      location: "Cornell University",
       logo: cornellUniversityLogo,
       logoAlt: "Cornell University logo",
       summary:
@@ -445,7 +445,7 @@ export const profileContent: ProfileContent = {
       company: "Velocitor",
       role: "Software Engineer Intern",
       timeframe: "2016",
-      location: "Cross-platform mobile",
+      location: "Charlotte, NC",
       logo: velocitorLogo,
       logoAlt: "Velocitor logo",
       summary:
