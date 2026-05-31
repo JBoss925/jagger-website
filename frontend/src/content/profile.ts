@@ -221,7 +221,7 @@ export const profileContent: ProfileContent = {
     {
       slug: "google-software-engineer",
       company: "Google",
-      role: "Software Engineer",
+      role: "L4 Software Engineer",
       timeframe: "2021-2024",
       location: "Sunnyvale, CA",
       logo: googleLogo,
