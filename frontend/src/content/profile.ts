@@ -28,7 +28,7 @@ export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
-  title: "Full-stack engineer across product, platform, and language tooling.",
+  title: "Sr. Full-stack engineer across product, platform, and language tooling.",
   location: "United States",
   email: "jagger@jaggerbrulato.com",
   heroSummary:
@@ -55,7 +55,7 @@ export const profileContent: ProfileContent = {
       id: "hero",
       label: "Intro",
       eyebrow: "Intro",
-      title: "I’m a full-stack engineer who likes work with real technical depth.",
+      title: "I’m a Sr. Full-Stack Engineer who likes work with real technical depth.",
       summary:
         "Most of the work I’m proud of sits somewhere between product engineering, backend systems, internal tools, and the kinds of projects that force you to understand the whole stack.",
       position: [-8, 3, -1],

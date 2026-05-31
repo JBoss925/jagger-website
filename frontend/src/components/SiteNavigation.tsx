@@ -24,7 +24,7 @@ function SiteNavigation({
   activeSectionId,
   onSectionNavigate,
   brandTitle = "Jagger Brulato",
-  brandSubtitle = "full-stack engineer",
+  brandSubtitle = "sr. full-stack engineer",
   brandHref = "/",
   showActions = true
 }: SiteNavigationProps) {
