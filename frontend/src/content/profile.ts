@@ -138,8 +138,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Working across the MERN stack with a backend/API emphasis, building scalable Node and Express services, MongoDB integrations, React surfaces, and testable product flows.",
         "Contributing to app features around solar production, electricity usage, grid exports, utility connections, daily/weekly/monthly energy trends, and the newer Solar and Electricity usage experience.",
-        "Supporting customer-facing workflows such as the marketplace, rewards and quests, personalized recommendations, badges, referrals, support, Learning Center/news content, and project/onboarding requirements like utility bills, HOA details, and virtual site surveys.",
-        "Working on software that has to make messy home-energy data feel reliable and useful: utility authentication, 2FA improvements, account state, deep links, push notifications, app performance, and integrations across iOS, Android, and web-backed services."
+        "Supporting customer-facing workflows such as the marketplace, gamification through rewards and quests, personalized recommendations, badges, referrals, support, Learning Center/news content, and project/onboarding requirements like utility bills, HOA details, and virtual site surveys.",
+        "Working on software that has to make messy home-energy data feel reliable and useful: utility authentication, account state, energy history/statistics, and integrations across iOS, Android, and web-backed services."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
