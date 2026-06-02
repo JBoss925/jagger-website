@@ -1,3 +1,4 @@
 linkedin_snapshots/
+.playwright-libs/
 *:Zone.Identifier
 *Zone.Identifier

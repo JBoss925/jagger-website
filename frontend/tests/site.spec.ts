@@ -8,6 +8,6 @@ test("home and JaggerScript routes render", async ({ page }) => {
 
   await page.goto("/jaggerscript");
   await expect(
-    page.getByRole("heading", { name: /JaggerScript Playground/i })
+    page.getByRole("heading", { name: /^JaggerScript$/i })
   ).toBeVisible();
 });

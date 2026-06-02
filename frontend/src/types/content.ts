@@ -51,6 +51,11 @@ export type ProjectEntry = {
     | "rengine"
     | "typing-effect"
     | "idol";
+  relatedLinks?: {
+    label: string;
+    href: string;
+    description: string;
+  }[];
   links: {
     label: string;
     href: string;

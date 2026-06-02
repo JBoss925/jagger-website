@@ -20,6 +20,18 @@ type ProjectCardProps = {
 };
 
 function ProjectCard({ project, id }: ProjectCardProps) {
+  const className = [
+    "project-card",
+    project.slug === "jagger-games" ? "project-card--wide" : null
+  ].filter(Boolean).join(" ");
+
+  function getRelatedLinkClass(label: string) {
+    return [
+      "project-card__related-link",
+      `project-card__related-link--${label.toLowerCase()}`
+    ].join(" ");
+  }
+
   function isPrimaryLink(label: string, href: string) {
     const normalized = label.toLowerCase();
     if (normalized.includes("npm")) {
@@ -67,7 +79,7 @@ function ProjectCard({ project, id }: ProjectCardProps) {
   }
 
   return (
-    <article id={id} className="project-card">
+    <article id={id} className={className}>
       {project.image ? (
         <img src={project.image} alt={`${project.title} preview`} className="project-card__image" />
       ) : (
@@ -79,6 +91,16 @@ function ProjectCard({ project, id }: ProjectCardProps) {
         <h3>{project.title}</h3>
         <p>{renderInlineEmphasis(project.description)}</p>
         <p className="project-card__impact">{renderInlineEmphasis(project.impact)}</p>
+        {project.relatedLinks ? (
+          <div className="project-card__related-links">
+            {project.relatedLinks.map((link) => (
+              <a key={link.href} href={link.href} className={getRelatedLinkClass(link.label)}>
+                <strong>{link.label}</strong>
+                <span>{link.description}</span>
+              </a>
+            ))}
+          </div>
+        ) : null}
         <div className="chip-row">
           {sortChipLabels(project.stack).map((item) => (
             <span key={item} className={`chip chip--${inferChipTone(item)}`}>

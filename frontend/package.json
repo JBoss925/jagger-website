@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "LD_LIBRARY_PATH=../.playwright-libs/extract/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH playwright test"
   },
   "overrides": {
     "dompurify": "^3.3.4"

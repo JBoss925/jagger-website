@@ -6,14 +6,9 @@ import lowesLogo from "../assets/company-logos/lowes.png";
 import palmettoLogo from "../assets/company-logos/palmetto.svg";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
 import velocitorLogo from "../assets/company-logos/velocitor.png";
-import domesPreview from "../assets/domes-preview.jpg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
-import jigsawPreview from "../assets/jigsaw-preview.jpg";
-import jinxPreview from "../assets/jinx-preview.jpg";
-import jordlePreview from "../assets/jordle-preview.jpg";
-import jolorPreview from "../assets/jolor-preview.jpg";
-import judokuPreview from "../assets/judoku-preview.jpg";
+import jaggerGamesPreview from "../assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../assets/jetstream-preview.jpg";
 import idolPreview from "../assets/idol-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
@@ -517,44 +512,61 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "tsxlight-renderer",
-      title: "TSXLight Renderer",
+      slug: "jagger-games",
+      title: "Jagger Games",
       description:
-        "A proof-of-concept TSX rendering engine for web and Electron apps, built around a **custom JSX factory**, server-managed component trees, and socket-triggered callbacks.",
+        "A collection of browser games: **Jordle**, **Jolor**, **Jinx**, **Judoku**, and **Jigsaw** are daily puzzles, while **Domes** is a standalone two-player strategy game.",
       impact:
-        "This is the kind of lower-level experiment I enjoy because it forces me to think about **rendering, state persistence, per-user sessions, and page transitions** from first principles.",
+        "They share the same site architecture, with puzzle generation, local persistence, archive handling where it fits, and responsive game interfaces.",
       stack: [
         "TypeScript",
-        "Custom JSX factory",
-        "SSR + sockets",
-        "Electron + Express",
-        "Rendering architecture",
-        "Realtime UI"
+        "React",
+        "Daily puzzles",
+        "Local persistence",
+        "Archive systems",
+        "Turn-based gameplay",
+        "Game UI",
+        "Responsive UI"
       ],
-      image: tsxlightRendererPreview,
-      icon: "tsxlight",
-      links: [{ label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }]
-    },
-    {
-      slug: "rengine",
-      title: "Rengine",
-      description:
-        "A small rendering and game engine experiment with **scenes, entities, transform hierarchies, animation loops, and switchable canvas or React output**.",
-      impact:
-        "What I like about this one is that the interesting work sits below the demo: **engine boundaries, update loops, renderer abstraction, and entity composition** you can reason about directly.",
-      stack: [
-        "TypeScript",
-        "Canvas rendering",
-        "Game loops",
-        "Entity systems",
-        "Scene graphs",
-        "Engine architecture"
+      image: jaggerGamesPreview,
+      relatedLinks: [
+        {
+          label: "Jordle",
+          href: "/games/jordle",
+          description: "Six-letter word puzzle with daily boards and archives."
+        },
+        {
+          label: "Jolor",
+          href: "/games/jolor",
+          description: "Color-name guessing game where you dial in the target swatch."
+        },
+        {
+          label: "Jinx",
+          href: "/games/jinx",
+          description: "Minefield logic puzzle built around reveals, flags, and hints."
+        },
+        {
+          label: "Judoku",
+          href: "/games/judoku",
+          description: "Compact 6x6 sudoku with notes mode and quick daily solves."
+        },
+        {
+          label: "Jigsaw",
+          href: "/games/jigsaw",
+          description: "Tile-swap picture puzzle with a new scrambled image each day."
+        },
+        {
+          label: "Domes",
+          href: "/games/domes",
+          description: "Two-player strategy game about movement, tempo, and board control."
+        }
       ],
-      image: renginePreview,
-      icon: "rengine",
       links: [
-        { label: "Open Demo", href: "/rengine" },
-        { label: "Source", href: "https://github.com/JBoss925/Rengine" }
+        { label: "Open Games", href: "/games" },
+        {
+          label: "Source",
+          href: "https://github.com/JBoss925/jagger-website/tree/main/frontend/src/features/games"
+        }
       ]
     },
     {
@@ -581,6 +593,28 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "rengine",
+      title: "Rengine",
+      description:
+        "A small rendering and game engine experiment with **scenes, entities, transform hierarchies, animation loops, and switchable canvas or React output**.",
+      impact:
+        "What I like about this one is that the interesting work sits below the demo: **engine boundaries, update loops, renderer abstraction, and entity composition** you can reason about directly.",
+      stack: [
+        "TypeScript",
+        "Canvas rendering",
+        "Game loops",
+        "Entity systems",
+        "Scene graphs",
+        "Engine architecture"
+      ],
+      image: renginePreview,
+      icon: "rengine",
+      links: [
+        { label: "Open Demo", href: "/rengine" },
+        { label: "Source", href: "https://github.com/JBoss925/Rengine" }
+      ]
+    },
+    {
       slug: "portfolio-site",
       title: "Portfolio Site",
       description:
@@ -602,6 +636,25 @@ export const profileContent: ProfileContent = {
         { label: "Open Site", href: "https://jaggerbrulato.com/" },
         { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
+    },
+    {
+      slug: "tsxlight-renderer",
+      title: "TSXLight Renderer",
+      description:
+        "A proof-of-concept TSX rendering engine for web and Electron apps, built around a **custom JSX factory**, server-managed component trees, and socket-triggered callbacks.",
+      impact:
+        "This is the kind of lower-level experiment I enjoy because it forces me to think about **rendering, state persistence, per-user sessions, and page transitions** from first principles.",
+      stack: [
+        "TypeScript",
+        "Custom JSX factory",
+        "SSR + sockets",
+        "Electron + Express",
+        "Rendering architecture",
+        "Realtime UI"
+      ],
+      image: tsxlightRendererPreview,
+      icon: "tsxlight",
+      links: [{ label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }]
     },
     {
       slug: "new-react-typing-effect",
@@ -645,141 +698,6 @@ export const profileContent: ProfileContent = {
       links: [
         { label: "Open Site", href: "https://idol.cornelldti.org/" },
         { label: "Source", href: "https://github.com/cornell-dti/idol" }
-      ]
-    },
-    {
-      slug: "jordle",
-      title: "Jordle",
-      description:
-        "A six-letter daily word game with archives, persistent daily state, and a much larger curated word set behind it.",
-      impact:
-        "I wanted at least one project on the site that people might come back to every day.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Daily puzzles",
-        "Local persistence",
-        "Game UI",
-        "Word games",
-        "Archive systems"
-      ],
-      image: jordlePreview,
-      icon: "jordle",
-      links: [
-        { label: "Play Jordle", href: "/games/jordle" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
-      ]
-    },
-    {
-      slug: "jolor",
-      title: "Jolor",
-      description:
-        "A daily color-guessing game where the name is the clue and you have to dial in the actual color yourself.",
-      impact:
-        "It let me build a daily game that is much more visual than Jordle while still needing careful state, feedback, archive handling, and a clean interface.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Daily puzzles",
-        "Color systems",
-        "Game UI",
-        "Visual feedback",
-        "Archive systems"
-      ],
-      image: jolorPreview,
-      icon: "jolor",
-      links: [
-        { label: "Play Jolor", href: "/games/jolor" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
-      ]
-    },
-    {
-      slug: "jinx",
-      title: "Jinx",
-      description:
-        "A daily minefield puzzle that keeps the rules simple: reveal safe cells, flag mines, and read the numbers carefully.",
-      impact:
-        "This one let me build a cleaner version of that classic board logic while keeping the state, archive, and hint systems tight.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Grid logic",
-        "Daily puzzles",
-        "Local persistence",
-        "Hint systems",
-        "Board state"
-      ],
-      image: jinxPreview,
-      links: [
-        { label: "Play Jinx", href: "/games/jinx" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
-      ]
-    },
-    {
-      slug: "judoku",
-      title: "Judoku",
-      description:
-        "A smaller daily sudoku built around a 6x6 grid, notes mode, and a faster solve than a full-sized board.",
-      impact:
-        "I wanted a number puzzle that still feels satisfying, but fits better on a phone and does not ask for a giant time commitment.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Constraint puzzles",
-        "State management",
-        "Daily puzzles",
-        "Notes mode",
-        "Mobile-first UI"
-      ],
-      image: judokuPreview,
-      links: [
-        { label: "Play Judoku", href: "/games/judoku" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
-      ]
-    },
-    {
-      slug: "jigsaw",
-      title: "Jigsaw",
-      description:
-        "A daily tile-swap picture puzzle where each board is a scrambled image you have to piece back together.",
-      impact:
-        "It added something visual to the games section and gave me a fun excuse to build image slicing, archive handling, and a simple interaction loop around it.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Image puzzles",
-        "Daily puzzles",
-        "Interaction design",
-        "Image slicing",
-        "Archive systems"
-      ],
-      image: jigsawPreview,
-      links: [
-        { label: "Play Jigsaw", href: "/games/jigsaw" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
-      ]
-    },
-    {
-      slug: "domes",
-      title: "Domes",
-      description:
-        "A two-player strategy game inspired by Santorini, built around movement, tempo, and board control.",
-      impact:
-        "It sits right in the overlap I like most: clear game rules, interaction design, and state that has to stay coherent turn after turn.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Turn-based gameplay",
-        "State machines",
-        "Game UI",
-        "Board strategy",
-        "Rules engines"
-      ],
-      image: domesPreview,
-      icon: "domes",
-      links: [
-        { label: "Play Domes", href: "/games/domes" },
-        { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
     {
