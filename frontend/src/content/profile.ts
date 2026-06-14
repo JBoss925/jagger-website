@@ -7,6 +7,7 @@ import palmettoLogo from "../assets/company-logos/palmetto.svg";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
 import velocitorLogo from "../assets/company-logos/velocitor.png";
 import geneticPreview from "../assets/genetic-preview.jpg";
+import hearthPreview from "../assets/hearth-preview.svg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jaggerGamesPreview from "../assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../assets/jetstream-preview.jpg";
@@ -464,6 +465,28 @@ export const profileContent: ProfileContent = {
     }
   ],
   projects: [
+    {
+      slug: "hearth",
+      title: "Hearth",
+      description:
+        "A Max for Live warm-saturation device with **GenExpr DSP, adaptive tone control, anti-aliased tube drive, flux memory, and transient bloom**.",
+      impact:
+        "The project combines implementation and research: a real M4L audio effect plus a technical paper explaining the pleasantness-constrained DSP architecture behind it.",
+      stack: [
+        "Max for Live",
+        "GenExpr",
+        "Audio DSP",
+        "Saturation",
+        "ADAA",
+        "Hysteresis",
+        "Research writing"
+      ],
+      image: hearthPreview,
+      links: [
+        { label: "Open Paper", href: "/papers/hearth" },
+        { label: "Source", href: "https://github.com/JBoss925/Hearth" }
+      ]
+    },
     {
       slug: "jaggerscript",
       title: "JaggerScript",
