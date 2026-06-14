@@ -1,4 +1,17 @@
-function PaperPreview() {
+type PaperPreviewProps = {
+  image?: string;
+  alt?: string;
+};
+
+function PaperPreview({ image, alt }: PaperPreviewProps) {
+  if (image) {
+    return (
+      <div className="paper-preview-art paper-preview-art--image">
+        <img src={image} alt={alt ?? "Paper preview"} />
+      </div>
+    );
+  }
+
   return (
     <div className="paper-preview-art" aria-hidden="true">
       <div className="paper-preview-art__header">

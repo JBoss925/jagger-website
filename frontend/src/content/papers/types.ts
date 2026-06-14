@@ -20,12 +20,20 @@ export type PaperGraph =
 export type PaperAudioSample = {
   label: string;
   source: string;
-  status: "planned" | "available";
-  src?: string;
+  drySrc: string;
+  wetSrc: string;
+  durationSeconds?: number;
+};
+
+export type PaperActionLink = {
+  label: string;
+  href: string;
+  description?: string;
 };
 
 export type PaperSection = {
   id: string;
+  kind?: "standard" | "audio-samples";
   eyebrow?: string;
   title: string;
   paragraphs: string[];
@@ -49,7 +57,9 @@ export type PaperDocument = {
   categories: PaperCategory[];
   tags: string[];
   repoUrl: string;
+  previewImage?: string;
   previewAlt: string;
+  actionLinks?: PaperActionLink[];
   sections: PaperSection[];
   audioSamples: PaperAudioSample[];
 };

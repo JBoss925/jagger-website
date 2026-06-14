@@ -1,4 +1,13 @@
 import type { PaperDocument } from "./types";
+import cleanGuitarDry from "../../assets/papers/hearth/clean-guitar-dry.mp3";
+import cleanGuitarWet from "../../assets/papers/hearth/clean-guitar-wet.mp3";
+import drumLoopDry from "../../assets/papers/hearth/drum-loop-dry.mp3";
+import drumLoopWet from "../../assets/papers/hearth/drum-loop-wet.mp3";
+import hearthPreviewImage from "../../assets/papers/hearth/hearth-1-0-ui.jpg";
+import leadVocalDry from "../../assets/papers/hearth/lead-vocal-dry.mp3";
+import leadVocalWet from "../../assets/papers/hearth/lead-vocal-wet.mp3";
+import sawPadDry from "../../assets/papers/hearth/saw-pad-dry.mp3";
+import sawPadWet from "../../assets/papers/hearth/saw-pad-wet.mp3";
 
 export const hearthPaper: PaperDocument = {
   slug: "hearth",
@@ -8,7 +17,7 @@ export const hearthPaper: PaperDocument = {
   authors: ["Jagger Brulato"],
   date: "2026",
   abstract:
-    "Hearth is a Max for Live saturation device designed for warm, stable harmonic coloration across vocals, guitars, synths, drums, and mix buses. Instead of exposing a generic distortion curve, Hearth uses three cooperating nonlinear lanes supervised by a Warmth Servo that reacts to brightness, roughness, level, and transient density. The device prioritizes low-latency performance, interpretable controls, and musical safety: upper-band drive backs off when the input becomes bright or rough, transient bloom remains time-local, and stereo protection keeps the center image intact. This paper summarizes the research basis, signal path, feature model, and validation plan behind the first Hearth implementation.",
+    "Hearth is a Max for Live saturation device designed for warm, stable harmonic coloration across vocals, guitars, synths, drums, and mix buses. Instead of exposing a generic distortion curve, Hearth uses three cooperating nonlinear lanes supervised by a Warmth Servo that reacts to brightness, roughness, level, and transient density. The device prioritizes low-latency performance, interpretable controls, and musical safety: upper-band drive backs off when the input becomes bright or rough, transient bloom remains time-local, and stereo protection keeps the center image intact. This paper summarizes the research basis, signal path, control surface, and first audio examples behind the Hearth implementation.",
   description:
     "A technical paper for a Max for Live warm-saturation plugin built from GenExpr, Gen DSP, and a research-backed pleasantness model.",
   categories: ["Audio DSP", "Max for Live", "Research Notes"],
@@ -22,7 +31,15 @@ export const hearthPaper: PaperDocument = {
     "Psychoacoustics"
   ],
   repoUrl: "https://github.com/JBoss925/Hearth",
-  previewAlt: "Hearth paper preview showing a signal path and warm saturation transfer curve",
+  previewImage: hearthPreviewImage,
+  previewAlt: "Hearth 1.0 Max for Live device interface",
+  actionLinks: [
+    {
+      label: "Download Hearth 1.0",
+      href: "https://github.com/JBoss925/Hearth/releases/download/v1.0/Hearth.1.0.amxd",
+      description: "Max for Live AMXD device"
+    }
+  ],
   sections: [
     {
       id: "motivation",
@@ -137,19 +154,15 @@ export const hearthPaper: PaperDocument = {
     {
       id: "controls",
       eyebrow: "VI",
-      title: "Controls and Feature Mapping",
+      title: "Macro-First Interface",
       paragraphs: [
-        "Hearth exposes a macro-first interface. The main Hearth control increases drive, emphasis depth, and mild sag while leaving the adaptive guard rails active. Body targets lower-mid density, Velvet increases high-band softening, Bloom controls transient-only parallel saturation, Flux controls the path-dependent lane, and Adapt sets the servo authority.",
-        "The current GenExpr implementation includes DC filtering, input conditioning, brightness and roughness analysis, level and transient analysis, compensated low-mid and presence emphasis, ADAA-style atan saturation, quasi-hysteretic flux memory, transient bloom, stereo protection, auto trim, patina, mix, output trim, and final safety saturation. Quality selects local tube-lane anti-aliasing depth: Eco uses one ADAA evaluation, Live uses two internal points, and High uses four internal points over the current sample segment."
+        "Hearth is deliberately macro-first. The Hearth knob is the primary control: it moves the device into a warm operating region quickly, then the surrounding controls handle source-specific refinement.",
+        "That structure keeps the first move musical instead of technical. A user can decide how present the effect should be, then adjust brightness, density, stereo safety, or level only when the material calls for it."
       ],
       bullets: [
-        "Hearth: macro drive, emphasis, and sag.",
-        "Body: low-mid target around the warmth region.",
-        "Velvet: upper-band softening and de-emphasis.",
-        "Bloom: transient-only parallel density.",
-        "Flux: quasi-hysteretic path dependence.",
-        "Adapt: Warmth Servo authority.",
-        "Quality: local anti-aliasing depth without full-device oversampling."
+        "The main macro reduces auditioning friction by making the effect more or less present with one gesture.",
+        "The underlying lanes and Warmth Servo stay available, but they do not become the starting point.",
+        "The same workflow works across vocals, guitars, synths, and buses before finer source-specific adjustments."
       ]
     },
     {
@@ -168,19 +181,69 @@ export const hearthPaper: PaperDocument = {
       ]
     },
     {
-      id: "validation",
+      id: "ui-controls",
       eyebrow: "VIII",
-      title: "Validation Plan",
+      title: "Interface Controls",
       paragraphs: [
-        "The useful validation target is not only whether Hearth saturates. It must remain musically stable across sources. The first test corpus should include sibilant vocal, clean picked guitar, bright synth pad, mono bass, close snare, full drum bus, and a full-mix excerpt. Each sample should be evaluated for added body, preserved intelligibility, controlled brightness, transient rounding, and mono compatibility.",
-        "The website presentation is prepared for before-and-after listening examples. Once audio is available, each sample slot can be replaced with source and processed media without changing the paper structure."
+        "Hearth's interface is organized around the order in which the audio is shaped: input and emphasis first, density lanes second, adaptive tone control third, and final blend/output controls last. The labels are intentionally plain because the device should be playable in a Live set without asking the user to think like the implementation.",
+        "The controls are also grouped by risk. The left side contains source preparation and the main warmth macro. The center contains the more characterful nonlinear lanes. The right side contains the adaptive guard rails, wet/dry blend, output level, and safety-oriented options that keep the device usable on full tracks and buses."
+      ],
+      bullets: [
+        "Input dB: sets the level entering the analysis and nonlinear core, making gain staging explicit before saturation.",
+        "Hearth: acts as the main macro, raising drive, emphasis, and relaxed saturation behavior together while staying inside the warmth-first operating range.",
+        "Body dB: biases the compensated emphasis toward low-mid density so the nonlinear stage generates body instead of only post-EQ volume.",
+        "Bias: trims asymmetry in the tube lane, adding controlled even-order color while the downstream DC handling prevents drift.",
+        "Bloom: controls transient-only parallel saturation for attack rounding and perceived size without flattening the whole signal.",
+        "Flux: sets the quasi-hysteretic memory lane amount, adding path-dependent density and subtle return behavior.",
+        "Patina: adds optional texture and stays at zero by default so clean bus processing remains safe.",
+        "Adapt: controls Warmth Servo authority; higher values let brightness and roughness analysis steer drive and de-emphasis more strongly.",
+        "Dyn: sets program-dependent relaxation so the saturation responds to level instead of behaving like a fixed clipper.",
+        "Recovery: controls the return time for dynamic relaxation and memory behavior.",
+        "Velvet: increases upper-band softening, reducing glare when harmonic content starts to feel sharp.",
+        "Detail: restores controlled presence after the warm path so the output stays intelligible instead of merely darker.",
+        "Stereo: protects the center image and side balance when the device is used on stereo material.",
+        "Quality: selects the local anti-aliasing depth for the tube lane: Eco, Live, or High.",
+        "Mix, Output dB, and Auto: handle final parallel blend, level matching, and loudness-bias control while auditioning."
+      ]
+    },
+    {
+      id: "audio-samples",
+      kind: "audio-samples",
+      eyebrow: "IX",
+      title: "Audio Samples",
+      paragraphs: [
+        "These wet/dry examples use matched clips from the Hearth 1.0 release. Each player starts the dry and processed buffers together, then switches the audible source with the toggle."
       ]
     }
   ],
   audioSamples: [
-    { label: "Vocal body and sibilance", source: "Lead vocal", status: "planned" },
-    { label: "Picked guitar transient rounding", source: "Clean guitar DI", status: "planned" },
-    { label: "Bright synth restraint", source: "Saw pad", status: "planned" },
-    { label: "Drum bus bloom", source: "Full drum loop", status: "planned" }
+    {
+      label: "Vocal body and sibilance",
+      source: "Lead vocal",
+      drySrc: leadVocalDry,
+      wetSrc: leadVocalWet,
+      durationSeconds: 16
+    },
+    {
+      label: "Picked guitar transient rounding",
+      source: "Clean guitar DI",
+      drySrc: cleanGuitarDry,
+      wetSrc: cleanGuitarWet,
+      durationSeconds: 16
+    },
+    {
+      label: "Bright synth restraint",
+      source: "Saw pad",
+      drySrc: sawPadDry,
+      wetSrc: sawPadWet,
+      durationSeconds: 16
+    },
+    {
+      label: "Drum bus bloom",
+      source: "Full drum loop",
+      drySrc: drumLoopDry,
+      wetSrc: drumLoopWet,
+      durationSeconds: 14
+    }
   ]
 };

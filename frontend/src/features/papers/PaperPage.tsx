@@ -4,6 +4,7 @@ import { getPaperBySlug } from "../../content/papers";
 import PaperGraphFigure from "./PaperGraphs";
 import PaperMath from "./PaperMath";
 import PapersHeader from "./PapersHeader";
+import WetDryAudioPlayer from "./WetDryAudioPlayer";
 import { usePapersTheme } from "./usePapersTheme";
 
 function PaperPage() {
@@ -54,6 +55,16 @@ function PaperPage() {
             <p>{paper.abstract}</p>
           </section>
 
+          {paper.previewImage ? (
+            <figure className="paper-device-figure">
+              <img src={paper.previewImage} alt={paper.previewAlt} />
+              <figcaption>
+                <strong>Hearth 1.0 interface.</strong> The current Max for Live device surface used for
+                the release preview and paper card.
+              </figcaption>
+            </figure>
+          ) : null}
+
           <div className="paper-layout">
             <aside className="paper-toc" aria-label="Paper sections">
               <strong>Contents</strong>
@@ -63,6 +74,16 @@ function PaperPage() {
                   {section.title}
                 </a>
               ))}
+              {paper.actionLinks?.length ? (
+                <div className="paper-action-links">
+                  {paper.actionLinks.map((link) => (
+                    <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+                      <strong>{link.label}</strong>
+                      {link.description ? <span>{link.description}</span> : null}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </aside>
 
             <div className="paper-body">
@@ -89,34 +110,21 @@ function PaperPage() {
                     </figure>
                   ))}
                   {section.graph ? <PaperGraphFigure graph={section.graph} /> : null}
+                  {section.kind === "audio-samples" ? (
+                    <div className="paper-audio-grid">
+                      {paper.audioSamples.map((sample) => (
+                        <article key={sample.label} className="paper-audio-card">
+                          <div>
+                            <span>{sample.source}</span>
+                            <h3>{sample.label}</h3>
+                          </div>
+                          <WetDryAudioPlayer sample={sample} />
+                        </article>
+                      ))}
+                    </div>
+                  ) : null}
                 </section>
               ))}
-
-              <section className="paper-section paper-audio-section" id="audio-samples">
-                <p className="paper-section__eyebrow">IX</p>
-                <h2>Audio Sample Scaffolding</h2>
-                <p>
-                  These slots are reserved for before-and-after media. Planned samples are visible now so
-                  the validation corpus is part of the paper rather than an afterthought.
-                </p>
-                <div className="paper-audio-grid">
-                  {paper.audioSamples.map((sample) => (
-                    <article key={sample.label} className="paper-audio-card">
-                      <div>
-                        <span>{sample.source}</span>
-                        <h3>{sample.label}</h3>
-                      </div>
-                      {sample.status === "available" && sample.src ? (
-                        <audio controls src={sample.src}>
-                          <track kind="captions" />
-                        </audio>
-                      ) : (
-                        <p>Before and after audio pending.</p>
-                      )}
-                    </article>
-                  ))}
-                </div>
-              </section>
             </div>
           </div>
         </article>

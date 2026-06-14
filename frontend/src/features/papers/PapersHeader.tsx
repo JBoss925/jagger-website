@@ -1,3 +1,4 @@
+import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 
 type PapersHeaderProps = {
@@ -15,8 +16,11 @@ function PapersHeader({
   theme,
   onThemeToggle
 }: PapersHeaderProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const controlsId = useId();
+
   return (
-    <header className="papers-header">
+    <header className={`papers-header${isExpanded ? " papers-header--expanded" : ""}`}>
       <Link className="papers-header__brand" to="/papers" aria-label="Jagger Papers home">
         <span className="papers-header__mark" aria-hidden="true" />
         <span>
@@ -25,7 +29,18 @@ function PapersHeader({
         </span>
       </Link>
 
-      <div className="papers-header__tools">
+      <button
+        type="button"
+        className="papers-header__menu"
+        aria-expanded={isExpanded}
+        aria-controls={controlsId}
+        aria-label={isExpanded ? "Collapse papers controls" : "Expand papers controls"}
+        onClick={() => setIsExpanded((current) => !current)}
+      >
+        <span aria-hidden="true" />
+      </button>
+
+      <div className="papers-header__tools" id={controlsId}>
         {onQueryChange ? (
           <form
             className="papers-search"

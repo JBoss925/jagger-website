@@ -7,7 +7,7 @@ import palmettoLogo from "../assets/company-logos/palmetto.svg";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
 import velocitorLogo from "../assets/company-logos/velocitor.png";
 import geneticPreview from "../assets/genetic-preview.jpg";
-import hearthPreview from "../assets/hearth-preview.svg";
+import hearthPreview from "../assets/papers/hearth/hearth-1-0-ui.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jaggerGamesPreview from "../assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../assets/jetstream-preview.jpg";

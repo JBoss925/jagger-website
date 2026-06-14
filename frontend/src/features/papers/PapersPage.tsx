@@ -31,8 +31,7 @@ function PapersPage() {
   }, [query]);
 
   function updateQuery(nextQuery: string) {
-    const trimmedQuery = nextQuery.trim();
-    setSearchParams(trimmedQuery ? { q: trimmedQuery } : {});
+    setSearchParams(nextQuery.trim() ? { q: nextQuery } : {});
   }
 
   return (
@@ -49,15 +48,15 @@ function PapersPage() {
           <p className="papers-kicker">Technical works</p>
           <h1>Jagger Papers</h1>
           <p>
-            Project papers, implementation notes, and technical writeups rendered as first-class web pages
-            with equations, native figures, tags, and future media samples.
+            Project papers, implementation notes, and technical writeups for the systems, tools, and
+            experiments that benefit from a slower, more detailed look.
           </p>
         </section>
 
         <section className="papers-grid" aria-label="Papers">
           {filteredPapers.map((paper) => (
             <Link key={paper.slug} to={`/papers/${paper.slug}`} className="paper-card">
-              <PaperPreview />
+              <PaperPreview image={paper.previewImage} alt={paper.previewAlt} />
               <div className="paper-card__body">
                 <div className="paper-card__meta">
                   <span>{paper.date}</span>
