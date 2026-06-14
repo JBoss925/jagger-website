@@ -5138,6 +5138,32 @@ button:hover {
   background: #080808;
 }
 
+.paper-device-figure__image-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.paper-device-figure__image-button img {
+  transition:
+    border-color 160ms ease,
+    filter 160ms ease;
+}
+
+.paper-device-figure__image-button:hover img {
+  border-color: var(--paper-accent);
+  filter: brightness(1.08);
+}
+
+.paper-device-figure__image-button:focus-visible {
+  outline: 3px solid var(--paper-accent-strong);
+  outline-offset: 4px;
+}
+
 .paper-device-figure figcaption {
   color: var(--paper-muted);
   font-size: 0.92rem;
@@ -5451,6 +5477,109 @@ button:hover {
   color: #fffaf4;
 }
 
+.paper-image-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: rgba(0, 0, 0, 0.82);
+  color: #fffaf4;
+}
+
+.paper-image-viewer__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+
+.paper-image-viewer__bar,
+.paper-image-viewer__stage {
+  position: relative;
+  z-index: 1;
+}
+
+.paper-image-viewer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px clamp(14px, 3vw, 28px);
+  background: var(--paper-accent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: var(--paper-shadow);
+}
+
+.paper-image-viewer__bar > div:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.paper-image-viewer__bar strong,
+.paper-image-viewer__bar span,
+.paper-image-viewer__controls button {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+}
+
+.paper-image-viewer__bar strong {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.paper-image-viewer__bar span {
+  overflow: hidden;
+  color: rgba(255, 250, 244, 0.74);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paper-image-viewer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.paper-image-viewer__controls button {
+  min-width: 40px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-radius: 2px;
+  padding: 0 11px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fffaf4;
+  cursor: pointer;
+  font-size: 0.74rem;
+}
+
+.paper-image-viewer__controls button:focus-visible {
+  outline: 3px solid #fffaf4;
+  outline-offset: 2px;
+}
+
+.paper-image-viewer__stage {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(12px, 3vw, 28px);
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.paper-image-viewer__stage img {
+  display: block;
+  min-width: min(100%, 320px);
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: #070707;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
 @media (max-width: 1040px) {
   .papers-header {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -5509,6 +5638,15 @@ button:hover {
   .wet-dry-player__play,
   .wet-dry-player__toggle {
     width: fit-content;
+  }
+
+  .paper-image-viewer__bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .paper-image-viewer__controls {
+    justify-content: flex-start;
   }
 }
 

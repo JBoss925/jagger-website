@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { getPaperBySlug } from "../../content/papers";
+import ImageViewer from "./ImageViewer";
 import PaperGraphFigure from "./PaperGraphs";
 import PaperMath from "./PaperMath";
 import PapersHeader from "./PapersHeader";
@@ -11,6 +12,7 @@ function PaperPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [openImage, setOpenImage] = useState<null | { alt: string; caption: string; image: string }>(null);
   const paper = getPaperBySlug(slug);
   const { theme, toggleTheme } = usePapersTheme();
 
@@ -57,7 +59,19 @@ function PaperPage() {
 
           {paper.previewImage ? (
             <figure className="paper-device-figure">
-              <img src={paper.previewImage} alt={paper.previewAlt} />
+              <button
+                type="button"
+                className="paper-device-figure__image-button"
+                onClick={() => {
+                  setOpenImage({
+                    alt: paper.previewAlt ?? "Paper preview",
+                    caption: "Hearth 1.0 interface",
+                    image: paper.previewImage ?? ""
+                  });
+                }}
+              >
+                <img src={paper.previewImage} alt={paper.previewAlt} />
+              </button>
               <figcaption>
                 <strong>Hearth 1.0 interface.</strong> The current Max for Live device surface used for
                 the release preview and paper card.
@@ -129,6 +143,14 @@ function PaperPage() {
           </div>
         </article>
       </main>
+      {openImage ? (
+        <ImageViewer
+          alt={openImage.alt}
+          caption={openImage.caption}
+          image={openImage.image}
+          onClose={() => setOpenImage(null)}
+        />
+      ) : null}
     </div>
   );
 }
