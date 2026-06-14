@@ -7,6 +7,7 @@ import PaperMath from "./PaperMath";
 import PapersHeader from "./PapersHeader";
 import WetDryAudioPlayer from "./WetDryAudioPlayer";
 import { usePapersTheme } from "./usePapersTheme";
+import { usePapersScrollTop } from "./usePapersScrollTop";
 
 function PaperPage() {
   const { slug } = useParams();
@@ -15,6 +16,7 @@ function PaperPage() {
   const [openImage, setOpenImage] = useState<null | { alt: string; caption: string; image: string }>(null);
   const paper = getPaperBySlug(slug);
   const { theme, toggleTheme } = usePapersTheme();
+  usePapersScrollTop();
 
   if (!paper) {
     return <Navigate to="/papers" replace />;

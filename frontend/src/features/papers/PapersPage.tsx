@@ -4,11 +4,13 @@ import { papers } from "../../content/papers";
 import PaperPreview from "./PaperPreview";
 import PapersHeader from "./PapersHeader";
 import { usePapersTheme } from "./usePapersTheme";
+import { usePapersScrollTop } from "./usePapersScrollTop";
 
 function PapersPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
   const { theme, toggleTheme } = usePapersTheme();
+  usePapersScrollTop();
 
   const filteredPapers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
