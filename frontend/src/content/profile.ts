@@ -6,6 +6,7 @@ import lowesLogo from "../assets/company-logos/lowes.png";
 import palmettoLogo from "../assets/company-logos/palmetto.svg";
 import redVenturesLogo from "../assets/company-logos/red-ventures.webp";
 import velocitorLogo from "../assets/company-logos/velocitor.png";
+import compressorPreview from "../assets/compressor-preview.svg";
 import geneticPreview from "../assets/genetic-preview.jpg";
 import hearthPreview from "../assets/papers/hearth/hearth-1-0-ui.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
@@ -466,6 +467,29 @@ export const profileContent: ProfileContent = {
   ],
   projects: [
     {
+      slug: "jaggerscript",
+      title: "JaggerScript",
+      description:
+        "A small typed scripting language with its own **parser, interpreter, and browser playground**.",
+      impact:
+        "This is one of the clearest examples of how I like to work: **own the language, the runtime, and the interface** around it.",
+      stack: [
+        "TypeScript",
+        "PEG parser",
+        "Interpreter",
+        "Browser tooling",
+        "Language design",
+        "Runtime systems"
+      ],
+      image: jaggerscriptPreview,
+      icon: "jaggerscript",
+      links: [
+        { label: "Open Playground", href: "/jaggerscript" },
+        { label: "Open Paper", href: "/papers/jaggerscript" },
+        { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
+      ]
+    },
+    {
       slug: "hearth",
       title: "Hearth",
       description:
@@ -488,25 +512,25 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "jaggerscript",
-      title: "JaggerScript",
+      slug: "aixc-compressor",
+      title: "AIXC Compressor",
       description:
-        "A small typed scripting language with its own **parser, interpreter, and browser playground**.",
+        "A deterministic predictor-based text compression format with **packed hit/miss streams, residual coding, manifest hashing, and multiple predictor backends**.",
       impact:
-        "This is one of the clearest examples of how I like to work: **own the language, the runtime, and the interface** around it.",
+        "It explores how much archive size can move when encoder and decoder share a predictor contract, with a reference codec, CLI, tests, benchmarks, and a local workbench.",
       stack: [
-        "TypeScript",
-        "PEG parser",
-        "Interpreter",
-        "Browser tooling",
-        "Language design",
-        "Runtime systems"
+        "Python",
+        "C extension",
+        "Compression",
+        "Predictor models",
+        "Huffman coding",
+        "CLI tooling",
+        "Benchmarking"
       ],
-      image: jaggerscriptPreview,
-      icon: "jaggerscript",
+      image: compressorPreview,
       links: [
-        { label: "Open Playground", href: "/jaggerscript" },
-        { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
+        { label: "Open Paper", href: "/papers/aixc-compressor" },
+        { label: "Source", href: "https://github.com/JBoss925/aixc-compressor" }
       ]
     },
     {
@@ -531,6 +555,7 @@ export const profileContent: ProfileContent = {
           label: "Open Demo",
           href: "/genetic-ts"
         },
+        { label: "Open Paper", href: "/papers/genetic-ts" },
         { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
@@ -634,6 +659,7 @@ export const profileContent: ProfileContent = {
       icon: "rengine",
       links: [
         { label: "Open Demo", href: "/rengine" },
+        { label: "Open Paper", href: "/papers/rengine" },
         { label: "Source", href: "https://github.com/JBoss925/Rengine" }
       ]
     },
@@ -677,7 +703,10 @@ export const profileContent: ProfileContent = {
       ],
       image: tsxlightRendererPreview,
       icon: "tsxlight",
-      links: [{ label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }]
+      links: [
+        { label: "Open Paper", href: "/papers/tsxlight-renderer" },
+        { label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }
+      ]
     },
     {
       slug: "new-react-typing-effect",

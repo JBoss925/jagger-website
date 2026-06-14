@@ -67,7 +67,14 @@ function ImageViewer({ alt, caption, image, onClose }: ImageViewerProps) {
           </button>
         </div>
       </div>
-      <div className="paper-image-viewer__stage">
+      <div
+        className="paper-image-viewer__stage"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            onClose();
+          }
+        }}
+      >
         <img src={image} alt={alt} style={{ width: `${zoom * 100}%` }} />
       </div>
     </div>

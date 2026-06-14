@@ -175,8 +175,8 @@ function SiteNavigation({
               <Link className="site-nav__button" to="/games" onClick={() => setIsMenuOpen(false)}>
                 Go to Games
               </Link>
-              <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
-                Go to JaggerScript
+              <Link className="site-nav__button" to="/papers" onClick={() => setIsMenuOpen(false)}>
+                Go to Papers
               </Link>
             </div>
           ) : null}

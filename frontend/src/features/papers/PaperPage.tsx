@@ -65,7 +65,7 @@ function PaperPage() {
                 onClick={() => {
                   setOpenImage({
                     alt: paper.previewAlt ?? "Paper preview",
-                    caption: "Hearth 1.0 interface",
+                    caption: paper.previewCaption ?? paper.title,
                     image: paper.previewImage ?? ""
                   });
                 }}
@@ -73,8 +73,7 @@ function PaperPage() {
                 <img src={paper.previewImage} alt={paper.previewAlt} />
               </button>
               <figcaption>
-                <strong>Hearth 1.0 interface.</strong> The current Max for Live device surface used for
-                the release preview and paper card.
+                {paper.previewCaption ?? paper.previewAlt}
               </figcaption>
             </figure>
           ) : null}

@@ -1,4 +1,12 @@
-export type PaperCategory = "Audio DSP" | "Max for Live" | "Research Notes";
+export type PaperCategory =
+  | "Audio DSP"
+  | "Compression"
+  | "Engine Architecture"
+  | "Language Tooling"
+  | "Max for Live"
+  | "Research Notes"
+  | "Simulation"
+  | "Systems";
 
 export type PaperGraph =
   | {
@@ -59,6 +67,7 @@ export type PaperDocument = {
   repoUrl: string;
   previewImage?: string;
   previewAlt: string;
+  previewCaption?: string;
   actionLinks?: PaperActionLink[];
   sections: PaperSection[];
   audioSamples: PaperAudioSample[];
