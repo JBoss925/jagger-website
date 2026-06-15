@@ -50,8 +50,7 @@ export type ProjectEntry = {
     | "materialize"
     | "tsxlight"
     | "rengine"
-    | "typing-effect"
-    | "idol";
+    | "typing-effect";
   relatedLinks?: {
     label: string;
     href: string;

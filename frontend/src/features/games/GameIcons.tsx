@@ -142,15 +142,3 @@ export function TypingEffectIcon() {
     </svg>
   );
 }
-
-export function IdolIcon() {
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true">
-      <rect x="11" y="10" width="6" height="28" rx="2" />
-      <path d="M24 14v20" />
-      <path d="M31 10v28" />
-      <circle cx="24" cy="10" r="2.5" />
-      <circle cx="31" cy="10" r="2.5" />
-    </svg>
-  );
-}

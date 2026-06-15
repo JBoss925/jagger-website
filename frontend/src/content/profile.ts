@@ -12,10 +12,10 @@ import hearthPreview from "../assets/papers/hearth/hearth-1-0-ui.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jaggerGamesPreview from "../assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../assets/jetstream-preview.jpg";
-import idolPreview from "../assets/idol-preview.jpg";
 import materializePreview from "../assets/materialize-preview.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
 import newReactTypingEffectDemo from "../assets/new-react-typing-effect-demo.gif";
+import ojamlPreview from "../assets/ojaml-preview.jpg";
 import portfolioPreview from "../assets/portfolio-preview.jpg";
 import renginePreview from "../assets/rengine-preview.jpg";
 import tsxlightRendererPreview from "../assets/tsxlight-renderer-preview.jpg";
@@ -482,6 +482,7 @@ export const profileContent: ProfileContent = {
         "Compiler tooling",
         "Runtime systems"
       ],
+      image: ojamlPreview,
       icon: "ojaml",
       links: [
         { label: "Open Editor", href: "/ojaml" },
@@ -556,32 +557,6 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "genetic-ts",
-      title: "Genetic Algorithms in TypeScript",
-      description:
-        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing physics.",
-      impact:
-        "Change gravity and wind, rerun the population, and watch the algorithm **adapt in real time**.",
-      stack: [
-        "TypeScript",
-        "matter-js",
-        "Genetic algorithms",
-        "Interactive simulation",
-        "Physics modeling",
-        "Data visualization"
-      ],
-      image: geneticPreview,
-      icon: "genetic",
-      links: [
-        {
-          label: "Open Demo",
-          href: "/genetic-ts"
-        },
-        { label: "Open Paper", href: "/papers/genetic-ts" },
-        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
-      ]
-    },
-    {
       slug: "jagger-games",
       title: "Jagger Games",
       description:
@@ -637,6 +612,32 @@ export const profileContent: ProfileContent = {
           label: "Source",
           href: "https://github.com/JBoss925/jagger-website/tree/main/frontend/src/features/games"
         }
+      ]
+    },
+    {
+      slug: "genetic-ts",
+      title: "Genetic Algorithms in TypeScript",
+      description:
+        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing physics.",
+      impact:
+        "Change gravity and wind, rerun the population, and watch the algorithm **adapt in real time**.",
+      stack: [
+        "TypeScript",
+        "matter-js",
+        "Genetic algorithms",
+        "Interactive simulation",
+        "Physics modeling",
+        "Data visualization"
+      ],
+      image: geneticPreview,
+      icon: "genetic",
+      links: [
+        {
+          label: "Open Demo",
+          href: "/genetic-ts"
+        },
+        { label: "Open Paper", href: "/papers/genetic-ts" },
+        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
     {
@@ -750,28 +751,6 @@ export const profileContent: ProfileContent = {
       links: [
         { label: "NPM", href: "https://www.npmjs.com/package/new-react-typing-effect" },
         { label: "Source", href: "https://github.com/JBoss925/new-react-typing-effect" }
-      ]
-    },
-    {
-      slug: "idol",
-      title: "IDOL",
-      description:
-        "An internal tools platform for Cornell DTI that bundles org operations, scheduling workflows, member data, and the team website into one TypeScript monorepo.",
-      impact:
-        "It is a strong example of the full-stack work I like most: shared types, real product surface area, business logic-heavy APIs, and software a 100+ person organization actually depends on.",
-      stack: [
-        "TypeScript monorepo",
-        "Next.js",
-        "Express + Netlify",
-        "Firebase",
-        "Internal tools",
-        "Business logic APIs"
-      ],
-      image: idolPreview,
-      icon: "idol",
-      links: [
-        { label: "Open Site", href: "https://idol.cornelldti.org/" },
-        { label: "Source", href: "https://github.com/cornell-dti/idol" }
       ]
     },
     {

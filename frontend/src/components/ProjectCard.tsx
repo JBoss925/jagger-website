@@ -4,7 +4,6 @@ import { renderInlineEmphasis } from "./renderInlineEmphasis";
 import {
   DomesIcon,
   GeneticIcon,
-  IdolIcon,
   JaggerScriptIcon,
   JolorIcon,
   JordleIcon,
@@ -74,8 +73,6 @@ function ProjectCard({ project, id }: ProjectCardProps) {
         return <RengineIcon />;
       case "typing-effect":
         return <TypingEffectIcon />;
-      case "idol":
-        return <IdolIcon />;
       default:
         return null;
     }
