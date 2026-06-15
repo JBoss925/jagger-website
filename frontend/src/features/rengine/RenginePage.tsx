@@ -576,7 +576,7 @@ function RenginePage() {
                     type="button"
                     className={
                       showWireframes
-                        ? "ide-run-button rengine-wireframe-toggle"
+                        ? "cta-button cta-button--secondary rengine-wireframe-toggle is-active"
                         : "cta-button cta-button--secondary rengine-wireframe-toggle"
                     }
                     onClick={() => setShowWireframes((current) => !current)}

@@ -3659,6 +3659,14 @@ button:hover {
   min-width: 9.9rem;
   justify-content: center;
   white-space: nowrap;
+  font-weight: 700;
+}
+
+.rengine-wireframe-toggle.is-active {
+  border-color: rgba(143, 201, 163, 0.34);
+  background: #20382d;
+  color: #f7faf6;
+  box-shadow: 0 10px 24px rgba(49, 86, 66, 0.2);
 }
 
 .ide-run-button__icon {
