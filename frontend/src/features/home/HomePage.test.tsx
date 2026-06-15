@@ -29,7 +29,8 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", { name: /^JaggerScript$/i })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Favorite Project\s*OJaml/i })).toHaveAttribute(
+    expect(screen.getByText("Product")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Start Here\s*OJaml/i })).toHaveAttribute(
       "href",
       "/ojaml"
     );
