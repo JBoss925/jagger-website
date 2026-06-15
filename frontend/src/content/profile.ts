@@ -39,7 +39,7 @@ export const profileContent: ProfileContent = {
     { label: "Main lane", value: "Full-stack" },
     { label: "Also drawn to", value: "Platform + PL" },
     { label: "Favorite work", value: "Distributed systems" },
-    { label: "Favorite Project", value: "JaggerScript" }
+    { label: "Favorite Project", value: "OJaml" }
   ],
   links: [
     { label: "Email", href: "mailto:jagger@jaggerbrulato.com" },

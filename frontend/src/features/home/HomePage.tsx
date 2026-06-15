@@ -210,7 +210,7 @@ function HomePage() {
             <div className="metric-grid">
               {profileContent.metrics.map((metric) => (
                 metric.label === "Favorite Project" ? (
-                  <a key={metric.label} className="metric-card metric-card--interactive" href="/jaggerscript">
+                  <a key={metric.label} className="metric-card metric-card--interactive" href="/ojaml">
                     <span>{metric.label}</span>
                     <strong className="metric-card__link-value">
                       {metric.value}
