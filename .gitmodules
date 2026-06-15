@@ -7,3 +7,6 @@
 [submodule "genetic_ts"]
 	path = genetic_ts
 	url = https://github.com/JBoss925/GeneticTS
+[submodule "ojaml"]
+	path = ojaml
+	url = https://github.com/JBoss925/OJaml

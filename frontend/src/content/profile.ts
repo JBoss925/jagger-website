@@ -467,6 +467,28 @@ export const profileContent: ProfileContent = {
   ],
   projects: [
     {
+      slug: "ojaml",
+      title: "OJaml",
+      description:
+        "An OCaml-inspired language with **type checking, polymorphic collections, first-class functions, and a native WebAssembly browser runtime**.",
+      impact:
+        "It pushes the language-workbench idea further: **real compiler behavior, Monaco diagnostics, reusable editor packaging, and runnable WASM output** in one browser surface.",
+      stack: [
+        "TypeScript",
+        "WebAssembly",
+        "Monaco Editor",
+        "Language design",
+        "Type systems",
+        "Compiler tooling",
+        "Runtime systems"
+      ],
+      icon: "ojaml",
+      links: [
+        { label: "Open Editor", href: "/ojaml" },
+        { label: "Source", href: "https://github.com/JBoss925/OJaml" }
+      ]
+    },
+    {
       slug: "jaggerscript",
       title: "JaggerScript",
       description:

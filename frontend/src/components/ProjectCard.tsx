@@ -9,6 +9,7 @@ import {
   JolorIcon,
   JordleIcon,
   MaterializeIcon,
+  OJamlIcon,
   RengineIcon,
   TsxLightIcon,
   TypingEffectIcon
@@ -63,6 +64,8 @@ function ProjectCard({ project, id }: ProjectCardProps) {
         return <GeneticIcon />;
       case "jaggerscript":
         return <JaggerScriptIcon />;
+      case "ojaml":
+        return <OJamlIcon />;
       case "materialize":
         return <MaterializeIcon />;
       case "tsxlight":

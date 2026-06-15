@@ -88,6 +88,18 @@ export function JaggerScriptIcon() {
   );
 }
 
+export function OJamlIcon() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M11 9h24l6 6v24H17l-6-6z" />
+      <path d="M35 9v6h6" />
+      <circle cx="22" cy="24" r="7" />
+      <path d="M31 17v10c0 3-1.8 5-4.8 5" />
+      <path d="M30 35h8" />
+    </svg>
+  );
+}
+
 export function MaterializeIcon() {
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true">

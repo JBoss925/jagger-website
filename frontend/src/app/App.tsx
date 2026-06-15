@@ -15,6 +15,7 @@ const JaggerScriptPage = lazy(
 const GeneticTsRoute = lazy(
   () => import("../features/genetic-ts/GeneticTsRoute")
 );
+const OJamlRoute = lazy(() => import("../features/ojaml/OJamlRoute"));
 const RenginePage = lazy(() => import("../features/rengine/RenginePage"));
 const PapersPage = lazy(() => import("../features/papers/PapersPage"));
 const PaperPage = lazy(() => import("../features/papers/PaperPage"));
@@ -51,6 +52,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/jaggerscript" element={<JaggerScriptPage />} />
+        <Route path="/ojaml" element={<OJamlRoute />} />
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />
         <Route path="/rengine" element={<RenginePage />} />
         <Route path="/papers" element={<PapersPage />} />

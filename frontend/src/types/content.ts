@@ -46,6 +46,7 @@ export type ProjectEntry = {
     | "jolor"
     | "genetic"
     | "jaggerscript"
+    | "ojaml"
     | "materialize"
     | "tsxlight"
     | "rengine"
