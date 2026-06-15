@@ -187,6 +187,7 @@ export const profileContent: ProfileContent = {
         { label: "Dashboards", tone: "practice" }
       ]
     },
+    /*
     {
       slug: "lowes-software-engineer",
       company: "Lowe’s",
@@ -215,6 +216,7 @@ export const profileContent: ProfileContent = {
         { label: "Merchandising systems", tone: "domain" }
       ]
     },
+    */
     {
       slug: "google-software-engineer",
       company: "Google",
