@@ -321,32 +321,88 @@ function HomePage() {
         </SectionShell>
 
         <SectionShell
+          id="leadership"
+          eyebrow="Leadership"
+          title="I prefer to create clarity, take ownership, and keep the team moving."
+          summary="When a project needs direction, I’m comfortable stepping forward to **define the path, organize the work, and make decisions**. I stay close enough to the implementation to understand the real constraints while making sure every developer has the context and support they need to execute."
+        >
+          <div className="leadership-principles">
+            <div>
+              <strong>Set a clear direction</strong>
+              <p>
+                Turn an ambiguous goal into a practical plan with explicit priorities,
+                ownership, milestones, and technical boundaries.
+              </p>
+            </div>
+            <div>
+              <strong>Lead from the work</strong>
+              <p>
+                Make architectural decisions, take on difficult implementation problems,
+                and use firsthand context to keep plans grounded.
+              </p>
+            </div>
+            <div>
+              <strong>Organize for momentum</strong>
+              <p>
+                Break work into parallel tracks, surface dependencies early, and keep
+                communication direct so developers can move without unnecessary blockers.
+              </p>
+            </div>
+            <div>
+              <strong>Raise the whole team</strong>
+              <p>
+                Share context, review thoughtfully, and help other engineers build the
+                confidence and judgment to own increasingly important parts of the system.
+              </p>
+            </div>
+          </div>
+        </SectionShell>
+
+        <SectionShell
           id="contact"
           eyebrow="Contact"
           title="If this looks like the kind of background you need, reach out."
-          summary="I’m especially interested in work where **product thinking and technical ownership** both matter."
         >
-          <div className="glass-card contact-card">
-            <div>
-              <h3>Reach out</h3>
+          <div className="contact-layout">
+            <div className="contact-card__intro">
               <p>
                 {renderInlineEmphasis(
-                  "Email is easiest, but the **resume, GitHub, and LinkedIn** are here too if you want to look around first."
+                  "Email is the most direct way to reach me. I’m always interested in hearing about **technically meaningful product work, platform challenges, and teams that value engineers who can lead while staying hands-on**. I tend to be most useful when a project needs someone who can **steady the direction, keep the work moving, and stay close enough to the code to make the decisions real**."
                 )}
               </p>
+              <a className="contact-card__cta" href={`mailto:${profileContent.email}`}>
+                <span className="contact-card__cta-eyebrow">Email me directly</span>
+                <strong>{profileContent.email}</strong>
+              </a>
             </div>
-            <div className="contact-links">
-              {profileContent.links.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="pill-link--neutral"
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                >
-                  {link.label}
+            <div className="contact-card__panel">
+              <div className="contact-card__fit">
+                <span className="contact-card__eyebrow">Strong fit</span>
+                <strong>A strong fit usually includes</strong>
+                <ul>
+                  <li>Real ownership over a product, system, or technical direction</li>
+                  <li>Problems that cross frontend, backend, platform, or operational boundaries</li>
+                  <li>A team that values clear communication and pragmatic technical leadership</li>
+                </ul>
+              </div>
+              <div className="contact-card__actions">
+                <a className="contact-card__action" href={`mailto:${profileContent.email}`}>
+                  Email
                 </a>
-              ))}
+                {profileContent.links
+                  .filter((link) => !link.href.startsWith("mailto:"))
+                  .map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="contact-card__action"
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel="noreferrer"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+              </div>
             </div>
           </div>
         </SectionShell>

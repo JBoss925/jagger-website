@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { profileContent } from "../../content/profile";
 import HomePage from "./HomePage";
 
 vi.mock("./SceneBackdrop", () => ({
@@ -28,6 +29,24 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", { name: /^JaggerScript$/i })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: /I prefer to create clarity, take ownership, and keep the team moving/i,
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Leadership" })).toHaveAttribute(
+      "href",
+      "#leadership"
+    );
+    expect(screen.getByRole("link", { name: "Email" })).toHaveAttribute(
+      "href",
+      "mailto:jagger@jaggerbrulato.com"
+    );
+    expect(screen.getByRole("link", { name: /Email me directly/i })).toHaveAttribute(
+      "href",
+      "mailto:jagger@jaggerbrulato.com"
+    );
+    expect(screen.getByText(profileContent.email)).toBeInTheDocument();
     expect(
       screen
         .getAllByRole("link", { name: /Open Demo/i })

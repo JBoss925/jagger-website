@@ -109,6 +109,18 @@ export const profileContent: ProfileContent = {
       accent: "#ffd36f"
     },
     {
+      id: "leadership",
+      label: "Leadership",
+      eyebrow: "Leadership",
+      title: "I prefer to create clarity, take ownership, and keep the team moving.",
+      summary:
+        "When a project needs direction, I am comfortable defining the path, organizing the work, and making decisions while staying close to the implementation.",
+      position: [-2.5, -4.2, 0],
+      camera: [-1.2, -1.6, 12.6],
+      target: [-1.8, -2.5, 0],
+      accent: "#8fc9a3"
+    },
+    {
       id: "contact",
       label: "Contact",
       eyebrow: "Contact",
