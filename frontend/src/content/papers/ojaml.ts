@@ -63,11 +63,23 @@ export const ojamlPaper: PaperDocument = {
       title: "Polymorphic Type Checking",
       paragraphs: [
         "The checker represents primitive types, type variables, collection applications, maps, and function types. It creates declaration stubs, checks bodies against those stubs, and unifies constraints as expressions are visited.",
-        "Fresh type variables allow built-ins such as List.map, Array.fold_left, and Map.set to remain polymorphic. The editor surfaces the resulting function and value types through diagnostics, hover information, completion details, and signature help."
+        "The standard library is typed through explicit polymorphic schemes instead of untyped runtime hooks. Arrays, lists, maps, higher-order collection helpers, and print all enter the environment with complete signatures, then each use site receives fresh variables that are unified with the surrounding program.",
+        "That matters most for maps: Map.empty begins with unknown key and value variables, Map.set fixes both sides from the provided key and value, and Map.get and Map.has must use the same key type later. Once a map becomes a (string, int) map, reading with an int key or writing a string value is rejected before WebAssembly generation.",
+        "The editor surfaces the resulting function and value types through diagnostics, hover information, completion details, and signature help. Builtin hovers show the instantiated type at the call site, while non-typed tokens such as keywords, operators, literals, delimiters, and declaration separators still report useful lexical identity."
       ],
       equations: [
         {
-          label: "Map",
+          label: "Map.get",
+          tex: "\\operatorname{Map.get} : ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v",
+          caption: "A map read uses the same key type established by the map and returns its value type."
+        },
+        {
+          label: "Map.set",
+          tex: "\\operatorname{Map.set} : ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v \\rightarrow ('k,\\;'v)\\;map",
+          caption: "A map write preserves the relationship between key type, value type, and the returned map."
+        },
+        {
+          label: "List.map",
           tex: "\\operatorname{map} : ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list",
           caption: "Higher-order collection operations preserve relationships between input and output element types."
         },
@@ -80,6 +92,7 @@ export const ojamlPaper: PaperDocument = {
       bullets: [
         "Branches and match arms must agree on their result type.",
         "Calls are checked for arity and argument compatibility.",
+        "Map keys and values remain statically connected across empty, set, get, and has calls.",
         "Undefined names and duplicate bindings are rejected.",
         "The print builtin accepts integers or strings and returns unit."
       ]
@@ -133,7 +146,8 @@ export const ojamlPaper: PaperDocument = {
       eyebrow: "VI",
       title: "Browser Tooling and Next Steps",
       paragraphs: [
-        "The reusable Monaco editor connects parsing and type checking directly to the authoring experience. Inline markers, completions, hover types, signature help, examples, compilation output, and execution results make the implementation inspectable without local setup.",
+        "The reusable Monaco editor connects parsing and type checking directly to the authoring experience. Inline markers, completions, token-level hovers, signature help, examples, compilation output, and execution results make the implementation inspectable without local setup.",
+        "Hover data now comes from the checker for typed identifiers and literals, so locals, parameters, top-level declarations, and standard-library calls expose their inferred types directly over the relevant token. When a token is lexical rather than typed, the language service still explains it as a keyword, operator, delimiter, or separator.",
         "The current core deliberately stops before several larger OCaml features. Algebraic data type declarations, records, tuples, modules, exceptions, structural collection patterns, bounds checks, and garbage collection are natural next steps."
       ],
       bullets: [
