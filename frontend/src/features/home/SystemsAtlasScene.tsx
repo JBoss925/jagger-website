@@ -1314,19 +1314,19 @@ function SystemsAtlasScene({ sections, activeSectionId, reducedMotion }: Systems
 
   return (
     <>
-      <color attach="background" args={["#040712"]} />
-      <fog attach="fog" args={["#040712", 11, 26]} />
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[6, 8, 5]} intensity={1.2} color="#9dc4ff" />
-      <pointLight position={[-6, 4, 8]} intensity={1.8} color="#57d0ff" />
-      <pointLight position={[8, -1, 5]} intensity={1.2} color="#f7a95b" />
-      <gridHelper args={[36, 36, "#14324a", "#09111f"]} position={[0, -4, 0]} />
+      <color attach="background" args={["#000000"]} />
+      <fog attach="fog" args={["#000000", 9, 23]} />
+      <ambientLight intensity={1.08} />
+      <directionalLight position={[6, 8, 5]} intensity={1.55} color="#9dc4ff" />
+      <pointLight position={[-6, 4, 8]} intensity={2.2} color="#57d0ff" />
+      <pointLight position={[8, -1, 5]} intensity={1.45} color="#f7a95b" />
+      <gridHelper args={[36, 36, "#315642", "#0d1511"]} position={[0, -4, 0]} />
       <StaticStarfield count={620} spread={34} height={[-6, 10]} size={0.08} opacity={0.94} color="#b7d6ff" />
       <StaticStarfield count={1840} spread={54} height={[-12, 18]} size={0.04} opacity={0.32} color="#88a8d6" />
       <CircularParticles count={220} bounds={[24, 14, 24]} size={0.2} opacity={0.72} color="#7bcfff" />
       <CircularParticles count={120} bounds={[20, 12, 20]} size={0.26} opacity={0.8} color="#c3dcff" speed={0.035} />
       <OrbitingDust sections={sections} />
-      <Line points={linePoints} color="#4c7ab7" lineWidth={1.8} transparent opacity={0.45} />
+      <Line points={linePoints} color="#315642" lineWidth={1.8} transparent opacity={0.45} />
       {sections.map((section, index) => (
         <AtlasNode
           key={section.id}

@@ -2,6 +2,7 @@ import { useEffect, useId, useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { NavLinkItem, SceneSection } from "../types/content";
 import { useMediaQuery } from "../hooks/useMediaQuery";
+import { headshotAsset } from "../content/profile";
 
 type SiteNavigationProps = {
   sections?: SceneSection[];
@@ -109,7 +110,9 @@ function SiteNavigation({
       >
         <div className="site-nav__topbar">
           <Link to={brandHref} className="site-nav__brand-link" onClick={handleBrandClick}>
-            <span className="site-nav__brand-mark">JB</span>
+            <span className="site-nav__brand-mark">
+              <img src={headshotAsset} alt="" aria-hidden="true" />
+            </span>
             <span>
               <strong>{brandTitle}</strong>
               <small>{brandSubtitle}</small>

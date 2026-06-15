@@ -17,7 +17,7 @@ if (
 
 const frontendRoot = fileURLToPath(new URL(".", import.meta.url));
 const workspaceRoot = fileURLToPath(new URL("..", import.meta.url));
-const utilShim = path.resolve(frontendRoot, "src/lib/jaggerscript/utilShim.ts");
+const utilShim = path.resolve(workspaceRoot, "jaggerscript/src/utilShim.ts");
 const monacoReactEntry = path.resolve(frontendRoot, "node_modules/@monaco-editor/react/dist/index.mjs");
 const monacoEditorEntry = path.resolve(frontendRoot, "node_modules/monaco-editor/esm/vs/editor/editor.api.js");
 const matterJsEntry = path.resolve(frontendRoot, "node_modules/matter-js/build/matter.js");
@@ -33,10 +33,11 @@ export default defineConfig({
       { find: /^monaco-editor$/, replacement: monacoEditorEntry },
       { find: /^matter-js$/, replacement: matterJsEntry },
       { find: /^wabt$/, replacement: wabtEntry },
-      { find: "@", replacement: path.resolve(frontendRoot, "src") },
       { find: "@genetic-ts", replacement: path.resolve(workspaceRoot, "genetic_ts/src") },
+      { find: "@jaggerscript", replacement: path.resolve(workspaceRoot, "jaggerscript/src") },
       { find: "@ojaml", replacement: path.resolve(workspaceRoot, "ojaml/src") },
-      { find: "@rengine", replacement: path.resolve(workspaceRoot, "rengine/src") }
+      { find: "@rengine", replacement: path.resolve(workspaceRoot, "rengine/src") },
+      { find: "@", replacement: path.resolve(frontendRoot, "src") }
     ]
   },
   define: {

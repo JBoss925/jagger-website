@@ -68,13 +68,6 @@ export type SkillCluster = {
   items: string[];
 };
 
-export type JaggerScriptExample = {
-  id: string;
-  title: string;
-  description: string;
-  source: string;
-};
-
 export type ProfileContent = {
   name: string;
   title: string;

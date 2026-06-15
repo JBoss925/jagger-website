@@ -488,6 +488,7 @@ export const profileContent: ProfileContent = {
       icon: "ojaml",
       links: [
         { label: "Open Editor", href: "/ojaml" },
+        { label: "Open Paper", href: "/papers/ojaml" },
         { label: "Source", href: "https://github.com/JBoss925/OJaml" }
       ]
     },

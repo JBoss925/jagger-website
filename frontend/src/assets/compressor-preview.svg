@@ -3,30 +3,30 @@
   <desc id="desc">A clean left-to-right codec diagram showing text units, predictor, hit/miss decisions, and an AIXC archive.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M0 0 10 5 0 10z" fill="#57d0ff"/>
+      <path d="M0 0 10 5 0 10z" fill="#8fc9a3"/>
     </marker>
     <linearGradient id="panel" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#102036"/>
-      <stop offset="1" stop-color="#091420"/>
+      <stop offset="0" stop-color="#121614"/>
+      <stop offset="1" stop-color="#080a09"/>
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="720" fill="#07101b"/>
-  <rect x="70" y="86" width="1060" height="548" rx="8" fill="url(#panel)" stroke="#34516f" stroke-width="2"/>
-  <rect x="116" y="126" width="968" height="468" rx="4" fill="#0b1522" stroke="#1d344d" stroke-width="1"/>
+  <rect width="1200" height="720" fill="#020202"/>
+  <rect x="70" y="86" width="1060" height="548" rx="8" fill="url(#panel)" stroke="#315642" stroke-width="2"/>
+  <rect x="116" y="126" width="968" height="468" rx="4" fill="#0b0b0b" stroke="#20382d" stroke-width="1"/>
 
   <g font-family="IBM Plex Mono, Consolas, monospace" text-anchor="middle">
-    <text x="600" y="184" fill="#eef5ff" font-size="34" font-weight="700">AIXC Predictor Codec</text>
-    <text x="600" y="218" fill="#9fb6cf" font-size="18">store what the predictor cannot reproduce</text>
+    <text x="600" y="184" fill="#f7f7f7" font-size="34" font-weight="700">AIXC Predictor Codec</text>
+    <text x="600" y="218" fill="#b8bcc4" font-size="18">store what the predictor cannot reproduce</text>
   </g>
 
-  <g fill="none" stroke="#57d0ff" stroke-width="4" marker-end="url(#arrow)">
+  <g fill="none" stroke="#8fc9a3" stroke-width="4" marker-end="url(#arrow)">
     <path d="M280 360H358"/>
     <path d="M520 360H598"/>
     <path d="M760 360H838"/>
   </g>
 
-  <g fill="#132437" stroke="#6ea5d8" stroke-width="2">
+  <g fill="#121614" stroke="#315642" stroke-width="2">
     <rect x="150" y="312" width="130" height="96" rx="4"/>
     <rect x="358" y="312" width="162" height="96" rx="4"/>
     <rect x="598" y="312" width="162" height="96" rx="4"/>
@@ -34,25 +34,25 @@
   </g>
 
   <g font-family="IBM Plex Mono, Consolas, monospace" text-anchor="middle">
-    <g fill="#eef5ff" font-size="22" font-weight="600">
+    <g fill="#f7f7f7" font-size="22" font-weight="600">
       <text x="215" y="352">TEXT</text>
       <text x="439" y="352">PREDICT</text>
       <text x="679" y="352">DECIDE</text>
       <text x="945" y="320">AIXC FILE</text>
     </g>
-    <g fill="#9fb6cf" font-size="15">
+    <g fill="#b8bcc4" font-size="15">
       <text x="215" y="381">units</text>
       <text x="439" y="381">next-unit argmax</text>
       <text x="679" y="381">hit or residual</text>
     </g>
-    <g fill="#8de7c1" font-size="15">
+    <g fill="#8fc9a3" font-size="15">
       <text x="945" y="354">seed units</text>
       <text x="945" y="386">packed decisions</text>
       <text x="945" y="418">miss residuals</text>
     </g>
   </g>
 
-  <g fill="#f7a95b" font-family="IBM Plex Mono, Consolas, monospace" font-size="18" text-anchor="middle">
+  <g fill="#dce8df" font-family="IBM Plex Mono, Consolas, monospace" font-size="18" text-anchor="middle">
     <text x="600" y="512">deterministic decode = same predictor + same manifest + same residual stream</text>
   </g>
 </svg>
