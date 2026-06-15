@@ -25,7 +25,7 @@ function PapersHeader({
         <span className="papers-header__mark" aria-hidden="true" />
         <span>
           <strong>Jagger Papers</strong>
-          <small>Technical notes and project papers</small>
+          <small>Technical notes &amp; papers</small>
         </span>
       </Link>
 
@@ -37,6 +37,8 @@ function PapersHeader({
         aria-label={isExpanded ? "Collapse papers controls" : "Expand papers controls"}
         onClick={() => setIsExpanded((current) => !current)}
       >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
         <span aria-hidden="true" />
       </button>
 
