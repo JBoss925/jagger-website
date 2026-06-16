@@ -35,24 +35,24 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "Whole-system pipeline",
                     body: `source.oj
-            |
-            v
-          lexer -> tokens -> recursive-descent parser -> AST
-            |                                      |
-            |                                      v
-            +---------------------------> polymorphic checker
-                                                   |
-                                                   v
-                                        typed program metadata
-                                                   |
-                                                   v
-                                   WAT emitter + runtime helpers
-                                                   |
-                                                   v
-                                        WABT -> WebAssembly
-                                                   |
-                                                   v
-                                   browser instantiate -> main()`,
+  |
+  v
+lexer -> tokens -> recursive-descent parser -> AST
+  |                                      |
+  |                                      v
+  +---------------------------> polymorphic checker
+                                         |
+                                         v
+                              typed program metadata
+                                         |
+                                         v
+                         WAT emitter + runtime helpers
+                                         |
+                                         v
+                              WABT -> WebAssembly
+                                         |
+                                         v
+                         browser instantiate -> main()`,
                     caption: "Every user-visible result comes from the same staged pipeline: parse, type check, emit WAT, convert to WASM, instantiate, and execute."
                 },
                 {
@@ -94,7 +94,7 @@ export const ojamlPaper: PaperDocument = {
                     label: "Hello world",
                     language: "ocaml",
                     code: `let main =
-            print "Hello, OJaml!"`,
+  print "Hello, OJaml!"`,
                     caption: "The smallest useful program binds main to an expression. print accepts int or string and returns unit."
                 },
                 {
@@ -112,14 +112,14 @@ export const ojamlPaper: PaperDocument = {
                     label: "Core expression tour",
                     language: "ocaml",
                     code: `let rec fact n =
-            match n with
-            | 0 -> 1
-            | 1 -> 1
-            | _ -> n * fact (n - 1)
+  match n with
+  | 0 -> 1
+  | 1 -> 1
+  | _ -> n * fact (n - 1)
 
-          let main =
-            let x = fact 5 in
-            if x > 100 then x else 0`,
+let main =
+  let x = fact 5 in
+  if x > 100 then x else 0`,
                     caption: "Top-level recursion, match, local let, arithmetic, comparison, and if/then/else all compile through the same expression checker."
                 },
                 {
@@ -156,22 +156,22 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "AST shape",
                     body: `Program
-            declarations: Declaration[]
+  declarations: Declaration[]
 
-          Declaration
-            kind: Let
-            recursive: boolean
-            name: string
-            nameSpan: SourceSpan
-            params: string[]
-            paramSpans: SourceSpan[]
-            value: Expr
-            span: SourceSpan
+Declaration
+  kind: Let
+  recursive: boolean
+  name: string
+  nameSpan: SourceSpan
+  params: string[]
+  paramSpans: SourceSpan[]
+  value: Expr
+  span: SourceSpan
 
-          Expr
-            Int | String | Bool | Unit | Var
-            Unary | Binary | If | LetIn
-            Call | Fun | Match`,
+Expr
+  Int | String | Bool | Unit | Var
+  Unary | Binary | If | LetIn
+  Call | Fun | Match`,
                     caption: "The AST is deliberately close to the implemented language constructs, and binder spans are first-class data."
                 },
                 {
@@ -212,12 +212,12 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "Type constructors",
                     body: `Type
-            prim("int" | "bool" | "string" | "unit")
-            var(id, instance?)
-            app("array", [elem])
-            app("list", [elem])
-            app("map", [key, value])
-            fn(params[], result)`,
+  prim("int" | "bool" | "string" | "unit")
+  var(id, instance?)
+  app("array", [elem])
+  app("list", [elem])
+  app("map", [key, value])
+  fn(params[], result)`,
                     caption: "Collections and maps are not erased during checking; their element, key, and value relationships remain visible to unification."
                 },
                 {
@@ -225,7 +225,7 @@ export const ojamlPaper: PaperDocument = {
                     label: "Rejected branch mismatch",
                     language: "ocaml",
                     code: `let main =
-            if true then 1 else "no"`,
+  if true then 1 else "no"`,
                     caption: "The condition is bool, but the branches try to unify int with string, so the checker rejects the program."
                 },
                 {
@@ -279,10 +279,10 @@ export const ojamlPaper: PaperDocument = {
                     label: "Typed map success",
                     language: "ocaml",
                     code: `let main =
-            let names = Map.set (Map.empty ()) "ada" 1815 in
-            if Map.has names "ada"
-            then Map.get names "ada"
-            else 0`,
+  let names = Map.set (Map.empty ()) "ada" 1815 in
+  if Map.has names "ada"
+  then Map.get names "ada"
+  else 0`,
                     caption: "Map.set fixes names as a (string, int) map; Map.has and Map.get must use string keys, and Map.get returns int."
                 },
                 {
@@ -300,8 +300,8 @@ export const ojamlPaper: PaperDocument = {
                     label: "Typed map rejection",
                     language: "ocaml",
                     code: `let main =
-            let names = Map.set (Map.empty ()) "ada" 1815 in
-            Map.get names 1815`,
+  let names = Map.set (Map.empty ()) "ada" 1815 in
+  Map.get names 1815`,
                     caption: "The map key type is string, so an int key cannot type check."
                 },
                 {
@@ -391,16 +391,16 @@ export const ojamlPaper: PaperDocument = {
                     label: "Closure layout",
                     body: `closure pointer p
 
-          p + 0   table index
-          p + 4   captured value 0
-          p + 8   captured value 1
-          ...
+p + 0   table index
+p + 4   captured value 0
+p + 8   captured value 1
+...
 
-          indirect call:
-            call_indirect(type fn_n)
-              env = p
-              arg_1 ... arg_n
-              table_index = load(p + 0)`,
+indirect call:
+  call_indirect(type fn_n)
+    env = p
+    arg_1 ... arg_n
+    table_index = load(p + 0)`,
                     caption: "Every closure is both an environment pointer and the source of its callable table entry."
                 },
                 {
@@ -408,11 +408,11 @@ export const ojamlPaper: PaperDocument = {
                     label: "Closure capture",
                     language: "ocaml",
                     code: `let make_adder x =
-            fun y -> x + y
+  fun y -> x + y
 
-          let main =
-            let add10 = make_adder 10 in
-            add10 32`,
+let main =
+  let add10 = make_adder 10 in
+  add10 32`,
                     caption: "The anonymous function captures x. At runtime add10 is a closure whose environment stores 10."
                 },
                 {
@@ -430,8 +430,8 @@ export const ojamlPaper: PaperDocument = {
                     label: "Higher-order collection call",
                     language: "ocaml",
                     code: `let main =
-            let xs = List.cons 3 (List.cons 2 (List.cons 1 (List.empty ()))) in
-            List.fold_left (fun acc x -> acc + x) 0 xs`,
+  let xs = List.cons 3 (List.cons 2 (List.cons 1 (List.empty ()))) in
+  List.fold_left (fun acc x -> acc + x) 0 xs`,
                     caption: "The fold callback is compiled as a closure and called indirectly by the List.fold_left runtime helper."
                 },
                 {
@@ -468,22 +468,22 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "Heap object layouts",
                     body: `array pointer a
-            a + 0   length
-            a + 4   element 0
-            a + 8   element 1
+  a + 0   length
+  a + 4   element 0
+  a + 8   element 1
 
-          list pointer l
-            l + 0   head
-            l + 4   tail pointer (0 = empty)
+list pointer l
+  l + 0   head
+  l + 4   tail pointer (0 = empty)
 
-          map pointer m
-            m + 0   key
-            m + 4   value
-            m + 8   next pointer (0 = empty)
+map pointer m
+  m + 0   key
+  m + 4   value
+  m + 8   next pointer (0 = empty)
 
-          closure pointer c
-            c + 0   table index
-            c + 4   captured value 0`,
+closure pointer c
+  c + 0   table index
+  c + 4   captured value 0`,
                     caption: "The runtime heap uses small fixed layouts and linked structures, all addressed through i32 pointers."
                 },
                 {
@@ -530,21 +530,21 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "Generated module skeleton",
                     body: `(module
-            (type $fn_1 ...)
-            (type $fn_2 ...)
-            (import "env" "print_i32" ...)
-            (import "env" "print_string" ...)
-            (memory (export "memory") 1)
-            (table N funcref)
-            (global $heap (mut i32) ...)
+  (type $fn_1 ...)
+  (type $fn_2 ...)
+  (import "env" "print_i32" ...)
+  (import "env" "print_string" ...)
+  (memory (export "memory") 1)
+  (table N funcref)
+  (global $heap (mut i32) ...)
 
-            ;; allocator and collection helpers
-            ;; top-level closure wrappers
-            ;; user declarations
-            ;; pending lambdas
-            ;; string data segments
+  ;; allocator and collection helpers
+  ;; top-level closure wrappers
+  ;; user declarations
+  ;; pending lambdas
+  ;; string data segments
 
-            (export "main" (func $main)))`,
+  (export "main" (func $main)))`,
                     caption: "The backend emits a self-contained module with runtime helpers and the user's program."
                 },
                 {
@@ -553,9 +553,9 @@ export const ojamlPaper: PaperDocument = {
                     language: "wat",
                     code: `let main = 40 + 2
 
-          ;; lowers approximately to:
-          (func $main (result i32)
-            (i32.add (i32.const 40) (i32.const 2)))`,
+;; lowers approximately to:
+(func $main (result i32)
+  (i32.add (i32.const 40) (i32.const 2)))`,
                     caption: "Primitive scalar expressions lower directly to simple WebAssembly instructions."
                 },
                 {
@@ -603,10 +603,10 @@ export const ojamlPaper: PaperDocument = {
                     label: "Primitive and variable patterns",
                     language: "ocaml",
                     code: `let classify n =
-            match n with
-            | 0 -> "zero"
-            | 1 -> "one"
-            | value -> "many"`,
+  match n with
+  | 0 -> "zero"
+  | 1 -> "one"
+  | value -> "many"`,
                     caption: "The final variable pattern both binds value and satisfies the catch-all requirement."
                 },
                 {
@@ -647,14 +647,14 @@ export const ojamlPaper: PaperDocument = {
                     kind: "diagram",
                     label: "Hover decision tree",
                     body: `hover(offset)
-            |
-            +-- parse + check succeeds?
-            |      |
-            |      +-- checked token covers offset -> show inferred detail
-            |      |
-            |      +-- otherwise -> lexical fallback
-            |
-            +-- parse/check fails -> lexical fallback`,
+  |
+  +-- parse + check succeeds?
+  |      |
+  |      +-- checked token covers offset -> show inferred detail
+  |      |
+  |      +-- otherwise -> lexical fallback
+  |
+  +-- parse/check fails -> lexical fallback`,
                     caption: "Typed hover information is preferred, but every meaningful token can still explain itself."
                 },
                 {
@@ -662,11 +662,11 @@ export const ojamlPaper: PaperDocument = {
                     label: "Instantiated hover",
                     language: "ocaml",
                     code: `let main =
-            let names = Map.set (Map.empty ()) "ada" 1815 in
-            Map.get names "ada"
+  let names = Map.set (Map.empty ()) "ada" 1815 in
+  Map.get names "ada"
 
-          hover Map.get:
-            Map.get : (string, int) map -> string -> int`,
+hover Map.get:
+  Map.get : (string, int) map -> string -> int`,
                     caption: "The hover reports the concrete map type inferred at the call site, not just the generic builtin signature."
                 },
                 {
@@ -702,9 +702,9 @@ export const ojamlPaper: PaperDocument = {
                     label: "Map type regression test",
                     language: "ocaml",
                     code: `let main =
-            let m = Map.set (Map.empty ()) "one" 1 in
-            let m = Map.set m "two" "nope" in
-            Map.get m "one"`,
+  let m = Map.set (Map.empty ()) "one" 1 in
+  let m = Map.set m "two" "nope" in
+  Map.get m "one"`,
                     caption: "This must fail because the second Map.set attempts to write a string value into a (string, int) map."
                 },
                 {
