@@ -1,74 +1,78 @@
-export type PaperCategory =
-  | "Audio DSP"
-  | "Compression"
-  | "Engine Architecture"
-  | "Language Tooling"
-  | "Max for Live"
-  | "Research Notes"
-  | "Simulation"
-  | "Systems";
-
-export type PaperGraph =
-  | {
-      kind: "signal-flow";
-      title: string;
-      description: string;
-    }
-  | {
-      kind: "servo-response";
-      title: string;
-      description: string;
-    }
-  | {
-      kind: "harmonic-profile";
-      title: string;
-      description: string;
-    };
-
+export type PaperCategory = "Audio DSP" | "Compression" | "Engine Architecture" | "Language Tooling" | "Max for Live" | "Research Notes" | "Simulation" | "Systems";
+export type PaperGraph = {
+    kind: "signal-flow";
+    title: string;
+    description: string;
+} | {
+    kind: "servo-response";
+    title: string;
+    description: string;
+} | {
+    kind: "harmonic-profile";
+    title: string;
+    description: string;
+};
 export type PaperAudioSample = {
-  label: string;
-  source: string;
-  drySrc: string;
-  wetSrc: string;
-  durationSeconds?: number;
+    label: string;
+    source: string;
+    drySrc: string;
+    wetSrc: string;
+    durationSeconds?: number;
 };
-
 export type PaperActionLink = {
-  label: string;
-  href: string;
-  description?: string;
+    label: string;
+    href: string;
+    description?: string;
 };
-
-export type PaperSection = {
-  id: string;
-  kind?: "standard" | "audio-samples";
-  eyebrow?: string;
-  title: string;
-  paragraphs: string[];
-  equations?: {
+export type PaperSectionBlock = {
+    kind: "paragraph";
+    text: string;
+} | {
+    kind: "bullets";
+    items: string[];
+} | {
+    kind: "example";
+    label: string;
+    code: string;
+    language?: string;
+    caption: string;
+} | {
+    kind: "diagram";
+    label: string;
+    body: string;
+    caption: string;
+} | {
+    kind: "equation";
     label: string;
     tex: string;
     caption: string;
-  }[];
-  bullets?: string[];
-  graph?: PaperGraph;
+} | {
+    kind: "graph";
+    graph: PaperGraph;
+} | {
+    kind: "audio-samples";
 };
-
+export type PaperSection = {
+    id: string;
+    eyebrow?: string;
+    title: string;
+    blocks: PaperSectionBlock[];
+};
 export type PaperDocument = {
-  slug: string;
-  title: string;
-  subtitle: string;
-  authors: string[];
-  date: string;
-  abstract: string;
-  description: string;
-  categories: PaperCategory[];
-  tags: string[];
-  repoUrl: string;
-  previewImage?: string;
-  previewAlt: string;
-  previewCaption?: string;
-  actionLinks?: PaperActionLink[];
-  sections: PaperSection[];
-  audioSamples: PaperAudioSample[];
+    slug: string;
+    title: string;
+    subtitle: string;
+    authors: string[];
+    date: string;
+    abstract: string;
+    description: string;
+    categories: PaperCategory[];
+    tags: string[];
+    repoUrl: string;
+    previewImage?: string;
+    previewAlt: string;
+    previewCaption?: string;
+    actionLinks?: PaperActionLink[];
+    sections: PaperSection[];
+    audioSamples: PaperAudioSample[];
 };

@@ -1,162 +1,790 @@
 import ojamlPreview from "../../assets/ojaml-preview.jpg";
 import type { PaperDocument } from "./types";
-
 export const ojamlPaper: PaperDocument = {
-  slug: "ojaml",
-  title: "OJaml: An OCaml-Inspired Language Compiled to WebAssembly",
-  subtitle:
-    "A browser-native language implementation with OCaml-style syntax, Hindley-Milner-inspired inference, polymorphic collections, first-class functions, and direct WebAssembly execution.",
-  authors: ["Jagger Brulato"],
-  date: "2026",
-  abstract:
-    "OJaml is an OCaml-inspired programming language designed to compile and run entirely inside the browser. Its implementation includes a lexer, recursive-descent parser, polymorphic type checker, WebAssembly text backend, runtime bridge, Monaco language service, examples, and reusable editor package. The current language supports top-level and local bindings, recursion, pattern matching, first-class functions and closures, strings, unit, polymorphic arrays, lists, and maps, higher-order collection operations, and browser-native printing. This paper describes how those pieces fit together and why WebAssembly makes a useful execution target for an interactive language workbench.",
-  description:
-    "A technical paper for an OCaml-inspired language with polymorphic type inference, first-class functions, collections, Monaco tooling, and a WebAssembly runtime.",
-  categories: ["Language Tooling", "Systems", "Research Notes"],
-  tags: ["TypeScript", "WebAssembly", "Type Inference", "Compiler", "Closures", "Monaco"],
-  repoUrl: "https://github.com/JBoss925/OJaml",
-  previewImage: ojamlPreview,
-  previewAlt: "OJaml browser editor preview",
-  previewCaption:
-    "OJaml editor. Source is parsed, type checked, compiled to WebAssembly text, converted to a binary module, and executed locally in the browser.",
-  actionLinks: [
-    {
-      label: "Open Editor",
-      href: "/ojaml",
-      description: "Compile and run OJaml programs in the browser"
-    }
-  ],
-  sections: [
-    {
-      id: "motivation",
-      eyebrow: "I",
-      title: "Motivation",
-      paragraphs: [
-        "OJaml explores how much of an OCaml-like programming experience can live directly in a browser without a remote compiler. The useful constraint is that the whole path must be understandable and local: source text becomes an AST, the AST is checked, valid programs become WebAssembly, and the resulting module is instantiated by the browser.",
-        "That makes the editor more than a syntax demo. Every example exercises the same compiler and runtime path that the command-line interface uses."
-      ],
-      bullets: [
-        "Keep the syntax and programming model recognizably OCaml-inspired.",
-        "Provide real static diagnostics before execution.",
-        "Compile to portable WebAssembly rather than interpreting source in the editor.",
-        "Package the editor so it can be embedded as a reusable component."
-      ]
-    },
-    {
-      id: "frontend",
-      eyebrow: "II",
-      title: "Lexer, Parser, and Language Core",
-      paragraphs: [
-        "The frontend uses a dedicated lexer and recursive-descent parser. Programs contain top-level let and let rec declarations, while expressions cover local let bindings, conditionals, function application, anonymous functions, arithmetic, comparisons, boolean operations, and match expressions.",
-        "Pattern matching currently supports integer, string, boolean, unit, wildcard, and variable patterns. Match checking requires a wildcard or variable catch-all arm, which prevents a common class of incomplete programs before code generation."
-      ],
-      bullets: [
-        "Top-level recursion supports examples such as factorial and Fibonacci.",
-        "Local let expressions provide scoped intermediate values.",
-        "Strings, booleans, integers, and unit form the primitive core.",
-        "OCaml-style match expressions make control flow data-oriented."
-      ]
-    },
-    {
-      id: "types",
-      eyebrow: "III",
-      title: "Polymorphic Type Checking",
-      paragraphs: [
-        "The checker represents primitive types, type variables, collection applications, maps, and function types. It creates declaration stubs, checks bodies against those stubs, and unifies constraints as expressions are visited.",
-        "The standard library is typed through explicit polymorphic schemes instead of untyped runtime hooks. Arrays, lists, maps, higher-order collection helpers, and print all enter the environment with complete signatures, then each use site receives fresh variables that are unified with the surrounding program.",
-        "That matters most for maps: Map.empty begins with unknown key and value variables, Map.set fixes both sides from the provided key and value, and Map.get and Map.has must use the same key type later. Once a map becomes a (string, int) map, reading with an int key or writing a string value is rejected before WebAssembly generation.",
-        "The editor surfaces the resulting function and value types through diagnostics, hover information, completion details, and signature help. Builtin hovers show the instantiated type at the call site, while non-typed tokens such as keywords, operators, literals, delimiters, and declaration separators still report useful lexical identity."
-      ],
-      equations: [
+    slug: "ojaml",
+    title: "OJaml: An OCaml-Inspired Language Compiled to WebAssembly",
+    subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
+    authors: ["Jagger Brulato"],
+    date: "2026",
+    abstract: "OJaml is a compact OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, strings, unit, polymorphic arrays, lists, maps, higher-order collection functions, printing, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries in enough detail to reconstruct the current OJaml system.",
+    description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
+    categories: ["Language Tooling", "Systems", "Research Notes"],
+    tags: ["TypeScript", "WebAssembly", "Type Inference", "Compiler", "Closures", "Monaco"],
+    repoUrl: "https://github.com/JBoss925/OJaml",
+    previewImage: ojamlPreview,
+    previewAlt: "OJaml browser editor preview",
+    previewCaption: "OJaml editor. Source is parsed, type checked, compiled to WebAssembly text, converted to a binary module, and executed locally in the browser.",
+    actionLinks: [
         {
-          label: "Map.get",
-          tex: "\\operatorname{Map.get} : ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v",
-          caption: "A map read uses the same key type established by the map and returns its value type."
+            label: "Open Editor",
+            href: "/ojaml",
+            description: "Compile and run OJaml programs in the browser"
+        }
+    ],
+    sections: [
+        {
+            id: "thesis",
+            eyebrow: "I",
+            title: "Thesis and Design Contract",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "OJaml is built around one constraint: the browser demo must be the real language implementation. There is no server compiler and no interpreter shortcut hidden behind the editor. The same source pipeline supports the reusable editor, the route embedded in the website, the command-line interface, the tests, and the generated WebAssembly output."
+                },
+                {
+                    kind: "diagram",
+                    label: "Whole-system pipeline",
+                    body: `source.oj
+            |
+            v
+          lexer -> tokens -> recursive-descent parser -> AST
+            |                                      |
+            |                                      v
+            +---------------------------> polymorphic checker
+                                                   |
+                                                   v
+                                        typed program metadata
+                                                   |
+                                                   v
+                                   WAT emitter + runtime helpers
+                                                   |
+                                                   v
+                                        WABT -> WebAssembly
+                                                   |
+                                                   v
+                                   browser instantiate -> main()`,
+                    caption: "Every user-visible result comes from the same staged pipeline: parse, type check, emit WAT, convert to WASM, instantiate, and execute."
+                },
+                {
+                    kind: "equation",
+                    label: "Compiler contract",
+                    tex: "\\operatorname{run}(s) = \\operatorname{instantiate}(\\operatorname{wabt}(\\operatorname{emit}(\\operatorname{check}(\\operatorname{parse}(\\operatorname{lex}(s))))))",
+                    caption: "Runtime behavior is downstream of syntax and type checking; invalid programs do not reach WebAssembly emission."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The language is intentionally small, but the implementation is complete across the boundary it chooses. Syntax is OCaml-like, values use a uniform i32 representation in WebAssembly, static checks run before emission, and all standard-library functions have explicit types. The result is a project small enough to audit but rich enough to demonstrate parsing, type inference, polymorphism, closures, heap allocation, indirect calls, and browser-native tooling."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The implementation favors explicit stages over clever collapse. Lexing decides what tokens exist. Parsing decides the tree shape. Checking decides whether names, calls, branches, patterns, and standard-library uses are coherent. Code generation decides memory layout and call shape. Runtime execution only runs programs that survived those prior stages."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "The editor, examples, tests, and CLI exercise the same language stages.",
+                        "The checker owns static validity; the runtime assumes checked programs.",
+                        "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
+                        "The current scope is deliberately finite: no modules, records, tuples, algebraic data type declarations, exceptions, garbage collection, or structural collection patterns yet."
+                    ]
+                }
+            ],
         },
         {
-          label: "Map.set",
-          tex: "\\operatorname{Map.set} : ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v \\rightarrow ('k,\\;'v)\\;map",
-          caption: "A map write preserves the relationship between key type, value type, and the returned map."
+            id: "surface-language",
+            eyebrow: "II",
+            title: "Surface Language",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, variables, unary and binary operations, conditionals, local lets, function application, anonymous functions, and match expressions."
+                },
+                {
+                    kind: "example",
+                    label: "Hello world",
+                    language: "ocaml",
+                    code: `let main =
+            print "Hello, OJaml!"`,
+                    caption: "The smallest useful program binds main to an expression. print accepts int or string and returns unit."
+                },
+                {
+                    kind: "equation",
+                    label: "Program grammar",
+                    tex: "P ::= D^{*}\\quad\\quad D ::= \\texttt{let}\\;\\texttt{rec?}\\;x\\;x^{*}=e",
+                    caption: "A program is a list of declarations; curried-looking parameters are stored as declaration parameters."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The surface syntax is intentionally close to OCaml without attempting to implement the entire language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which keeps the grammar small while still allowing namespaced builtins."
+                },
+                {
+                    kind: "example",
+                    label: "Core expression tour",
+                    language: "ocaml",
+                    code: `let rec fact n =
+            match n with
+            | 0 -> 1
+            | 1 -> 1
+            | _ -> n * fact (n - 1)
+
+          let main =
+            let x = fact 5 in
+            if x > 100 then x else 0`,
+                    caption: "Top-level recursion, match, local let, arithmetic, comparison, and if/then/else all compile through the same expression checker."
+                },
+                {
+                    kind: "equation",
+                    label: "Expression grammar",
+                    tex: "e ::= n\\mid s\\mid b\\mid ()\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;x=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
+                    caption: "The implemented expression set is small but expressive enough for recursion, higher-order functions, and collection programs."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Every construct in the grammar maps to a direct AST node. That correspondence is an engineering choice: it keeps diagnostics precise, lets hover spans point back to real tokens, and makes later compilation passes easy to inspect."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Lexed token kinds include ints, strings, identifiers, keywords, operators, parentheses, pipes, arrows, equals, separators, and EOF.",
+                        "Supported primitive values are int, bool, string, and unit.",
+                        "Supported binary operators are arithmetic, comparisons, equality/inequality, boolean conjunction/disjunction, and mod.",
+                        "Patterns cover int, string, bool, unit, wildcard, and variable catch-all patterns."
+                    ]
+                }
+            ],
         },
         {
-          label: "List.map",
-          tex: "\\operatorname{map} : ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list",
-          caption: "Higher-order collection operations preserve relationships between input and output element types."
+            id: "ast",
+            eyebrow: "III",
+            title: "AST and Source Spans",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The parser emits a purpose-built AST rather than preserving parser tokens as the executable representation. Program nodes contain declarations. Declaration nodes store the binding name, precise binding span, parameter names, parameter spans, body expression, and full declaration span. Expression nodes carry a kind-specific payload and a source span."
+                },
+                {
+                    kind: "diagram",
+                    label: "AST shape",
+                    body: `Program
+            declarations: Declaration[]
+
+          Declaration
+            kind: Let
+            recursive: boolean
+            name: string
+            nameSpan: SourceSpan
+            params: string[]
+            paramSpans: SourceSpan[]
+            value: Expr
+            span: SourceSpan
+
+          Expr
+            Int | String | Bool | Unit | Var
+            Unary | Binary | If | LetIn
+            Call | Fun | Match`,
+                    caption: "The AST is deliberately close to the implemented language constructs, and binder spans are first-class data."
+                },
+                {
+                    kind: "equation",
+                    label: "Span invariant",
+                    tex: "\\forall n \\in AST,\\; 0 \\le n.start \\le n.end \\le |source|",
+                    caption: "Every diagnostic or hover range is an interval over the original source."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Spans are not cosmetic. They are part of the language service contract. Diagnostics use spans to mark errors; editor hovers use spans to identify exactly which token is being described; local binders and function parameters keep separate name spans so a hover over the binder reports the same inferred type as a hover over a later use."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This design keeps the parser simple and lets downstream passes avoid re-tokenizing to understand binding sites. The checker can annotate the program with symbol and token metadata after unification has resolved type variables."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Declaration name spans and parameter spans make top-level hovers precise.",
+                        "Local let name spans make inferred local values hoverable at the binding site.",
+                        "Function parameter spans make anonymous function parameters hoverable.",
+                        "Pattern spans make variable catch-all bindings available to diagnostics and hovers."
+                    ]
+                }
+            ],
         },
         {
-          label: "Fold",
-          tex: "\\operatorname{fold\\_left} : ('b \\rightarrow 'a \\rightarrow 'b) \\rightarrow 'b \\rightarrow 'a\\;array \\rightarrow 'b",
-          caption: "The accumulator type remains independent from the collection element type."
-        }
-      ],
-      bullets: [
-        "Branches and match arms must agree on their result type.",
-        "Calls are checked for arity and argument compatibility.",
-        "Map keys and values remain statically connected across empty, set, get, and has calls.",
-        "Undefined names and duplicate bindings are rejected.",
-        "The print builtin accepts integers or strings and returns unit."
-      ]
-    },
-    {
-      id: "closures",
-      eyebrow: "IV",
-      title: "First-Class Functions and Closures",
-      paragraphs: [
-        "Functions are values in OJaml. Top-level functions can be passed into higher-order operations, anonymous functions can be created inside expressions, and closures can capture local values.",
-        "The compiler lowers closures into heap-backed environments and table indices. Indirect calls use WebAssembly function tables, while captured values are loaded from the closure environment."
-      ],
-      equations: [
+            id: "static-semantics",
+            eyebrow: "IV",
+            title: "Static Semantics and Type Representation",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "OJaml uses a compact Hindley-Milner-style constraint system. Types are primitives, type variables, applications for arrays/lists/maps, and function types. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as each expression demands a relationship between values."
+                },
+                {
+                    kind: "diagram",
+                    label: "Type constructors",
+                    body: `Type
+            prim("int" | "bool" | "string" | "unit")
+            var(id, instance?)
+            app("array", [elem])
+            app("list", [elem])
+            app("map", [key, value])
+            fn(params[], result)`,
+                    caption: "Collections and maps are not erased during checking; their element, key, and value relationships remain visible to unification."
+                },
+                {
+                    kind: "example",
+                    label: "Rejected branch mismatch",
+                    language: "ocaml",
+                    code: `let main =
+            if true then 1 else "no"`,
+                    caption: "The condition is bool, but the branches try to unify int with string, so the checker rejects the program."
+                },
+                {
+                    kind: "equation",
+                    label: "Variable lookup",
+                    tex: "\\frac{x:\\tau \\in \\Gamma}{\\Gamma \\vdash x : \\tau}\\quad\\quad\\frac{x:\\sigma \\in \\Delta}{\\Gamma,\\Delta \\vdash x : \\operatorname{fresh}(\\sigma)}",
+                    caption: "Local values are used directly, while global declarations and builtins are freshly instantiated when referenced."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Top-level declarations are installed into the global environment before their bodies are checked. A zero-parameter declaration receives a fresh type variable. A parameterized declaration receives a function stub whose parameter and result types are fresh variables. This permits recursive references because the name is available before the body is checked."
+                },
+                {
+                    kind: "equation",
+                    label: "Application",
+                    tex: "\\frac{\\Gamma \\vdash f : \\tau_f\\quad \\Gamma \\vdash a_i : \\tau_i\\quad \\operatorname{unify}(\\tau_f,\\;\\tau_1 \\rightarrow \\cdots \\rightarrow \\tau_n \\rightarrow \\alpha)}{\\Gamma \\vdash f\\;a_1\\ldots a_n : \\alpha}",
+                    caption: "Function application creates a fresh result type and unifies the callee against a function from argument types to that result."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, non-exhaustive matches without wildcard or variable catch-all arms, invalid print arguments, and main values that cannot be returned directly from the runtime. main may return int, bool, or unit; strings and heap values should be printed or reduced to a supported runtime result."
+                },
+                {
+                    kind: "equation",
+                    label: "Branch agreement",
+                    tex: "\\frac{\\Gamma \\vdash c:bool\\quad \\Gamma \\vdash t:\\tau\\quad \\Gamma \\vdash e:\\tau}{\\Gamma \\vdash \\texttt{if}\\;c\\;\\texttt{then}\\;t\\;\\texttt{else}\\;e : \\tau}",
+                    caption: "Both branches of a conditional must unify to one result type."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Pruning follows instantiated type variables until it reaches a concrete representative.",
+                        "Occurs checks prevent infinite types such as a = a -> b.",
+                        "Freshening copies polymorphic variables so one builtin use cannot constrain another unrelated use.",
+                        "showType formats resolved types for diagnostics, completion details, and hover output."
+                    ]
+                }
+            ],
+        },
         {
-          label: "Closure representation",
-          tex: "c = (i_{table},\\;p_{env})",
-          caption: "A closure pairs a callable table entry with a pointer to its captured environment."
-        }
-      ],
-      bullets: [
-        "Captured locals are stored in closure environments.",
-        "Top-level functions receive closure wrappers when used as values.",
-        "Indirect calls support higher-order collection functions.",
-        "Direct calls remain available when the callee is statically known."
-      ]
-    },
-    {
-      id: "wasm",
-      eyebrow: "V",
-      title: "WebAssembly Backend and Runtime",
-      paragraphs: [
-        "The compiler emits WebAssembly text with memory, a function table, a mutable heap pointer, standard-library helpers, declarations, closure wrappers, pending lambdas, string data segments, and an exported main function.",
-        "The browser runtime uses WABT to convert the emitted text into a binary module, validates it, instantiates it with printing imports, and executes main. Integers and booleans are immediate i32 values; strings, collections, maps, and closures are represented by heap pointers."
-      ],
-      equations: [
+            id: "stdlib",
+            eyebrow: "V",
+            title: "Typed Standard Library",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The standard library is part of the type environment, not an untyped escape hatch. Each builtin has a visible signature and a type factory. When the checker creates the builtins map, the factory constructs the type graph for that builtin. When a builtin is referenced, the checker freshens the graph so each call site receives independent variables."
+                },
+                {
+                    kind: "example",
+                    label: "Typed map success",
+                    language: "ocaml",
+                    code: `let main =
+            let names = Map.set (Map.empty ()) "ada" 1815 in
+            if Map.has names "ada"
+            then Map.get names "ada"
+            else 0`,
+                    caption: "Map.set fixes names as a (string, int) map; Map.has and Map.get must use string keys, and Map.get returns int."
+                },
+                {
+                    kind: "equation",
+                    label: "Array API",
+                    tex: "\\begin{aligned}\\operatorname{Array.make}&: int \\rightarrow 'a \\rightarrow 'a\\;array\\\\\\operatorname{Array.get}&: 'a\\;array \\rightarrow int \\rightarrow 'a\\\\\\operatorname{Array.set}&: 'a\\;array \\rightarrow int \\rightarrow 'a \\rightarrow unit\\end{aligned}",
+                    caption: "Array creation, reads, and writes preserve a single element type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This is most important for polymorphic collections. Array.make must connect its element argument to the returned array element type. List.cons must connect the head value and tail list. Map.set must connect map key, provided key, map value, provided value, and returned map. Map.get must return exactly the value type stored by the map and must accept exactly the map key type."
+                },
+                {
+                    kind: "example",
+                    label: "Typed map rejection",
+                    language: "ocaml",
+                    code: `let main =
+            let names = Map.set (Map.empty ()) "ada" 1815 in
+            Map.get names 1815`,
+                    caption: "The map key type is string, so an int key cannot type check."
+                },
+                {
+                    kind: "equation",
+                    label: "List API",
+                    tex: "\\begin{aligned}\\operatorname{List.empty}&: unit \\rightarrow 'a\\;list\\\\\\operatorname{List.cons}&: 'a \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list\\end{aligned}",
+                    caption: "List operations preserve or transform element types according to their function arguments."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The editor reuses the same signature table for completion details. That prevents the type checker, hover provider, and autocomplete provider from drifting into contradictory definitions of the standard library."
+                },
+                {
+                    kind: "equation",
+                    label: "Map API",
+                    tex: "\\begin{aligned}\\operatorname{Map.empty}&: unit \\rightarrow ('k,\\;'v)\\;map\\\\\\operatorname{Map.set}&: ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v \\rightarrow ('k,\\;'v)\\;map\\\\\\operatorname{Map.get}&: ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow 'v\\\\\\operatorname{Map.has}&: ('k,\\;'v)\\;map \\rightarrow 'k \\rightarrow bool\\end{aligned}",
+                    caption: "Map key and value variables remain connected across empty, set, get, and has."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "print is deliberately special: it accepts int or string and returns unit.",
+                        "Array.iter and List.iter require callbacks returning unit.",
+                        "Array.fold_left and List.fold_left keep accumulator type independent from element type.",
+                        "Polymorphic builtins are still compiled to uniform i32 functions at runtime; the checker is what preserves static meaning."
+                    ]
+                }
+            ],
+        },
         {
-          label: "Compilation path",
-          tex: "source \\rightarrow AST \\rightarrow typed\\;AST \\rightarrow WAT \\rightarrow WASM \\rightarrow result",
-          caption: "The editor executes the same compiler pipeline locally for every run."
+            id: "inference-proof",
+            eyebrow: "VI",
+            title: "Inference Proof Sketch",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The checker is not a formal proof assistant, but its structure follows the standard progress path for a small typed language: every accepted expression receives a type, and every emitted call has a statically established arity and value representation. The proof obligation is modest because OJaml uses one WebAssembly value shape, i32, for all runtime values."
+                },
+                {
+                    kind: "equation",
+                    label: "Unification preservation",
+                    tex: "\\operatorname{unify}(\\tau_1,\\tau_2) \\Rightarrow \\operatorname{prune}(\\tau_1)=\\operatorname{prune}(\\tau_2)",
+                    caption: "After a successful unify, both sides resolve to a shared representative type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Soundness here means the compiler never emits direct WebAssembly for a program with unresolved names, inconsistent branches, impossible call arity, or collection access whose key/value relationship is statically contradictory. It does not yet mean total runtime safety for every pointer operation; bounds checks, null checks for head/get, and garbage collection are explicitly outside the current core."
+                },
+                {
+                    kind: "equation",
+                    label: "Map key lemma",
+                    tex: "\\Gamma \\vdash m : (K,V)\\;map \\land \\Gamma \\vdash k : K \\Rightarrow \\Gamma \\vdash \\operatorname{Map.get}\\;m\\;k : V",
+                    caption: "Map reads are type-preserving because Map.get unifies its key parameter with the map key type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The most useful theorem for reconstructing the implementation is preservation under unification: once two types are unified, all later pruned references see the same representative. That property is what makes local hover information accurate after later expressions force a type variable to become concrete."
+                },
+                {
+                    kind: "equation",
+                    label: "No cross-call pollution",
+                    tex: "\\operatorname{fresh}(\\forall \\alpha.\\tau) = \\tau[\\alpha \\mapsto \\beta_{new}]",
+                    caption: "Fresh variables ensure one call to List.map or Map.set does not constrain another independent call."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Base cases assign primitive types to literals.",
+                        "Inductive expression cases add local constraints and unify recursively checked subexpressions.",
+                        "Function cases introduce fresh parameter variables and infer the body under the extended environment.",
+                        "Match cases unify every pattern with the scrutinee and every arm body with a shared result."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "closures",
+            eyebrow: "VII",
+            title: "First-Class Functions and Closures",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "OJaml supports first-class functions through heap-allocated closures and WebAssembly function tables. A top-level function can be called directly when statically known, or wrapped as a closure when passed as a value. Anonymous functions become pending lambdas with captured variables recorded from free-variable analysis."
+                },
+                {
+                    kind: "diagram",
+                    label: "Closure layout",
+                    body: `closure pointer p
+
+          p + 0   table index
+          p + 4   captured value 0
+          p + 8   captured value 1
+          ...
+
+          indirect call:
+            call_indirect(type fn_n)
+              env = p
+              arg_1 ... arg_n
+              table_index = load(p + 0)`,
+                    caption: "Every closure is both an environment pointer and the source of its callable table entry."
+                },
+                {
+                    kind: "example",
+                    label: "Closure capture",
+                    language: "ocaml",
+                    code: `let make_adder x =
+            fun y -> x + y
+
+          let main =
+            let add10 = make_adder 10 in
+            add10 32`,
+                    caption: "The anonymous function captures x. At runtime add10 is a closure whose environment stores 10."
+                },
+                {
+                    kind: "equation",
+                    label: "Closure value",
+                    tex: "c = (i_{table},\\;v_0,\\ldots,v_n)",
+                    caption: "The heap object stores the target function table index and all captured runtime values."
+                },
+                {
+                    kind: "paragraph",
+                    text: "A closure stores a table index followed by captured values. Indirect calls load the function table index from the closure pointer and pass the closure pointer as an environment parameter. Lambda bodies recover captured values by loading from fixed offsets in that environment."
+                },
+                {
+                    kind: "example",
+                    label: "Higher-order collection call",
+                    language: "ocaml",
+                    code: `let main =
+            let xs = List.cons 3 (List.cons 2 (List.cons 1 (List.empty ()))) in
+            List.fold_left (fun acc x -> acc + x) 0 xs`,
+                    caption: "The fold callback is compiled as a closure and called indirectly by the List.fold_left runtime helper."
+                },
+                {
+                    kind: "equation",
+                    label: "Free-variable capture",
+                    tex: "\\operatorname{captures}(\\texttt{fun}\\;x\\rightarrow e)=FV(e)\\setminus\\{x\\}",
+                    caption: "Anonymous functions capture exactly the free variables that are local or already captured in the surrounding context."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This representation keeps direct calls efficient while still supporting higher-order collection functions such as List.map, Array.iter, and fold_left. The standard library calls callbacks through call_indirect with the correct arity-specific WebAssembly function type."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Top-level functions receive closure wrappers when they are used as values.",
+                        "Pending lambdas are emitted after top-level declarations, with stable function-table indices.",
+                        "Indirect calls are currently implemented for arities one through three.",
+                        "Captured locals and captured captures are both loaded into the new closure environment."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "runtime-layout",
+            eyebrow: "VIII",
+            title: "Runtime Value Representation",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The WebAssembly backend uses i32 as the universal value representation. Integers and booleans are immediate i32 values. Unit is zero. Strings, arrays, lists, maps, and closures are heap pointers. This greatly simplifies WebAssembly function signatures and makes the language backend small enough to inspect."
+                },
+                {
+                    kind: "diagram",
+                    label: "Heap object layouts",
+                    body: `array pointer a
+            a + 0   length
+            a + 4   element 0
+            a + 8   element 1
+
+          list pointer l
+            l + 0   head
+            l + 4   tail pointer (0 = empty)
+
+          map pointer m
+            m + 0   key
+            m + 4   value
+            m + 8   next pointer (0 = empty)
+
+          closure pointer c
+            c + 0   table index
+            c + 4   captured value 0`,
+                    caption: "The runtime heap uses small fixed layouts and linked structures, all addressed through i32 pointers."
+                },
+                {
+                    kind: "equation",
+                    label: "Allocation",
+                    tex: "\\operatorname{alloc}(b) = p\\quad\\land\\quad heap' = heap + b",
+                    caption: "The allocator is a monotonic bump pointer."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The heap begins after static string data. Allocation is bump-pointer allocation: alloc(bytes) returns the current heap pointer and advances it by the requested byte count. There is no garbage collector in the current implementation. Allocated arrays, cons cells, map entries, and closures live for the lifetime of the module instance."
+                },
+                {
+                    kind: "equation",
+                    label: "Uniform lowering",
+                    tex: "\\tau \\in \\{int,bool,unit,string,array,list,map,fn\\}\\Rightarrow \\operatorname{wasm}(\\tau)=i32",
+                    caption: "Static types differ in the checker, but emitted runtime values share the same WebAssembly value type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Strings are emitted as WebAssembly data segments and represented by their memory offset. The runtime imports two print functions from JavaScript: one for i32 values and one for string pointers. The compiler chooses which import to call by consulting simple expression shape metadata derived from checked code."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Array.get and Array.set compute address base + 4 + index * 4.",
+                        "List.empty and Map.empty are represented by null pointer 0.",
+                        "Map.set prepends a key/value entry, making newer bindings shadow older equal keys.",
+                        "Current runtime helpers do not implement general bounds or null safety checks."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "wasm-backend",
+            eyebrow: "IX",
+            title: "WebAssembly Backend",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The compiler emits a complete WebAssembly text module. The module declares arity-specific function types for indirect calls, imports print_i32 and print_string, exports memory and main, defines a function table, owns a mutable heap global, emits standard-library helpers, emits closure wrappers, emits top-level declarations, emits pending lambdas, and appends string data segments."
+                },
+                {
+                    kind: "diagram",
+                    label: "Generated module skeleton",
+                    body: `(module
+            (type $fn_1 ...)
+            (type $fn_2 ...)
+            (import "env" "print_i32" ...)
+            (import "env" "print_string" ...)
+            (memory (export "memory") 1)
+            (table N funcref)
+            (global $heap (mut i32) ...)
+
+            ;; allocator and collection helpers
+            ;; top-level closure wrappers
+            ;; user declarations
+            ;; pending lambdas
+            ;; string data segments
+
+            (export "main" (func $main)))`,
+                    caption: "The backend emits a self-contained module with runtime helpers and the user's program."
+                },
+                {
+                    kind: "example",
+                    label: "Expression lowering sketch",
+                    language: "wat",
+                    code: `let main = 40 + 2
+
+          ;; lowers approximately to:
+          (func $main (result i32)
+            (i32.add (i32.const 40) (i32.const 2)))`,
+                    caption: "Primitive scalar expressions lower directly to simple WebAssembly instructions."
+                },
+                {
+                    kind: "equation",
+                    label: "Direct call",
+                    tex: "\\operatorname{emit}(f\\;a_1\\ldots a_n)=(call\\;\\$f\\;\\operatorname{emit}(a_1)\\ldots\\operatorname{emit}(a_n))",
+                    caption: "Known global callees are emitted as direct WebAssembly calls."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Direct calls are emitted when the callee is a known global function. Local function values, captured function values, anonymous functions, and top-level functions used as values are emitted through closure allocation and call_indirect. This lets OJaml preserve a direct fast path while still supporting higher-order functions."
+                },
+                {
+                    kind: "equation",
+                    label: "Indirect call",
+                    tex: "\\operatorname{emit}(g\\;a_1\\ldots a_n)=\\operatorname{call\\_indirect}(\\$fn_n,\\;env=g,\\;args,\\;table=load(g))",
+                    caption: "Function values are closure pointers and call through the function table."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Expression emission follows the AST. Literals become constants or string offsets. Binary operators become i32 operations. Local lets become blocks that set locals then evaluate the body. Conditionals and matches become structured WebAssembly if expressions. Function values become closure pointers."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "safe(name) maps source names like Map.get to valid WebAssembly identifiers such as Map_get.",
+                        "StringPool interns string literals and emits one null-terminated data segment per distinct value.",
+                        "The table contains top-level closure wrappers followed by anonymous lambda functions.",
+                        "The backend currently emits all user-level values as i32, relying on prior static checks for meaning."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "patterns",
+            eyebrow: "X",
+            title: "Pattern Matching",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Pattern matching is implemented for primitive and catch-all patterns. A match expression checks the scrutinee once, then checks every arm under an environment extended by any variable pattern. Arm result types must unify, and the match must contain a wildcard or variable catch-all arm."
+                },
+                {
+                    kind: "example",
+                    label: "Primitive and variable patterns",
+                    language: "ocaml",
+                    code: `let classify n =
+            match n with
+            | 0 -> "zero"
+            | 1 -> "one"
+            | value -> "many"`,
+                    caption: "The final variable pattern both binds value and satisfies the catch-all requirement."
+                },
+                {
+                    kind: "equation",
+                    label: "Pattern typing",
+                    tex: "\\frac{\\Gamma \\vdash e_s:\\tau_s\\quad p_i \\sim \\tau_s\\Rightarrow\\Gamma_i\\quad \\Gamma_i\\vdash e_i:\\tau}{\\Gamma\\vdash\\texttt{match}\\;e_s\\;\\texttt{with}\\;p_i\\rightarrow e_i : \\tau}",
+                    caption: "Each pattern must be compatible with the scrutinee, and each arm body must produce the same result type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The exhaustiveness rule is intentionally conservative. The checker does not attempt full finite-domain analysis for bool or literal patterns. Instead, it requires a catch-all pattern, which is simple, predictable, and easy to explain in diagnostics."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The backend stores the scrutinee in a scratch local, then emits a chain of WebAssembly conditionals. Wildcard, unit, and variable patterns can immediately produce their body. Literal patterns compare the scrutinee against the literal representation."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "PInt, PString, PBool, and PUnit unify the scrutinee with the matching primitive type.",
+                        "PWildcard accepts any scrutinee type and binds nothing.",
+                        "PVar accepts any scrutinee type and binds the variable to that type in the arm body.",
+                        "Missing catch-all arms are rejected before code generation."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "tooling",
+            eyebrow: "XI",
+            title: "Monaco Tooling and Language Service",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The Monaco integration turns the compiler into an interactive language workbench. The editor registers an OJaml language ID, language configuration, Monarch tokenizer, dark and light themes, completion provider, hover provider, signature help provider, and diagnostic marker producer."
+                },
+                {
+                    kind: "diagram",
+                    label: "Hover decision tree",
+                    body: `hover(offset)
+            |
+            +-- parse + check succeeds?
+            |      |
+            |      +-- checked token covers offset -> show inferred detail
+            |      |
+            |      +-- otherwise -> lexical fallback
+            |
+            +-- parse/check fails -> lexical fallback`,
+                    caption: "Typed hover information is preferred, but every meaningful token can still explain itself."
+                },
+                {
+                    kind: "example",
+                    label: "Instantiated hover",
+                    language: "ocaml",
+                    code: `let main =
+            let names = Map.set (Map.empty ()) "ada" 1815 in
+            Map.get names "ada"
+
+          hover Map.get:
+            Map.get : (string, int) map -> string -> int`,
+                    caption: "The hover reports the concrete map type inferred at the call site, not just the generic builtin signature."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Diagnostics call parse and check on the current source. On OJamlError, the provider translates byte offsets to Monaco line/column ranges. Completion items include keywords, snippets, top-level symbols, and standard-library functions. Module-qualified autocomplete is context-aware: after Map. it offers empty, set, get, and has rather than inserting a second Map prefix."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Hover data is checker-first and lexical-second. If the program parses and type checks, the hover provider uses checked token metadata so identifiers and builtin calls show inferred or instantiated types. If no checked token applies, lexical fallback still describes keywords, literals, operators, delimiters, declaration separators, and unknown identifiers."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Completion details come from the same stdlib signature table used by the checker.",
+                        "Signature help currently focuses on print because print has an int|string overload-like constraint.",
+                        "Token-level checked hovers cover locals, params, top-level declarations, literals, and builtin calls.",
+                        "Lexical hovers identify non-typed tokens as keyword, operator, delimiter, separator, literal, or identifier."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "validation",
+            eyebrow: "XII",
+            title: "Validation Strategy",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic arrays, polymorphic lists, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, and editor hover metadata."
+                },
+                {
+                    kind: "example",
+                    label: "Map type regression test",
+                    language: "ocaml",
+                    code: `let main =
+            let m = Map.set (Map.empty ()) "one" 1 in
+            let m = Map.set m "two" "nope" in
+            Map.get m "one"`,
+                    caption: "This must fail because the second Map.set attempts to write a string value into a (string, int) map."
+                },
+                {
+                    kind: "equation",
+                    label: "Round-trip execution obligation",
+                    tex: "\\operatorname{check}(P)=ok \\land \\operatorname{emit}(P)=W \\Rightarrow \\operatorname{instantiate}(W)\\;\\text{exports}\\;main",
+                    caption: "For valid programs, emitted WebAssembly should produce an instantiable module with main."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The strongest tests are negative tests for the checker and runtime integration tests for language features. Negative tests prove the checker rejects invalid programs before emission. Runtime tests prove accepted programs still execute correctly after lowering to WebAssembly."
+                },
+                {
+                    kind: "equation",
+                    label: "Negative diagnostic obligation",
+                    tex: "\\operatorname{invalid}(P) \\Rightarrow \\operatorname{markers}(P) \\ne \\varnothing",
+                    caption: "Programs with static errors should surface diagnostics in the editor."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The site build is also part of validation because OJaml is consumed as a submodule-backed editor package. A successful frontend build confirms the paper content, route import, and package integration still compile together."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Feature tests cover each supported syntax and standard-library family.",
+                        "Compiler tests inspect generated WAT for scalar programs.",
+                        "Runtime tests execute WASM and compare main result plus captured print output.",
+                        "Editor tests assert diagnostics and hover strings for inferred local and stdlib types."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "implementation-correspondence",
+            eyebrow: "XIII",
+            title: "Implementation Correspondence",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The paper maps directly onto the repository. The language core is not distributed across hidden build steps: each stage has a small TypeScript module, and the public editor route composes those modules rather than replacing them. A reconstruction should preserve this correspondence because it is what makes OJaml inspectable."
+                },
+                {
+                    kind: "diagram",
+                    label: "Source map",
+                    body: `src/lexer.ts        tokens, nested comments, string escapes
+src/parser.ts       recursive-descent parser and source spans
+src/ast.ts          Program, Declaration, Expr, Pattern types
+src/check.ts        type graph, unification, stdlib schemes, hover tokens
+src/compiler.ts     WAT emission, heap layouts, closures, stdlib runtime
+src/runtime.ts      WABT conversion, imports, execution result
+src/monacoOJaml.ts  diagnostics, completions, hovers, signature help
+tests/*.test.ts     positive runtime tests and negative checker tests`,
+                    caption: "The implementation is deliberately stage-shaped, so every concept in the paper has a concrete module."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The most important cross-file invariant is name agreement. Standard-library names are parsed as identifiers, typed by check.ts, assigned arities and return shapes by compiler.ts, emitted as WebAssembly-safe names by safe(name), and surfaced to Monaco through the shared signature list. If one stage adds a builtin without the others, the language becomes inconsistent."
+                },
+                {
+                    kind: "equation",
+                    label: "Builtin consistency",
+                    tex: "name \\in \\operatorname{Stdlib}_{check} \\Rightarrow name \\in \\operatorname{Arities}_{emit} \\land safe(name) \\in \\operatorname{WAT}",
+                    caption: "A builtin is complete only when the checker, emitter, and generated WebAssembly agree on its identity and arity."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The second cross-file invariant is representation agreement. The checker distinguishes int, bool, string, unit, arrays, lists, maps, and functions. The emitter erases those distinctions to i32 only after type checking. Runtime helpers then interpret the i32 according to the static type that selected the helper."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Adding tuples requires an AST node, a tuple type constructor, unification over element positions, a heap layout, WAT emitter cases, examples, and tests.",
+                        "Adding records requires labels in the type representation, deterministic field layout, pattern or access syntax, and hover metadata for fields.",
+                        "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
+                        "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
+                    ]
+                }
+            ]
         }
-      ],
-      bullets: [
-        "WebAssembly memory stores strings and heap-backed runtime values.",
-        "Function tables support indirect calls through closures.",
-        "Imported print functions bridge WASM output back into the editor.",
-        "The result panel exposes the main value, output, and generated module size."
-      ]
-    },
-    {
-      id: "tooling",
-      eyebrow: "VI",
-      title: "Browser Tooling and Next Steps",
-      paragraphs: [
-        "The reusable Monaco editor connects parsing and type checking directly to the authoring experience. Inline markers, completions, token-level hovers, signature help, examples, compilation output, and execution results make the implementation inspectable without local setup.",
-        "Hover data now comes from the checker for typed identifiers and literals, so locals, parameters, top-level declarations, and standard-library calls expose their inferred types directly over the relevant token. When a token is lexical rather than typed, the language service still explains it as a keyword, operator, delimiter, or separator.",
-        "The current core deliberately stops before several larger OCaml features. Algebraic data type declarations, records, tuples, modules, exceptions, structural collection patterns, bounds checks, and garbage collection are natural next steps."
-      ],
-      bullets: [
-        "Examples cover primitives, recursion, pattern matching, higher-order functions, closures, and polymorphic collections.",
-        "The editor can toggle between execution results and emitted WebAssembly text.",
-        "The package exports both the editor component and the compiler/runtime APIs.",
-        "Future work can grow the language while preserving the existing frontend, checker, backend, and tooling boundaries."
-      ]
-    }
-  ],
-  audioSamples: []
+    ],
+    audioSamples: []
 };

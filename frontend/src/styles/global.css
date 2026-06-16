@@ -5422,7 +5422,9 @@ button:hover {
 }
 
 .paper-equation,
-.paper-figure {
+.paper-figure,
+.paper-code-example,
+.paper-diagram {
   margin: 10px 0;
   display: grid;
   gap: 12px;
@@ -5439,8 +5441,33 @@ button:hover {
   color: var(--paper-text);
 }
 
+.paper-code-example pre,
+.paper-diagram pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 14px;
+  border: 1px solid var(--paper-line);
+  border-radius: 2px;
+  background: var(--paper-surface-strong);
+  color: var(--paper-text);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre;
+}
+
+.paper-diagram pre {
+  color: var(--paper-muted);
+}
+
+.paper-code-example code {
+  font-family: inherit;
+}
+
 .paper-equation figcaption,
-.paper-figure figcaption {
+.paper-figure figcaption,
+.paper-code-example figcaption,
+.paper-diagram figcaption {
   color: var(--paper-muted);
   font-size: 0.92rem;
   line-height: 1.55;
