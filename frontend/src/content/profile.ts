@@ -115,9 +115,9 @@ export const profileContent: ProfileContent = {
       title: "I prefer to create clarity, take ownership, and keep the team moving.",
       summary:
         "When a project needs direction, I am comfortable defining the path, organizing the work, and making decisions while staying close to the implementation.",
-      position: [-2.5, -4.2, 0],
-      camera: [-1.2, -1.6, 12.6],
-      target: [-1.8, -2.5, 0],
+      position: [-5.6, -3.2, 0],
+      camera: [-3.9, -0.95, 12.6],
+      target: [-4.9, -1.75, 0],
       accent: "#8fc9a3"
     },
     {
@@ -127,9 +127,9 @@ export const profileContent: ProfileContent = {
       title: "If this sounds like the kind of engineer you need, reach out.",
       summary:
         "Email is the easiest way to reach me. The resume, GitHub, and LinkedIn are here too if you want the longer version first.",
-      position: [-5, -2.4, 1],
-      camera: [-3.6, -0.4, 13],
-      target: [-3.6, -1.2, 0],
+      position: [-10.4, -1.5, 1],
+      camera: [-7.6, 0.25, 13],
+      target: [-8.8, -0.45, 0],
       accent: "#ff8ca8"
     }
   ],

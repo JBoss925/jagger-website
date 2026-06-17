@@ -20,7 +20,7 @@
   --radius-md: 4px;
   --section-scroll-offset: 112px;
   --header-mask-height: 104px;
-  --content-readability-opacity: 0.32;
+  --content-readability-opacity: 0;
   --content-readability-width: min(1180px, calc(100vw - 48px));
 }
 
@@ -2680,6 +2680,8 @@ button:hover {
   isolation: isolate;
   background: rgba(10, 10, 12, 0.82);
   border: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .experience-card,
@@ -3231,7 +3233,7 @@ button:hover {
 .leadership-principles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 36px;
+  gap: 18px;
   min-height: 440px;
   align-content: center;
 }
@@ -3240,9 +3242,13 @@ button:hover {
   display: grid;
   gap: 12px;
   min-height: 190px;
-  padding: 28px 0;
+  padding: 22px;
   align-content: start;
-  border-top: 1px solid rgba(143, 201, 163, 0.38);
+  border: 1px solid rgba(143, 201, 163, 0.22);
+  border-radius: var(--radius-xl);
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .leadership-principles strong {
@@ -3274,6 +3280,12 @@ button:hover {
 .contact-card__intro {
   gap: 16px;
   align-content: start;
+  padding: 22px;
+  border: 1px solid rgba(143, 201, 163, 0.22);
+  border-radius: var(--radius-xl);
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .contact-card__intro p {
@@ -3331,6 +3343,8 @@ button:hover {
   border: 1px solid rgba(143, 201, 163, 0.24);
   border-radius: var(--radius-xl);
   background: rgba(9, 9, 11, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .contact-card__fit {

@@ -16,7 +16,8 @@ type PlanetSurfaceKind =
   | "desert_rocky"
   | "ice_world"
   | "storm_world"
-  | "volcanic";
+  | "volcanic"
+  | "toxic";
 
 type PlanetSurfaceVariant = {
   kind: PlanetSurfaceKind;
@@ -24,6 +25,8 @@ type PlanetSurfaceVariant = {
   ringColor: string;
   inactiveTint: string;
   emissiveColor: string;
+  activeEmissiveIntensity?: number;
+  inactiveEmissiveIntensity?: number;
   rotationSpeed: number;
   seed: number;
 };
@@ -94,11 +97,19 @@ const nodeVariants = [
     ]
   },
   {
+    scale: 1.1,
+    hasPrimaryRing: false,
+    ringScale: 1.2,
+    ringWidth: 0.11,
+    ringRotation: [Math.PI / 2.32, -0.42, 0.48] as [number, number, number],
+    extraRings: []
+  },
+  {
     scale: 0.96,
     hasPrimaryRing: true,
-    ringScale: 1.12,
-    ringWidth: 0.18,
-    ringRotation: [Math.PI / 2.64, 0.28, -0.12] as [number, number, number],
+    ringScale: 0.98,
+    ringWidth: 0.08,
+    ringRotation: [Math.PI / 2.64, 0.28, 0.36] as [number, number, number],
     extraRings: []
   }
 ];
@@ -150,13 +161,26 @@ const planetSurfaceVariants: PlanetSurfaceVariant[] = [
     seed: 53
   },
   {
+    kind: "toxic",
+    palette: ["#13040f", "#250a20", "#41113a", "#68d84a", "#b7e86a"],
+    ringColor: "#9f82c7",
+    inactiveTint: "#d2c8dc",
+    emissiveColor: "#74d957",
+    activeEmissiveIntensity: 0.72,
+    inactiveEmissiveIntensity: 0.22,
+    rotationSpeed: 0.027,
+    seed: 347
+  },
+  {
     kind: "volcanic",
-    palette: ["#6b2f1f", "#8d3d24", "#c75b2b", "#eb7a34", "#ffb15c"],
-    ringColor: "#dba06a",
-    inactiveTint: "#dfc6b3",
-    emissiveColor: "#ff9b47",
+    palette: ["#7a0505", "#a10c08", "#c31910", "#ff6b1f", "#ffd36d"],
+    ringColor: "#c46d3d",
+    inactiveTint: "#d3b29f",
+    emissiveColor: "#ff7d2b",
+    activeEmissiveIntensity: 0.72,
+    inactiveEmissiveIntensity: 0.24,
     rotationSpeed: 0.03,
-    seed: 67
+    seed: 307
   }
 ];
 
@@ -233,6 +257,39 @@ function drawSoftBlob(
   context.fillStyle = color;
   context.beginPath();
   context.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+}
+
+function drawIrregularPatch(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  color: string,
+  opacity: number,
+  rng: () => number,
+  points = 12
+) {
+  context.save();
+  context.globalAlpha = opacity;
+  context.fillStyle = color;
+  context.beginPath();
+
+  for (let point = 0; point <= points; point += 1) {
+    const angle = (point / points) * Math.PI * 2;
+    const pointRadius = radius * (0.55 + rng() * 0.75);
+    const pointX = x + Math.cos(angle) * pointRadius;
+    const pointY = y + Math.sin(angle) * pointRadius * (0.62 + rng() * 0.5);
+
+    if (point === 0) {
+      context.moveTo(pointX, pointY);
+    } else {
+      context.lineTo(pointX, pointY);
+    }
+  }
+
+  context.closePath();
   context.fill();
   context.restore();
 }
@@ -515,46 +572,60 @@ function drawVolcanic(
     size * 0.5,
     size * 0.74
   );
-  baseGradient.addColorStop(0, variant.palette[4]);
-  baseGradient.addColorStop(0.36, variant.palette[2]);
-  baseGradient.addColorStop(0.7, variant.palette[1]);
-  baseGradient.addColorStop(1, variant.palette[0]);
+  baseGradient.addColorStop(0, variant.palette[2]);
+  baseGradient.addColorStop(0.42, variant.palette[1]);
+  baseGradient.addColorStop(0.72, variant.palette[0]);
+  baseGradient.addColorStop(1, "#4f0303");
   context.fillStyle = baseGradient;
   context.fillRect(0, 0, size, size);
 
-  for (let index = 0; index < 95; index += 1) {
+  for (let index = 0; index < 130; index += 1) {
     drawSoftBlob(
       context,
       rng() * size,
       rng() * size,
       size * (0.02 + rng() * 0.05),
       size * (0.02 + rng() * 0.05),
-      variant.palette[index % 3 === 0 ? 1 : 3],
-      0.2 + rng() * 0.2
+      variant.palette[index % 3 === 0 ? 2 : 1],
+      0.12 + rng() * 0.16
     );
   }
 
   for (let index = 0; index < 28; index += 1) {
+    const x = rng() * size;
+    const y = rng() * size;
+    const radiusX = size * (0.04 + rng() * 0.07);
+    const radiusY = size * (0.04 + rng() * 0.07);
+
     drawSoftBlob(
       context,
-      rng() * size,
-      rng() * size,
-      size * (0.04 + rng() * 0.07),
-      size * (0.04 + rng() * 0.07),
-      variant.palette[index % 2 === 0 ? 2 : 4],
-      0.06 + rng() * 0.1
+      x,
+      y,
+      radiusX,
+      radiusY,
+      variant.palette[index % 2 === 0 ? 0 : 2],
+      0.08 + rng() * 0.12
+    );
+    drawSoftBlob(
+      emissiveContext,
+      x,
+      y,
+      radiusX * 0.7,
+      radiusY * 0.7,
+      "#d51a12",
+      0.14 + rng() * 0.12
     );
   }
 
-  context.strokeStyle = "rgba(255,146,72,0.4)";
-  emissiveContext.strokeStyle = "rgba(255,156,79,0.98)";
-  for (let index = 0; index < 14; index += 1) {
+  context.strokeStyle = "rgba(255,118,36,0.72)";
+  emissiveContext.strokeStyle = "rgba(255,177,77,1)";
+  for (let index = 0; index < 18; index += 1) {
     const startX = size * rng();
     const startY = size * rng();
     const endX = size * rng();
     const endY = size * rng();
-    context.lineWidth = size * 0.022;
-    emissiveContext.lineWidth = size * 0.013;
+    context.lineWidth = size * (0.02 + rng() * 0.014);
+    emissiveContext.lineWidth = size * (0.014 + rng() * 0.012);
     context.beginPath();
     emissiveContext.beginPath();
     context.moveTo(startX, startY);
@@ -580,23 +651,132 @@ function drawVolcanic(
   }
 
   for (let index = 0; index < 10; index += 1) {
+    const x = rng() * size;
+    const y = rng() * size;
+    const radius = size * (0.025 + rng() * 0.04);
     drawSoftBlob(
       context,
-      rng() * size,
-      rng() * size,
-      size * (0.03 + rng() * 0.04),
-      size * (0.03 + rng() * 0.04),
+      x,
+      y,
+      radius * 1.4,
+      radius,
       variant.palette[4],
       0.18 + rng() * 0.12
     );
     drawSoftBlob(
       emissiveContext,
-      rng() * size,
-      rng() * size,
-      size * (0.018 + rng() * 0.028),
-      size * (0.018 + rng() * 0.028),
+      x,
+      y,
+      radius,
+      radius * 0.7,
       "#ffb35d",
-      0.24 + rng() * 0.12
+      0.34 + rng() * 0.18
+    );
+  }
+}
+
+function drawToxic(
+  context: CanvasRenderingContext2D,
+  emissiveContext: CanvasRenderingContext2D,
+  size: number,
+  variant: PlanetSurfaceVariant,
+  rng: () => number
+) {
+  const baseGradient = context.createRadialGradient(
+    size * 0.48,
+    size * 0.42,
+    size * 0.05,
+    size * 0.5,
+    size * 0.5,
+    size * 0.76
+  );
+  baseGradient.addColorStop(0, variant.palette[2]);
+  baseGradient.addColorStop(0.34, variant.palette[1]);
+  baseGradient.addColorStop(0.76, variant.palette[0]);
+  baseGradient.addColorStop(1, "#0d0309");
+  context.fillStyle = baseGradient;
+  context.fillRect(0, 0, size, size);
+
+  for (let index = 0; index < 190; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.01 + rng() * 0.035),
+      size * (0.01 + rng() * 0.035),
+      index % 5 === 0 ? "#4f1a49" : variant.palette[index % 2],
+      0.08 + rng() * 0.18
+    );
+  }
+
+  context.strokeStyle = "rgba(164,62,142,0.18)";
+  context.lineWidth = size * 0.008;
+  for (let index = 0; index < 28; index += 1) {
+    context.beginPath();
+    const startX = size * rng();
+    const startY = size * rng();
+    context.moveTo(startX, startY);
+    context.lineTo(startX + size * (rng() - 0.5) * 0.28, startY + size * (rng() - 0.5) * 0.28);
+    context.stroke();
+  }
+
+  for (let index = 0; index < 16; index += 1) {
+    const x = rng() * size;
+    const y = rng() * size;
+    const radius = size * (0.036 + rng() * 0.07);
+    const patchColor = index % 3 === 0 ? variant.palette[4] : variant.palette[3];
+
+    drawSoftBlob(context, x, y, radius * 1.6, radius * 1.15, "#314821", 0.18 + rng() * 0.16);
+    drawIrregularPatch(context, x, y, radius, patchColor, 0.54 + rng() * 0.22, rng, 11);
+    drawSoftBlob(emissiveContext, x, y, radius * 1.65, radius * 1.2, "#79d957", 0.16 + rng() * 0.18);
+    drawIrregularPatch(emissiveContext, x, y, radius * 0.72, "#aee65e", 0.38 + rng() * 0.22, rng, 10);
+  }
+
+  context.strokeStyle = "rgba(112, 214, 78, 0.28)";
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  for (let index = 0; index < 9; index += 1) {
+    const startX = size * (0.04 + rng() * 0.32);
+    const startY = size * (0.08 + rng() * 0.82);
+    const length = size * (0.36 + rng() * 0.46);
+    const controlLift = size * (rng() - 0.5) * 0.26;
+
+    context.lineWidth = size * (0.02 + rng() * 0.025);
+    context.beginPath();
+    context.moveTo(startX, startY);
+    context.bezierCurveTo(
+      startX + length * 0.28,
+      startY + controlLift,
+      startX + length * 0.62,
+      startY - controlLift * 0.7,
+      startX + length,
+      startY + size * (rng() - 0.5) * 0.12
+    );
+    context.stroke();
+  }
+
+  for (let index = 0; index < 18; index += 1) {
+    drawSoftBlob(
+      context,
+      rng() * size,
+      rng() * size,
+      size * (0.045 + rng() * 0.09),
+      size * (0.012 + rng() * 0.032),
+      index % 2 === 0 ? "#71d653" : "#a3de5c",
+      0.1 + rng() * 0.1
+    );
+  }
+
+  for (let index = 0; index < 36; index += 1) {
+    const radius = size * (0.006 + rng() * 0.012);
+    drawSoftBlob(
+      emissiveContext,
+      rng() * size,
+      rng() * size,
+      radius,
+      radius,
+      "#8fdc58",
+      0.18 + rng() * 0.2
     );
   }
 }
@@ -643,6 +823,9 @@ function createPlanetTextures(variant: PlanetSurfaceVariant) {
       break;
     case "volcanic":
       drawVolcanic(context, emissiveContext, size, variant, rng);
+      break;
+    case "toxic":
+      drawToxic(context, emissiveContext, size, variant, rng);
       break;
   }
 
@@ -1262,7 +1445,11 @@ function AtlasNode({
           color={active ? "#ffffff" : surfaceVariant.inactiveTint}
           emissive={surfaceVariant.emissiveColor}
           emissiveMap={emissiveMap}
-          emissiveIntensity={active ? 0.4 : 0.14}
+          emissiveIntensity={
+            active
+              ? surfaceVariant.activeEmissiveIntensity ?? 0.4
+              : surfaceVariant.inactiveEmissiveIntensity ?? 0.14
+          }
           roughness={0.72}
           metalness={0.08}
         />
