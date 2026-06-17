@@ -210,7 +210,7 @@ function HomePage() {
             <div className="metric-grid">
               {profileContent.metrics.map((metric) => (
                 metric.label === "Start Here" ? (
-                  <a key={metric.label} className="metric-card metric-card--interactive" href="/ojaml">
+                  <a key={metric.label} className="glass-card metric-card metric-card--interactive" href="/ojaml">
                     <span>{metric.label}</span>
                     <strong className="metric-card__link-value">
                       {metric.value}
@@ -229,7 +229,7 @@ function HomePage() {
                     </strong>
                   </a>
                 ) : (
-                  <article key={metric.label} className="metric-card">
+                  <article key={metric.label} className="glass-card metric-card">
                     <span>{metric.label}</span>
                     <strong>{metric.value}</strong>
                   </article>
@@ -327,28 +327,28 @@ function HomePage() {
           summary="When a project needs direction, I’m comfortable stepping forward to **define the path, organize the work, and make decisions**. I stay close enough to the implementation to understand the real constraints while making sure every developer has the context and support they need to execute."
         >
           <div className="leadership-principles">
-            <div>
+            <div className="glass-card">
               <strong>Set a clear direction</strong>
               <p>
                 Turn an ambiguous goal into a practical plan with explicit priorities,
                 ownership, milestones, and technical boundaries.
               </p>
             </div>
-            <div>
+            <div className="glass-card">
               <strong>Lead from the work</strong>
               <p>
                 Make architectural decisions, take on difficult implementation problems,
                 and use firsthand context to keep plans grounded.
               </p>
             </div>
-            <div>
+            <div className="glass-card">
               <strong>Organize for momentum</strong>
               <p>
                 Break work into parallel tracks, surface dependencies early, and keep
                 communication direct so developers can move without unnecessary blockers.
               </p>
             </div>
-            <div>
+            <div className="glass-card">
               <strong>Raise the whole team</strong>
               <p>
                 Share context, review thoughtfully, and help other engineers build the
@@ -364,7 +364,7 @@ function HomePage() {
           title="If this looks like the kind of background you need, reach out."
         >
           <div className="contact-layout">
-            <div className="contact-card__intro">
+            <div className="glass-card contact-card__intro">
               <p>
                 {renderInlineEmphasis(
                   "Email is the most direct way to reach me. I’m always interested in hearing about **technically meaningful product work, platform challenges, and teams that value engineers who can lead while staying hands-on**. I tend to be most useful when a project needs someone who can **steady the direction, keep the work moving, and stay close enough to the code to make the decisions real**."
@@ -375,7 +375,7 @@ function HomePage() {
                 <strong>{profileContent.email}</strong>
               </a>
             </div>
-            <div className="contact-card__panel">
+            <div className="glass-card contact-card__panel">
               <div className="contact-card__fit">
                 <span className="contact-card__eyebrow">Strong fit</span>
                 <strong>A strong fit usually includes</strong>

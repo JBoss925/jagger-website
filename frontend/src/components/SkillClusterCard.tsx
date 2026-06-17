@@ -7,7 +7,7 @@ type SkillClusterCardProps = {
 
 function SkillClusterCard({ cluster }: SkillClusterCardProps) {
   return (
-    <article className="skill-card">
+    <article className="glass-card skill-card">
       <h3>{cluster.title}</h3>
       <p>{renderInlineEmphasis(cluster.summary)}</p>
       <div className="chip-row">

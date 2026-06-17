@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: dark;
-  --bg: #020202;
+  --bg: #000000;
   --bg-soft: rgba(8, 8, 10, 0.88);
   --panel: rgba(12, 12, 14, 0.9);
   --panel-strong: rgba(6, 6, 8, 0.96);
@@ -67,9 +67,7 @@ a {
   place-items: center;
   padding: 32px;
   color: var(--text-dim);
-  background:
-    radial-gradient(circle at top, rgba(49, 86, 66, 0.14), transparent 34%),
-    var(--bg);
+  background: #000000;
 }
 
 .route-loading__copy {
@@ -2173,6 +2171,15 @@ a {
   background: rgba(10, 10, 12, 0.9);
   border: 1px solid var(--line);
   backdrop-filter: blur(12px);
+  transition: backdrop-filter 520ms ease;
+}
+
+.page-shell--entering .content-shell .glass-card {
+  backdrop-filter: blur(0);
+}
+
+.page-shell--ready .content-shell .glass-card {
+  backdrop-filter: blur(12px);
 }
 
 .site-nav-shell {
@@ -2678,10 +2685,6 @@ button:hover {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: rgba(10, 10, 12, 0.82);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .experience-card,
@@ -2743,7 +2746,8 @@ button:hover {
     transform 160ms ease,
     border-color 160ms ease,
     background-color 160ms ease,
-    box-shadow 160ms ease;
+    box-shadow 160ms ease,
+    backdrop-filter 520ms ease;
 }
 
 .metric-card--interactive:hover,
@@ -3244,11 +3248,7 @@ button:hover {
   min-height: 190px;
   padding: 22px;
   align-content: start;
-  border: 1px solid rgba(143, 201, 163, 0.22);
   border-radius: var(--radius-xl);
-  background: rgba(10, 10, 12, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .leadership-principles strong {
@@ -3281,11 +3281,7 @@ button:hover {
   gap: 16px;
   align-content: start;
   padding: 22px;
-  border: 1px solid rgba(143, 201, 163, 0.22);
   border-radius: var(--radius-xl);
-  background: rgba(10, 10, 12, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .contact-card__intro p {
@@ -3340,11 +3336,7 @@ button:hover {
 .contact-card__panel {
   gap: 24px;
   padding: 22px;
-  border: 1px solid rgba(143, 201, 163, 0.24);
   border-radius: var(--radius-xl);
-  background: rgba(9, 9, 11, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .contact-card__fit {
@@ -3408,6 +3400,12 @@ button:hover {
   position: fixed;
   inset: 0;
   z-index: 0;
+  background: #000000;
+}
+
+.scene-canvas canvas {
+  display: block;
+  background: #000000 !important;
 }
 
 .scene-static {

@@ -21,6 +21,7 @@ type ProjectCardProps = {
 
 function ProjectCard({ project, id }: ProjectCardProps) {
   const className = [
+    "glass-card",
     "project-card",
     project.slug === "jagger-games" ? "project-card--wide" : null
   ].filter(Boolean).join(" ");

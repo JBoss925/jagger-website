@@ -1,4 +1,5 @@
 import { Canvas } from "@react-three/fiber";
+import * as THREE from "three";
 import SystemsAtlasScene from "./SystemsAtlasScene";
 import type { SceneSection } from "../../types/content";
 
@@ -22,7 +23,18 @@ function SceneBackdrop({ sections, activeSectionId, useStaticScene }: SceneBackd
 
   return (
     <div className="scene-canvas" aria-hidden="true">
-      <Canvas camera={{ position: [-1, 1.8, 14], fov: 42 }} dpr={[1, 1.5]}>
+      <Canvas
+        camera={{ position: [-1, 1.8, 14], fov: 42 }}
+        dpr={[1, 1.5]}
+        gl={{ alpha: false }}
+        onCreated={({ gl, scene }) => {
+          gl.setClearColor("#000000", 1);
+          gl.autoClear = true;
+          gl.autoClearColor = true;
+          scene.background = new THREE.Color("#000000");
+        }}
+        style={{ background: "#000000" }}
+      >
         <SystemsAtlasScene
           sections={sections}
           activeSectionId={activeSectionId}
