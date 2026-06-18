@@ -5126,6 +5126,8 @@ button:hover {
 
 .paper-card__body {
   display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-items: start;
   gap: 12px;
   padding: 20px;
 }
@@ -5155,11 +5157,15 @@ button:hover {
 .paper-tag-row {
   display: flex;
   flex-wrap: wrap;
+  align-self: end;
+  align-items: flex-start;
+  align-content: flex-start;
   gap: 8px;
 }
 
 .paper-tag-row span {
   display: inline-flex;
+  align-items: center;
   border: 1px solid var(--paper-line);
   border-radius: 2px;
   padding: 5px 8px;
