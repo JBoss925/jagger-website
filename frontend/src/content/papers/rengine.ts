@@ -6,7 +6,7 @@ export const renginePaper: PaperDocument = {
     subtitle: "A scene/entity runtime for exploring transform hierarchies, update components, canvas rendering, React rendering, and live debug visualization.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "Rengine is a compact rendering and game-engine experiment built in TypeScript. It focuses on the engine boundaries behind a demo rather than a finished game: scenes, entities, folder-style transform hierarchies, components, update loops, renderer abstraction, and debug visualization. Entities hold transform properties, component lists, render functions, and optional shaders. Folder entities compose child transforms, scenes group entities, the loop advances component state, and renderer helpers can target canvas or React output. The portfolio demo exposes those mechanics with live scene selection, zoom controls, wireframe toggles, and an inspectable component tree.",
+    abstract: "Rengine is a compact rendering and game-engine experiment built in TypeScript. It focuses on core engine boundaries: scenes, entities, folder-style transform hierarchies, components, update loops, renderer abstraction, and debug visualization. Entities hold transform properties, component lists, render functions, and optional shaders. Folder entities compose child transforms, scenes group entities, the loop advances component state, and renderer helpers can target canvas or React output. The browser surface exposes those mechanics with live scene selection, zoom controls, wireframe toggles, and an inspectable component tree.",
     description: "A technical paper for a small TypeScript rendering engine built around scenes, entities, transform composition, and renderer abstraction.",
     categories: ["Engine Architecture", "Systems", "Research Notes"],
     tags: ["TypeScript", "Canvas", "Game Loop", "Scene Graph", "Entity Systems", "Rendering"],
@@ -29,11 +29,11 @@ export const renginePaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "Rengine exists to explore the parts of a game or rendering engine that are usually hidden below the demo: how entities are represented, how transforms compose through parents, how rendering can be swapped, and how update logic stays separate from drawing."
+                    text: "Rengine isolates the parts of a game or rendering engine that sit below visible content: how entities are represented, how transforms compose through parents, how rendering can be swapped, and how update logic stays separate from drawing."
                 },
                 {
                     kind: "paragraph",
-                    text: "The project deliberately keeps the visual vocabulary small. Boxes, folders, paths, rotations, and debug markers are enough to stress the runtime boundaries without burying the engine ideas under art assets."
+                    text: "The visual vocabulary is deliberately small. Boxes, folders, paths, rotations, and debug markers are enough to stress the runtime boundaries without burying the engine model under art assets."
                 },
                 {
                     kind: "bullets",
@@ -82,8 +82,51 @@ export const renginePaper: PaperDocument = {
             ],
         },
         {
-            id: "scenes",
+            id: "engine-types",
             eyebrow: "III",
+            title: "Engine Type Model",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The engine can be reconstructed from a small set of TypeScript types. Entity is the core drawable/updateable object. FolderEntity extends Entity with children. Scene groups entities and gives them a name. EngineState stores scenes, the active scene, global configuration, camera data, and renderer selection."
+                },
+                {
+                    kind: "example",
+                    label: "Core engine types",
+                    language: "typescript",
+                    code: `type Vector2 = { x: number; y: number };
+type Component = {
+  name: string;
+  update: (delta: number, e: Entity, s: Scene, prev: EngineState) => [Entity, EngineState];
+};
+type Entity = {
+  id: string;
+  position: Vector2;
+  anchor: Vector2;
+  rotation: number;
+  scale: Vector2;
+  components: Component[];
+  render: (state: EngineState) => (entity: Entity) => unknown;
+};
+type FolderEntity = Entity & { entities: Entity[] };
+type Scene = { name: string; entities: Entity[] };`,
+                    caption: "The model is deliberately small: transforms, components, render function, and optional children."
+                },
+                {
+                    kind: "equation",
+                    label: "Folder subtype",
+                    tex: "FolderEntity = Entity \\cap \\{children: Entity^{*}\\}",
+                    caption: "A folder is an entity with child ownership, not a separate scene-graph primitive."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This choice keeps traversal uniform. Rendering and updating can visit an Entity, inspect whether it owns children, and recursively traverse without switching to a distinct transform-node API."
+                }
+            ],
+        },
+        {
+            id: "scenes",
+            eyebrow: "IV",
             title: "Scenes and Runtime Loop",
             blocks: [
                 {
@@ -104,15 +147,96 @@ export const renginePaper: PaperDocument = {
                     kind: "bullets",
                     items: [
                         "Demo components include rotations, velocities, square paths, and star paths.",
-                        "The active demo scene is recreated when the selected demo changes.",
+                        "The active scene is recreated when the selected sample changes.",
                         "The runtime tree is periodically synchronized back into the React inspector."
                     ]
                 }
             ],
         },
         {
+            id: "loop-scheduling",
+            eyebrow: "V",
+            title: "Loop Scheduling",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The loop has two modes: interval-based stepping and animation-frame stepping. In both modes the frame operation is the same: compute delta time, tick the active scene, apply the global update hook, and render the new engine state. Delta time is passed into every component so animation speed is independent of frame count."
+                },
+                {
+                    kind: "diagram",
+                    label: "Frame operation",
+                    body: `timestamp
+  |
+  v
+delta = timestamp - previousTimestamp
+  |
+  v
+TickActiveScene(delta, state)
+  |
+  v
+Lifecycle.update(delta, state)
+  |
+  v
+render(state)
+  |
+  v
+store state for next frame`,
+                    caption: "The frame path is stable regardless of whether scheduling comes from requestAnimationFrame or an interval."
+                },
+                {
+                    kind: "equation",
+                    label: "Delta-time update",
+                    tex: "x_{t+\\Delta t}=x_t+v\\Delta t",
+                    caption: "Velocity-style components update position from elapsed time rather than from an assumed frame rate."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The portfolio route caps large deltas before rendering so a suspended tab or stutter does not produce a single enormous movement step in the visible inspection surface."
+                }
+            ],
+        },
+        {
+            id: "transform-composition",
+            eyebrow: "VI",
+            title: "Transform Composition",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Rengine's central mathematical object is the local-to-world transform. Entity position, anchor, rotation, and scale are stored locally. Folder entities compose those local values into world values for their children, which allows nested motion without copying absolute coordinates into every descendant."
+                },
+                {
+                    kind: "equation",
+                    label: "Local transform matrix",
+                    tex: "M_e = T(p_e)\\,R(r_e)\\,S(s_e)\\,T(-a_e)",
+                    caption: "An entity transform translates to position, rotates, scales, and offsets by anchor."
+                },
+                {
+                    kind: "equation",
+                    label: "World transform",
+                    tex: "W_e = W_{parent}\\,M_e",
+                    caption: "A child world transform is the parent world transform multiplied by the child's local transform."
+                },
+                {
+                    kind: "diagram",
+                    label: "Folder composition",
+                    body: `Root folder W0
+  |
+  +-- Orbit folder M1 -> W1 = W0 M1
+        |
+        +-- Box M2 -> W2 = W1 M2
+        |
+        +-- Child folder M3 -> W3 = W1 M3`,
+                    caption: "Folders are ordinary transform nodes that contribute a parent transform to every child."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The runtime inspector exposes both local and world-space values because most transform bugs are mismatches between the two. A child that appears wrong on screen may have a correct local transform but an unexpected parent transform, or the inverse."
+                }
+            ],
+        },
+        {
             id: "rendering",
-            eyebrow: "IV",
+            eyebrow: "VII",
             title: "Renderer Abstraction",
             blocks: [
                 {
@@ -129,19 +253,92 @@ export const renginePaper: PaperDocument = {
                         "Canvas rendering uses translate, rotate, and fillRect against the current entity transform.",
                         "React rendering converts the same transform data into CSS position, scale, and rotation.",
                         "Texture rendering is implemented for the React path as an image renderer.",
-                        "Wireframe/debug overlays are intentionally part of the learning surface."
+                        "Wireframe/debug overlays expose the renderer's transform basis."
                     ]
                 }
             ],
         },
         {
-            id: "portfolio-demo",
-            eyebrow: "V",
-            title: "Portfolio Demo Surface",
+            id: "renderer-contract",
+            eyebrow: "VIII",
+            title: "Renderer Contract",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The portfolio integration upgrades the engine sandbox into a reader-facing demo. It keeps the live canvas, adds demo selection, zoom controls, wireframe toggling, scene-focus copy, and a collapsible runtime tree."
+                    text: "Renderers consume engine state and entities; they do not own simulation state. This creates a useful separation: the same scene graph can be stepped once and projected into different output targets. The canvas renderer uses imperative drawing commands, while the React renderer converts transforms into DOM/CSS output."
+                },
+                {
+                    kind: "equation",
+                    label: "Render signature",
+                    tex: "\\operatorname{render}: EngineState \\rightarrow Entity \\rightarrow Output",
+                    caption: "A renderer is a curried function from engine state and entity to a target-specific output."
+                },
+                {
+                    kind: "example",
+                    label: "Canvas transform order",
+                    language: "text",
+                    code: `save context
+translate(entity.position)
+rotate(entity.rotation)
+scale(entity.scale)
+translate(-entity.anchor)
+draw entity body
+restore context`,
+                    caption: "The canvas path maps entity transform fields directly onto 2D context operations."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The debug overlay is part of the renderer contract. Anchor markers, position markers, and relationship lines expose the transform basis used by the renderer, so visual output can be compared against the tree inspector without consulting source code."
+                }
+            ],
+        },
+        {
+            id: "components",
+            eyebrow: "IX",
+            title: "Component Behaviors",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Components are small deterministic update functions attached to entities. A component may mutate transform fields such as position or rotation, but it returns the updated entity and engine state explicitly. Multiple components on one entity are applied in sequence."
+                },
+                {
+                    kind: "equation",
+                    label: "Component chain",
+                    tex: "e' = c_n(\\Delta t, \\ldots c_2(\\Delta t, c_1(\\Delta t,e,S),S)\\ldots,S)",
+                    caption: "An entity's component list acts as an ordered transform/update pipeline."
+                },
+                {
+                    kind: "example",
+                    label: "Component catalog",
+                    language: "text",
+                    code: `rotation component:
+  rotation += angularVelocity * delta
+
+velocity component:
+  position += velocity * delta
+
+square path component:
+  select edge by phase
+  move along edge at configured speed
+
+star path component:
+  interpolate along star vertices by phase`,
+                    caption: "The sample components cover continuous rotation, linear motion, and scripted path following."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Because component labels are exposed in the runtime tree, they also function as instrumentation. The inspector can explain why a node moves, not only where it currently is."
+                }
+            ],
+        },
+        {
+            id: "browser-surface",
+            eyebrow: "X",
+            title: "Browser Inspection Surface",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The browser integration turns the engine sandbox into an inspection surface. It keeps the live canvas, adds scene selection, zoom controls, wireframe toggling, scene-focus copy, and a collapsible runtime tree."
                 },
                 {
                     kind: "paragraph",
@@ -153,30 +350,100 @@ export const renginePaper: PaperDocument = {
                         "Demo scenes include stacked orbits, counter drift, layered motion, diagonal sweep arrays, in-place arrays, square paths, and star paths.",
                         "The stage zooms from 0.1x to 2x.",
                         "The tree supports local/world-space toggling per node.",
-                        "The demo route makes the runtime inspectable without opening the source."
+                        "The browser route makes the runtime inspectable without opening the source."
                     ]
                 }
             ],
         },
         {
-            id: "takeaways",
-            eyebrow: "VI",
-            title: "Technical Takeaways",
+            id: "inspector-snapshots",
+            eyebrow: "XI",
+            title: "Inspector Snapshot Semantics",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "Rengine is valuable because it treats engine concepts as the product. The demo does not need complex gameplay to show whether transform composition, component updates, scene activation, and renderer boundaries make sense."
+                    text: "The runtime tree is a snapshot of the current engine graph, not the graph itself. Each node stores identity, kind, component labels, local transform, world transform, color, and child snapshots. This keeps React inspection state separate from the mutable engine state used by the canvas loop."
+                },
+                {
+                    kind: "example",
+                    label: "Runtime tree node",
+                    language: "typescript",
+                    code: `type RuntimeTreeNode = {
+  id: string;
+  label: string;
+  kind: "entity" | "folder";
+  componentLabels: string[];
+  local: TransformSnapshot;
+  world: TransformSnapshot;
+  color?: string;
+  children: RuntimeTreeNode[];
+};`,
+                    caption: "Snapshots contain the information needed by the inspector without giving React ownership of engine mutation."
+                },
+                {
+                    kind: "equation",
+                    label: "Snapshot function",
+                    tex: "\\operatorname{snapshot}: EngineState \\rightarrow Tree",
+                    caption: "The inspector is a pure projection of current engine state."
                 },
                 {
                     kind: "paragraph",
-                    text: "The project also shows why inspectors matter. A visual bug in a scene graph is much easier to reason about when the tree, local transforms, world transforms, and debug markers are visible at the same time."
+                    text: "Collapsed-node state and local/world display preferences live outside the snapshot. When the scene changes, those UI sets are filtered against the new node IDs so stale inspector state cannot refer to removed nodes."
+                }
+            ],
+        },
+        {
+            id: "sample-suite",
+            eyebrow: "XII",
+            title: "Sample Scene Suite",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The sample scenes are not arbitrary; each stresses a different engine property. Stacked orbits stress parent rotation. Counter drift stresses competing component updates. Layered motion stresses folder nesting. Sweep and in-place arrays stress repeated entity construction. Square and star paths stress time-dependent component motion."
+                },
+                {
+                    kind: "diagram",
+                    label: "Scene coverage",
+                    body: `stacked orbits      -> nested rotation composition
+counter drift       -> opposing component fields
+layered motion      -> multi-level folder transforms
+diagonal sweep      -> repeated entity construction
+in-place array      -> shared origin with varied transforms
+square/star paths   -> scripted component trajectories`,
+                    caption: "Each scene maps to a specific engine behavior rather than only a visual variation."
+                },
+                {
+                    kind: "equation",
+                    label: "Frame update",
+                    tex: "S_{t+\\Delta t} = R\\left(U_{global}(\\Delta t, U_{scene}(\\Delta t, S_t))\\right)",
+                    caption: "A frame advances the active scene, applies any global update, then renders the resulting state."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The site integration adds a second verification surface. The canvas shows whether motion is visually correct; the runtime tree shows whether the underlying hierarchy and transforms explain that motion."
+                }
+            ],
+        },
+        {
+            id: "results",
+            eyebrow: "XIII",
+            title: "Results and Design Properties",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Rengine establishes a compact engine model with explicit scenes, entities, folder entities, component update functions, renderer abstraction, and live inspection. The result is a small but complete environment for validating hierarchical transforms and render-target boundaries in TypeScript."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The strongest result is observability. The same running scene can be inspected as pixels, as a runtime tree, as local transforms, as world transforms, and as component labels. That makes the engine suitable for demonstrating transform and update semantics without relying on a large game layer."
                 },
                 {
                     kind: "bullets",
                     items: [
-                        "Small engine experiments benefit from explicit scene, entity, renderer, and loop boundaries.",
-                        "Folder entities are a compact way to explore hierarchical transforms.",
-                        "Debug visualization makes transform math much easier to evaluate."
+                        "Folder entities provide hierarchy without a separate transform-node type.",
+                        "Components update entities through an explicit delta-time contract.",
+                        "Canvas and React render paths share entity state while differing in projection target.",
+                        "The runtime inspector makes transform composition auditable from the browser surface."
                     ]
                 }
             ],

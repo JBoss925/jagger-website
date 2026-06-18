@@ -3,10 +3,10 @@ import type { PaperDocument } from "./types";
 export const tsxlightRendererPaper: PaperDocument = {
     slug: "tsxlight-renderer",
     title: "TSXLight Renderer: Server-Owned TSX Component Rendering",
-    subtitle: "A proof-of-concept rendering framework where TSX components are rendered on the server, callbacks travel over sockets, and each user receives an isolated renderer instance.",
+    subtitle: "A server-owned rendering framework where TSX components render into user-specific shells, callbacks travel over sockets, and each user receives an isolated renderer instance.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "TSXLight Renderer is a proof-of-concept React-style rendering engine for web and Electron targets. It defines a component model with a custom JSX factory, renders component trees to HTML shells, registers callback handlers on the server, and uses socket messages to route client events back into server-owned component instances. Each connected user receives an isolated renderer with its own state, callbacks, page context, and communication channel. The framework also includes a page manager, state save/load hooks, screen-size tracking, render-mode settings, and a placeholder Juice Messenger application that demonstrates callback-driven rerendering.",
+    abstract: "TSXLight Renderer is a React-style rendering engine for web and Electron targets with server-owned component state. It defines a component model with a custom JSX factory, renders component trees to HTML shells, registers callback handlers on the server, and uses socket messages to route client events back into server-owned component instances. Each connected user receives an isolated renderer with its own state, callbacks, page context, and communication channel. The framework also includes a page manager, state save/load hooks, screen-size tracking, render-mode settings, and a Juice Messenger application surface that demonstrates callback-driven rerendering.",
     description: "A technical paper for a TSX rendering experiment built around server-owned components, socket callbacks, per-user renderer instances, and page/state managers.",
     categories: ["Engine Architecture", "Language Tooling", "Systems"],
     tags: ["TypeScript", "TSX", "SSR", "Sockets", "Electron", "Rendering Architecture"],
@@ -26,7 +26,7 @@ export const tsxlightRendererPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "That is not a general replacement for React. It is an architectural experiment in rendering boundaries: what state can live server-side, how callbacks can be represented in generated markup, and how separate users can interact with the same application code without sharing renderer state."
+                    text: "The system defines a distinct rendering boundary from browser-owned React: state can live server-side, callbacks can be represented in generated markup, and separate users can interact with the same application code without sharing renderer state."
                 },
                 {
                     kind: "bullets",
@@ -105,8 +105,85 @@ export const tsxlightRendererPaper: PaperDocument = {
             ],
         },
         {
-            id: "page-state",
+            id: "component-model",
             eyebrow: "IV",
+            title: "Component Model",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "A TSXLight component is a server-resident object that can render a JSX-like subtree, hold mutable state, expose lifecycle hooks, and register callbacks. The rendered client output is a projection of that object, not the owner of the object."
+                },
+                {
+                    kind: "example",
+                    label: "Component shape",
+                    language: "typescript",
+                    code: `type Component = {
+  props: Record<string, unknown>;
+  state?: Record<string, unknown>;
+  render(): TsxNode;
+  saveState?(): unknown;
+  loadState?(state: unknown): void;
+  afterRender?(): void;
+};`,
+                    caption: "The renderer needs render, optional state persistence hooks, and optional post-render behavior."
+                },
+                {
+                    kind: "equation",
+                    label: "Component projection",
+                    tex: "view_t = render(component_t)",
+                    caption: "At any time, the visible shell is a projection of server component state."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The custom JSX factory creates plain element records rather than React elements. Intrinsic elements become tag records; component constructors become component records; children are stored explicitly so the server renderer can walk the whole tree."
+                }
+            ],
+        },
+        {
+            id: "identity",
+            eyebrow: "V",
+            title: "Identity and Callback Addressing",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "A server-owned component tree needs a stable identity model because the client cannot close over JavaScript functions directly. TSXLight solves this by converting event props into callback registrations. The generated markup carries callback identifiers, while the server stores the executable function and its receiver context."
+                },
+                {
+                    kind: "equation",
+                    label: "Callback table",
+                    tex: "K_u : (pageId, elementId, eventName) \\mapsto (this, f)",
+                    caption: "For a given user, the callback table maps a rendered event identity to a server-side function and binding."
+                },
+                {
+                    kind: "diagram",
+                    label: "Callback dispatch",
+                    body: `client event
+  |
+  v
+socket message(user, page, element, event, payload)
+  |
+  v
+CallbackManager lookup
+  |
+  v
+invoke server function with stored binding
+  |
+  v
+mutate component state
+  |
+  v
+rerender shell for that user`,
+                    caption: "The browser does not own the callback; it owns only the event signal that selects a server callback."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This is the main distinction from browser-owned React. React event handlers are closures already resident in the client runtime. TSXLight handlers are serialized as identities and resolved through server state."
+                }
+            ],
+        },
+        {
+            id: "page-state",
+            eyebrow: "VI",
             title: "Page and State Management",
             blocks: [
                 {
@@ -129,8 +206,80 @@ export const tsxlightRendererPaper: PaperDocument = {
             ],
         },
         {
+            id: "state-model",
+            eyebrow: "VII",
+            title: "State Persistence Model",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The state model is page-scoped and renderer-scoped. A base page definition supplies the component class or component tree, but active component instances belong to a renderer. Before a transition, the outgoing tree can serialize state; after a transition, the incoming page receives either its prior renderer-local state or a fresh instance."
+                },
+                {
+                    kind: "equation",
+                    label: "Per-renderer page state",
+                    tex: "State = \\{(rendererId, pageId) \\mapsto componentInstance\\}",
+                    caption: "The same page definition can have distinct live component instances for different users."
+                },
+                {
+                    kind: "example",
+                    label: "Page transition",
+                    language: "text",
+                    code: `save outgoing page state
+run outgoing unload hook
+select next page for renderer
+load or create renderer-local component instance
+render next page shell
+run incoming load/afterRender hooks`,
+                    caption: "Transitions coordinate lifecycle hooks, state persistence, active-page selection, and rendering."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This model favors explicit ownership over implicit reconciliation. The server can decide when state is saved, when it is discarded, and which renderer receives which page instance."
+                }
+            ],
+        },
+        {
+            id: "render-algorithm",
+            eyebrow: "VIII",
+            title: "Render Algorithm",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Rendering is a recursive tree walk with special cases for primitives, arrays, intrinsic tags, and component nodes. The renderer emits escaped text for primitive children, serializes safe HTML attributes for ordinary props, converts style objects into CSS declarations, and diverts event props into the callback registry."
+                },
+                {
+                    kind: "example",
+                    label: "Render walk",
+                    language: "text",
+                    code: `render(node):
+  if node is null/false: return ""
+  if node is string/number: return escape(node)
+  if node is array: return concat(render(child))
+  if node is component:
+    instance = resolve or create component instance
+    return render(instance.render())
+  if node is intrinsic element:
+    id = allocate element id
+    attrs = serialize props except events
+    callbacks = register event props under id
+    return "<tag attrs callbacks>" + render(children) + "</tag>"`,
+                    caption: "The renderer is deterministic when element identity allocation and callback registration order are deterministic."
+                },
+                {
+                    kind: "equation",
+                    label: "Render determinism",
+                    tex: "T_1=T_2 \\land K_0=\\varnothing \\Rightarrow render(T_1)=render(T_2)",
+                    caption: "The same component tree and empty callback registry produce the same HTML shell."
+                },
+                {
+                    kind: "paragraph",
+                    text: "A rerender clears or replaces the callback table for the active page before walking the tree again. That prevents stale event identities from surviving after the DOM shape changes."
+                }
+            ],
+        },
+        {
             id: "communication",
-            eyebrow: "V",
+            eyebrow: "IX",
             title: "Client Communication",
             blocks: [
                 {
@@ -147,31 +296,148 @@ export const tsxlightRendererPaper: PaperDocument = {
                         "ServerManager supplies the process port and communication settings.",
                         "CallbackManager stores callbacks by user, page, and callback ID.",
                         "ScreenSizeManager lets server components query user-specific viewport information.",
-                        "The proof-of-concept Juice Messenger app demonstrates state changes and callback-triggered rerendering."
+                        "The Juice Messenger application surface demonstrates state changes and callback-triggered rerendering."
                     ]
                 }
             ],
         },
         {
-            id: "takeaways",
-            eyebrow: "VI",
-            title: "Technical Takeaways",
+            id: "socket-protocol",
+            eyebrow: "X",
+            title: "Socket Event Protocol",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "TSXLight is interesting because it reopens assumptions that modern frontend frameworks usually hide. It treats JSX syntax as a component authoring format, but moves rendering, state, and callbacks to a server-owned runtime."
+                    text: "The callback bridge can be reconstructed as a small message protocol. The client sends renderer identity, active page identity, callback identity, event name, and a serialized event payload. The server validates the renderer/page pair, looks up the callback, invokes it, and decides whether to rerender."
+                },
+                {
+                    kind: "example",
+                    label: "Client event message",
+                    language: "json",
+                    code: `{
+  "type": "callback",
+  "rendererId": "renderer-7",
+  "pageId": "inbox",
+  "callbackId": "cb-42",
+  "eventName": "click",
+  "payload": {
+    "value": "Send",
+    "clientX": 144,
+    "clientY": 220
+  }
+}`,
+                    caption: "The payload carries event data, but the executable function remains on the server."
+                },
+                {
+                    kind: "diagram",
+                    label: "Server callback handling",
+                    body: `receive message
+  |
+  v
+validate rendererId -> user/session
+  |
+  v
+validate pageId == active page
+  |
+  v
+lookup callbackId in page callback table
+  |
+  v
+invoke callback with payload
+  |
+  +-- state changed -> rerender and emit shell patch/full shell
+  +-- no change -> acknowledge`,
+                    caption: "Validation precedes callback invocation so stale or cross-page events are rejected."
+                },
+                {
+                    kind: "equation",
+                    label: "Active-page guard",
+                    tex: "message.pageId \\ne activePage(rendererId) \\Rightarrow reject(message)",
+                    caption: "A callback is valid only for the renderer's active page."
+                }
+            ],
+        },
+        {
+            id: "security-isolation",
+            eyebrow: "XI",
+            title: "Isolation and Failure Boundaries",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Per-user renderers are the primary isolation boundary. User identity selects a renderer, the renderer selects an active page, and the active page selects the callback table. A callback message that does not match the current user and page should not be able to invoke another user's component function."
+                },
+                {
+                    kind: "equation",
+                    label: "Isolation condition",
+                    tex: "u_1 \\ne u_2 \\Rightarrow R_{u_1} \\cap R_{u_2} = \\varnothing",
+                    caption: "Renderer-owned component state and callbacks are disjoint across users."
                 },
                 {
                     kind: "paragraph",
-                    text: "The project is most useful as a rendering architecture study. It makes identity, per-user isolation, callback serialization, page state, and rerender ownership concrete instead of relying on a browser-side framework to solve them implicitly."
+                    text: "The architecture therefore treats duplicate connections, stale callback IDs, page transitions, and viewport-specific state as renderer-management problems rather than client-rendering problems. That tradeoff is coherent for controlled shells and internal tools because the server remains the source of truth."
                 },
                 {
                     kind: "bullets",
                     items: [
-                        "A JSX-like authoring model can be separated from React's runtime assumptions.",
-                        "Server-owned component trees need strong per-user isolation boundaries.",
-                        "Callback serialization is the core design problem once the client becomes a thin shell.",
-                        "The architecture fits experiments and controlled shells better than high-latency public interfaces."
+                        "Callback IDs are scoped by renderer and page, not treated as global capabilities.",
+                        "Page transitions clear or replace the active callback surface.",
+                        "Screen-size tracking is user-specific, which prevents one viewport from driving another user's layout decisions.",
+                        "Connection policy belongs to the server manager rather than to generated markup."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "rerender-consistency",
+            eyebrow: "XII",
+            title: "Rerender Consistency",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Because the server owns the component tree, rerender consistency depends on sequencing. Callback invocation, state mutation, callback-table replacement, HTML generation, and shell delivery must occur as one ordered transaction for a renderer."
+                },
+                {
+                    kind: "equation",
+                    label: "Renderer transaction",
+                    tex: "R_u^{t+1}=deliver(render(mutate(R_u^t, callback)))",
+                    caption: "A renderer advances by applying one callback mutation, rendering the new state, and delivering the resulting shell."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Only the addressed renderer is mutated by a callback transaction.",
+                        "The active callback table is regenerated from the rendered tree.",
+                        "Page transitions persist outgoing state before replacing the active page.",
+                        "Viewport updates are stored per renderer and consumed during subsequent renders.",
+                        "Duplicate or stale callbacks are rejected by renderer/page/callback identity checks."
+                    ]
+                },
+                {
+                    kind: "paragraph",
+                    text: "This transaction model is the server-side equivalent of UI reconciliation. Instead of diffing fibers in the browser, TSXLight rebuilds the renderer-owned shell from authoritative server state."
+                }
+            ],
+        },
+        {
+            id: "results",
+            eyebrow: "XIII",
+            title: "Results and Design Properties",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "TSXLight Renderer establishes a complete architecture for TSX-authored, server-owned UI. It separates authoring syntax from React's runtime, renders component trees into user-specific HTML shells, routes event callbacks through sockets, and keeps page state inside renderer instances."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The technical result is an explicit rendering ownership model. The server owns state, callbacks, page transitions, component instances, and rerender decisions; the client owns display and event forwarding. That split makes identity and isolation visible, which is the core contribution of the experiment."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "A JSX-like authoring model can be separated from React's browser runtime assumptions.",
+                        "Server-owned component trees require renderer-local callback tables and page-local state.",
+                        "Callback serialization is the core design problem once the client becomes an event bridge.",
+                        "The architecture is coherent for controlled web/Electron shells where server-owned state is an intentional property."
                     ]
                 }
             ],

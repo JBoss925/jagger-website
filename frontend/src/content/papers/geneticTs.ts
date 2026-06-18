@@ -7,7 +7,7 @@ export const geneticTsPaper: PaperDocument = {
     authors: ["Jagger Brulato"],
     date: "2026",
     abstract: "Genetic Algorithms in TypeScript is an interactive simulation that evolves launch velocities for a ball trying to hit a target in a bounded physics scene. Each genome is a two-dimensional initial velocity. The simulator evaluates a generation by replaying every genome through Matter.js, scoring hits, minimum distance, and path behavior, then breeding the next generation through elitism, rank-biased parent selection, blend crossover, mutation, and random resets. The UI exposes the important algorithm and environment parameters so the reader can see convergence change when gravity, wind, population size, mutation rate, elite share, target size, or the target position changes.",
-    description: "A technical paper for an interactive genetic algorithm demo that evolves projectile launch velocities under configurable physics.",
+    description: "A technical paper for an interactive genetic algorithm system that evolves projectile launch velocities under configurable physics.",
     categories: ["Simulation", "Systems", "Research Notes"],
     tags: ["TypeScript", "Genetic Algorithms", "Matter.js", "Simulation", "Physics", "Visualization"],
     repoUrl: "https://github.com/JBoss925/GeneticTS",
@@ -29,11 +29,11 @@ export const geneticTsPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The project turns a genetic algorithm into something visible. Instead of optimizing an abstract score in a console, every candidate is a launch trajectory. The reader can watch the best path, see ghost attempts, drag the target, and change the physics while the population adapts."
+                    text: "The system makes a genetic algorithm observable. Instead of optimizing an abstract score in a console, every candidate is a launch trajectory. The interface exposes the best path, ghost attempts, draggable target position, and configurable physics while the population adapts."
                 },
                 {
                     kind: "paragraph",
-                    text: "That makes it useful as both a demo and a debugging surface. Selection pressure, mutation rate, population size, and environmental difficulty are usually hidden inside algorithm logs. Here, each setting changes the shape of the paths on screen."
+                    text: "That makes the optimizer both an algorithm and a debugging surface. Selection pressure, mutation rate, population size, and environmental difficulty are usually hidden inside algorithm logs. Here, each setting changes the shape of the paths on screen."
                 },
                 {
                     kind: "bullets",
@@ -79,8 +79,105 @@ export const geneticTsPaper: PaperDocument = {
             ],
         },
         {
-            id: "evolution",
+            id: "physics-model",
             eyebrow: "III",
+            title: "Physics Model and Termination",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The simulator treats every candidate as a deterministic rollout in the same bounded world. A Matter.js engine is constructed per genome, gravity and wind are combined into one field vector, four walls are inserted with restitution, and the ball is launched from a fixed point. The engine advances at 60 Hz until the candidate hits the target, exhausts the frame budget, settles on the floor, or bounces enough times that the attempt no longer carries useful search information."
+                },
+                {
+                    kind: "equation",
+                    label: "Net field",
+                    tex: "\\vec{a} = (0, g) + w(\\cos\\theta, \\sin\\theta)",
+                    caption: "Gravity strength and wind controls combine into the acceleration field assigned to the Matter.js engine."
+                },
+                {
+                    kind: "diagram",
+                    label: "Evaluation loop",
+                    body: `genome (vx, vy)
+  |
+  v
+fresh Matter.js engine
+  |
+  v
+apply net field + walls + ball velocity
+  |
+  v
+step frames -> record path, distance, contacts
+  |
+  +-- target overlap -> hit score
+  +-- rest / bounce / frame cap -> miss score`,
+                    caption: "Each genome receives an isolated physics replay so cross-candidate state cannot leak into fitness."
+                },
+                {
+                    kind: "equation",
+                    label: "Target overlap",
+                    tex: "d_t = \\lVert p_t - q \\rVert_2 - (r_{target} + r_{ball})",
+                    caption: "A hit occurs when the signed clearance between the ball center and target center is non-positive."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The default frame budget is 200 steps. Rest detection stops attempts that reach the floor with velocity below the configured tolerance for consecutive frames. Wall-contact counting stops degenerate attempts that repeatedly bounce around the boundary instead of expressing a useful launch strategy."
+                }
+            ],
+        },
+        {
+            id: "state-schema",
+            eyebrow: "IV",
+            title: "State and Configuration Schema",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The simulation state can be reconstructed from four groups of data: immutable scene bounds, mutable configuration, target state, and population state. The engine does not store hidden physics state between generations; every genome evaluation creates a new Matter.js world."
+                },
+                {
+                    kind: "example",
+                    label: "Core state",
+                    language: "typescript",
+                    code: `type VelocityGenome = { vx: number; vy: number };
+type Target = { x: number; y: number; radius: number };
+
+type GeneticSimulationState = {
+  seed: number;
+  generation: number;
+  target: Target;
+  population: VelocityGenome[];
+  solvedStreak: number;
+  bestEverFitness: number;
+  lastSummary: GenerationSummary;
+};`,
+                    caption: "The persistent state contains only the data needed to evaluate the next generation and render the current one."
+                },
+                {
+                    kind: "example",
+                    label: "Default configuration",
+                    language: "text",
+                    code: `populationSize = 42
+targetRadius = 22
+gravityStrength = 0.98
+ballRadius = 12
+windDirection = -18 degrees
+windMagnitude = 0.18
+mutationRate = 0.18
+elitePercent = 18
+attemptFrames = 200
+successStreakTarget = 3
+ghostCount = 5`,
+                    caption: "These defaults define the baseline search space and solved condition."
+                },
+                {
+                    kind: "equation",
+                    label: "Simulation bounds",
+                    tex: "\\Omega = [0,760] \\times [0,460],\\quad q_0=(84,368)",
+                    caption: "The launch point q0 and rectangular bounds define the coordinate system for targets and paths."
+                }
+            ],
+        },
+        {
+            id: "evolution",
+            eyebrow: "V",
             title: "Selection, Crossover, and Mutation",
             blocks: [
                 {
@@ -115,8 +212,93 @@ export const geneticTsPaper: PaperDocument = {
             ],
         },
         {
+            id: "algorithm",
+            eyebrow: "VI",
+            title: "Evolution Algorithm",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The implemented algorithm is a compact elitist genetic search over a continuous two-dimensional genome. It is not a symbolic planner and it does not analytically solve the projectile equation. The only objective signal comes from simulated rollouts."
+                },
+                {
+                    kind: "example",
+                    label: "Generation step",
+                    language: "text",
+                    code: `evaluate every genome
+sort attempts by descending fitness
+copy elite attempts directly
+while population is not full:
+  pick two parents from the ranked parent pool
+  blend their velocity vectors
+  optionally jitter vx and vy
+  clamp velocity bounds
+append a small random-reset tail
+evaluate the next generation`,
+                    caption: "The algorithm preserves strong candidates, samples the ranked frontier, and keeps an explicit exploration tail."
+                },
+                {
+                    kind: "equation",
+                    label: "Elite count",
+                    tex: "E = \\operatorname{clamp}\\left(\\operatorname{round}\\left(\\frac{e}{100}N\\right), 2, N-1\\right)",
+                    caption: "The elite percentage is converted into an integer count while preserving at least two elites and at least one non-elite slot."
+                },
+                {
+                    kind: "equation",
+                    label: "Rank-biased index",
+                    tex: "i = \\left\\lfloor U^{1.7}\\,|P| \\right\\rfloor,\\quad U \\sim \\mathcal{U}(0,1)",
+                    caption: "Exponentiating the random source biases parent selection toward the front of the sorted parent pool without making parent choice deterministic."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Random resets occupy roughly eight percent of the next population. This matters in a draggable interactive scene because the target or field can move abruptly; a converged population near the old solution should not be the only genetic material available for the new problem."
+                }
+            ],
+        },
+        {
+            id: "target-constraints",
+            eyebrow: "VII",
+            title: "Target Constraints and Reconfiguration",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The target is constrained so the search problem remains valid and the controls remain usable. Its x coordinate must stay to the right of the launcher by a fixed minimum, its radius must fit inside the stage, and it must avoid the wind panel region so the draggable target does not overlap UI instrumentation."
+                },
+                {
+                    kind: "equation",
+                    label: "Target domain",
+                    tex: "x \\in [\\max(q_{0x}+120, inset+r),\\; W-inset-r],\\quad y \\in [inset+r,\\; H-inset-r]",
+                    caption: "The target domain is the stage rectangle shrunk by radius and safe inset, with an additional x-distance constraint from the launch point."
+                },
+                {
+                    kind: "diagram",
+                    label: "Reconfiguration path",
+                    body: `control change or drag
+  |
+  v
+copy ranked genomes from previous summary
+  |
+  v
+resize population to new populationSize
+  |
+  v
+clamp target to legal bounds
+  |
+  v
+evaluate immediately under new config
+  |
+  v
+reset solved streak`,
+                    caption: "Interactive changes preserve useful genetic material where possible while invalidating solved-state history."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Population resizing is rank-preserving. If the population shrinks, the highest-ranked genomes survive. If it grows, new random genomes are appended. That gives configuration changes continuity without pretending old convergence statistics still apply."
+                }
+            ],
+        },
+        {
             id: "interaction",
-            eyebrow: "IV",
+            eyebrow: "VIII",
             title: "Interactive Controls",
             blocks: [
                 {
@@ -139,8 +321,35 @@ export const geneticTsPaper: PaperDocument = {
             ],
         },
         {
+            id: "convergence",
+            eyebrow: "IX",
+            title: "Convergence Criteria and Observability",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The simulator separates a lucky hit from a solved field. A generation is considered generation-solved only when the hit rate reaches the configured threshold. The overall scene is solved only after that condition holds for the configured number of consecutive generations."
+                },
+                {
+                    kind: "equation",
+                    label: "Generation solved predicate",
+                    tex: "\\operatorname{solvedGen}(G) = \\frac{|\\{a \\in G : a.hit\\}|}{N} \\ge 0.75",
+                    caption: "The default solved predicate requires at least 75% of the generation to hit the target."
+                },
+                {
+                    kind: "equation",
+                    label: "Solved streak",
+                    tex: "s_t = \\begin{cases}s_{t-1}+1 & \\operatorname{solvedGen}(G_t)\\\\0 & \\text{otherwise}\\end{cases}",
+                    caption: "A scene is solved when the solved streak reaches the configured success-streak target."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The rendered surface exposes the state variables that matter: generation number, hit rate, best minimum distance, solved streak, current target, best trajectory, ghost trajectories, wind vector, and launch velocity. The visualization is not decorative; it is the diagnostic layer for the search process."
+                }
+            ],
+        },
+        {
             id: "implementation",
-            eyebrow: "V",
+            eyebrow: "X",
             title: "Implementation Shape",
             blocks: [
                 {
@@ -157,30 +366,64 @@ export const geneticTsPaper: PaperDocument = {
                         "simulation.ts owns genomes, population state, target bounds, evaluation, breeding, and reconfiguration.",
                         "GeneticTsPage.tsx owns controls, SVG rendering, path playback, dragging, and replay timing.",
                         "Matter.js provides collision, gravity, walls, restitution, and ball motion.",
-                        "The site route embeds the simulation as a first-class portfolio demo."
+                        "The browser route embeds the simulation as a first-class interactive system."
                     ]
                 }
             ],
         },
         {
-            id: "takeaways",
-            eyebrow: "VI",
-            title: "Technical Takeaways",
+            id: "rendering-replay",
+            eyebrow: "XI",
+            title: "Rendering and Replay Mechanics",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The demo works because the optimization target is understandable. A user does not need to know genetic algorithms to see the population improve from bad trajectories to accurate launches."
+                    text: "Rendering is a projection of evaluated simulation data, not a second simulation. The best path and ghost paths are already produced during fitness evaluation. The UI converts those point arrays into SVG polylines and animates the ball by stepping through the best path at a fixed replay rate."
+                },
+                {
+                    kind: "equation",
+                    label: "Replay frame",
+                    tex: "p_{display}(t)=path_{\\lfloor \\alpha t \\rfloor \\bmod |path|}",
+                    caption: "The displayed ball samples the evaluated best path using a replay-speed coefficient alpha."
+                },
+                {
+                    kind: "example",
+                    label: "SVG projection",
+                    language: "text",
+                    code: `bestAttempt.path -> highlighted polyline
+topAttempts[1..ghostCount] -> translucent ghost polylines
+bestAttempt.genome -> launch velocity arrow
+target -> draggable circle and hit halo
+wind config -> wind vector panel
+summary -> generation/hit/min-distance stats`,
+                    caption: "All visual layers are derived from the current simulation summary and configuration."
                 },
                 {
                     kind: "paragraph",
-                    text: "The broader lesson is that algorithm demos benefit from direct manipulation. When the reader can drag the target or change the physics and see the population recover, the algorithm becomes less like a black box and more like a system with observable pressure."
+                    text: "Because rendering is derived from stored attempts, pausing the animation does not pause the optimizer state itself. It only stops the visible replay on the selected best trajectory."
+                }
+            ],
+        },
+        {
+            id: "results",
+            eyebrow: "XII",
+            title: "Results and Design Properties",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The completed system demonstrates a stable browser-native evolutionary optimizer whose fitness signal is generated by a real physics engine rather than a hand-written parabola. The model supports target dragging, immediate parameter changes, deterministic seeded generations, replayable best paths, and visible population diversity without requiring a server process."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The main technical result is not that a genetic algorithm can find a projectile velocity; the analytic problem is simpler than that. The result is an inspectable optimization surface where selection pressure, mutation, random resets, field forces, boundary collisions, and solved predicates are all observable in one interface."
                 },
                 {
                     kind: "bullets",
                     items: [
-                        "Genetic algorithms are easiest to teach when fitness is visual.",
-                        "Interactive parameter changes expose the exploration/exploitation tradeoff.",
-                        "A small, well-scoped genome can still produce rich emergent behavior."
+                        "The genome is minimal: two velocity scalars are sufficient to produce rich trajectory behavior.",
+                        "The fitness function is discontinuous at target contact, which creates a clear separation between near misses and hits.",
+                        "The 75% hit-rate solved predicate avoids declaring success from a single lucky candidate.",
+                        "The visual replay layer makes convergence auditable through paths, ghost attempts, hit count, and target distance."
                     ]
                 }
             ],

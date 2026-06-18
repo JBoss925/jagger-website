@@ -21,7 +21,7 @@ export const aixcCompressorPaper: PaperDocument = {
     repoUrl: "https://github.com/JBoss925/aixc-compressor",
     previewImage: compressorPreview,
     previewAlt: "AIXC compressor placeholder architecture preview",
-    previewCaption: "AIXC reference-codec preview. The project stores a seed, predictor hit/miss decisions, residual streams, and manifest-backed metadata in a deterministic archive.",
+    previewCaption: "AIXC reference-codec preview. The archive stores a seed, predictor hit/miss decisions, residual streams, and manifest-backed metadata in a deterministic container.",
     sections: [
         {
             id: "motivation",
@@ -30,18 +30,18 @@ export const aixcCompressorPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "AIXC started from a compact idea: if both sides can run the same predictor, the archive should not have to store every next unit. It can store enough seed material to initialize context, then a decision stream saying whether the predictor was correct. On misses, the encoder stores the actual residual unit so decoding remains exact."
+                    text: "AIXC is based on a compact premise: if both sides can run the same predictor, the archive does not need to store every next unit. It can store enough seed material to initialize context, then a decision stream saying whether the predictor was correct. On misses, the encoder stores the actual residual unit so decoding remains exact."
                 },
                 {
                     kind: "paragraph",
-                    text: "That idea is attractive because it turns compression into an explicit contract between a file and a predictor. The hard part is not packing bits. The hard part is making sure a future decoder can reproduce the same prediction sequence, tokenizer behavior, and residual interpretation without guessing."
+                    text: "That premise turns compression into an explicit contract between a file and a predictor. The hard part is not packing bits. The hard part is making sure any conforming decoder can reproduce the same prediction sequence, tokenizer behavior, and residual interpretation without guessing."
                 },
                 {
                     kind: "bullets",
                     items: [
                         "Primary goal: exact round-trip text compression using a deterministic predictor contract.",
                         "Reference mode: seed units, packed hit/miss bits, and literal residuals.",
-                        "Practical direction: entropy-coded decision streams and smaller residual representations."
+                        "Practical format property: entropy-coded decision streams and compact residual representations."
                     ]
                 }
             ],
@@ -90,7 +90,7 @@ export const aixcCompressorPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The useful path is to compress the decision stream toward its binary entropy and to avoid raw literals when the correct unit is still near the top of the predictor ranking. A rank residual, sparse top-k residual, Huffman section, or future range/ANS coder can use more of the predictor distribution than a single hit bit."
+                    text: "The useful representation compresses the decision stream toward its binary entropy and avoids raw literals when the correct unit is still near the top of the predictor ranking. A rank residual, sparse top-k residual, Huffman section, or range/ANS-style section coder can use more of the predictor distribution than a single hit bit."
                 },
                 {
                     kind: "equation",
@@ -110,8 +110,70 @@ export const aixcCompressorPaper: PaperDocument = {
             ],
         },
         {
-            id: "determinism",
+            id: "codec-state-machine",
             eyebrow: "IV",
+            title: "Codec State Machine",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "A conforming implementation can be reconstructed as two lockstep state machines. The encoder and decoder both maintain a context buffer, a predictor handle, a unit index, and stream cursors. The encoder additionally observes the source unit at each index; the decoder additionally observes the next decision bit and residual cursor."
+                },
+                {
+                    kind: "diagram",
+                    label: "Encoder state",
+                    body: `state E = {
+  context: unit[]
+  index: number
+  predictor: Predictor
+  decisions: bit[]
+  residuals: unit[]
+}
+
+for source[index]:
+  prediction = predictor.argmax(context)
+  if prediction == source[index]:
+    decisions.push(1)
+  else:
+    decisions.push(0)
+    residuals.push(source[index])
+  context.push(source[index])
+  index += 1`,
+                    caption: "The encoder records only prediction failures as residuals; the context always advances with the true source unit."
+                },
+                {
+                    kind: "diagram",
+                    label: "Decoder state",
+                    body: `state D = {
+  context: seed
+  index: number
+  predictor: Predictor
+  decisionCursor: number
+  residualCursor: number
+}
+
+while output.length < originalLength:
+  prediction = predictor.argmax(context)
+  if decisions[decisionCursor] == 1:
+    unit = prediction
+  else:
+    unit = residuals[residualCursor]
+    residualCursor += 1
+  output.push(unit)
+  context.push(unit)
+  decisionCursor += 1`,
+                    caption: "The decoder consumes residuals exactly at miss positions and feeds reconstructed units back into predictor context."
+                },
+                {
+                    kind: "equation",
+                    label: "Cursor invariant",
+                    tex: "0 \\le residualCursor_i \\le decisionCursor_i \\le unitIndex_i",
+                    caption: "The residual cursor cannot advance except when a consumed decision bit is a miss."
+                }
+            ],
+        },
+        {
+            id: "determinism",
+            eyebrow: "V",
             title: "Deterministic Decoding Contract",
             blocks: [
                 {
@@ -147,7 +209,7 @@ export const aixcCompressorPaper: PaperDocument = {
         },
         {
             id: "container",
-            eyebrow: "V",
+            eyebrow: "VI",
             title: "Binary Container",
             blocks: [
                 {
@@ -167,21 +229,190 @@ export const aixcCompressorPaper: PaperDocument = {
                         "Residual stream: raw literals, ULEB128 token ids, top-k ranks, or section-coded bytes depending on mode.",
                         "Optional section: TLV metadata for body integrity and predictor manifest fingerprints."
                     ]
+                },
+                {
+                    kind: "diagram",
+                    label: "Archive layout",
+                    body: `+----------------------+ 0
+| magic/version/header |
++----------------------+
+| seed section         |
++----------------------+
+| packed decisions     |
++----------------------+
+| residual section     |
++----------------------+
+| optional metadata    |
++----------------------+
+| integrity trailer    |
++----------------------+`,
+                    caption: "The archive is section-addressed so a decoder can validate offsets before running predictor-dependent decode."
+                },
+                {
+                    kind: "equation",
+                    label: "Container size",
+                    tex: "|A| = |H| + |S| + |D| + |R| + |M|",
+                    caption: "Archive size is the sum of fixed header, seed, decision, residual, and metadata sections."
+                }
+            ],
+        },
+        {
+            id: "header-schema",
+            eyebrow: "VII",
+            title: "Header and Manifest Schema",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The fixed header is the decoder's first trust boundary. It must contain enough information to locate every section, reject incompatible modes, allocate decode buffers, and validate predictor compatibility before any predictor call is made."
+                },
+                {
+                    kind: "example",
+                    label: "Header fields",
+                    language: "text",
+                    code: `magic: 4 bytes = AIXC
+version: u16
+flags: u32
+unitMode: enum(byte, token)
+predictorKind: enum(toy, lzp, byte-model, hf-token)
+entropyMode: enum(raw, huffman, zstd)
+originalLength: u64
+seedOffset, seedLength: u64, u64
+decisionOffset, decisionLength: u64, u64
+residualOffset, residualLength: u64, u64
+metadataOffset, metadataLength: u64, u64
+bodyCrc32: optional u32
+manifestSha256: optional bytes32`,
+                    caption: "A decoder can reconstruct section boundaries and compatibility requirements from the fixed prefix."
+                },
+                {
+                    kind: "equation",
+                    label: "Section bounds",
+                    tex: "\\forall s,\\; 0 \\le offset_s < offset_s + length_s \\le |A|",
+                    caption: "Every referenced section must lie inside the archive byte range."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The manifest is canonical JSON or an equivalent canonical binary map. Required fields include predictor kind, version, tokenizer identity when applicable, tie-break rule, unit mode, residual mode, entropy mode, training corpus identity for sidecar models, and any quantization or runtime switches that affect argmax."
+                }
+            ],
+        },
+        {
+            id: "residual-coding",
+            eyebrow: "VIII",
+            title: "Residual Coding Modes",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "AIXC separates prediction correctness from residual representation. The simplest residual is the literal unit, but a predictor distribution contains more information than a binary hit/miss flag. If the correct unit appears near the top of the ranked prediction list, the archive can store a rank or compact top-k code rather than a full literal."
+                },
+                {
+                    kind: "equation",
+                    label: "Rank residual",
+                    tex: "r_i = \\operatorname{rank}_{p(\\cdot\\mid u_{<i})}(u_i)",
+                    caption: "A rank residual records where the true unit appeared in the deterministic predictor ordering."
+                },
+                {
+                    kind: "equation",
+                    label: "Top-k admissibility",
+                    tex: "u_i \\in \\operatorname{TopK}(p(\\cdot\\mid u_{<i})) \\Rightarrow C(r_i) \\le \\lceil\\log_2 k\\rceil",
+                    caption: "When the true unit appears in the top-k set, its residual can be bounded by the rank code width."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The format can still fall back to literal residuals. This fallback is essential because the archive must be exact even when the predictor is wrong in an unhelpful way. The residual mode therefore defines a total decode rule, not merely an optimization hint."
+                },
+                {
+                    kind: "diagram",
+                    label: "Residual decision tree",
+                    body: `predict next unit
+  |
+  +-- exact top prediction -> decision hit, no residual
+  |
+  +-- true unit in top-k -> decision miss, rank residual
+  |
+  +-- otherwise -> decision miss, literal residual`,
+                    caption: "Residual modes progressively exploit more predictor information while preserving a literal escape hatch."
+                }
+            ],
+        },
+        {
+            id: "entropy-sections",
+            eyebrow: "IX",
+            title: "Entropy-Coded Sections",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Packed one-bit decisions are easy to inspect but not always economical. Decision streams are often biased and clustered; residual streams are often highly nonuniform. AIXC therefore treats section coding as an independent layer: after semantic streams are generated, each section can be encoded by a configured entropy backend."
+                },
+                {
+                    kind: "equation",
+                    label: "Section coding objective",
+                    tex: "C(X) \\ge H(X),\\quad H(X) = -\\sum_x p(x)\\log_2 p(x)",
+                    caption: "A practical section coder attempts to approach the entropy of the symbols in that section."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Huffman coding is attractive in the reference implementation because it is deterministic, inspectable, and simple to decode. zstd-style section compression is useful for comparing predictor-specific savings against mature generic compression. The archive manifest records the selected coding mode so decoders do not infer it from bytes."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Decision bits can be packed raw or entropy-coded as a binary stream.",
+                        "Residual units can be literal bytes, varint token IDs, rank codes, or compressed byte sections.",
+                        "Metadata remains separately parseable so integrity and predictor checks run before decode.",
+                        "The coding layer must be deterministic; adaptive decoders cannot depend on unstored model state."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "predictor-interface",
+            eyebrow: "X",
+            title: "Predictor Interface",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "AIXC does not require a specific model class. It requires a deterministic predictor interface. The minimum interface accepts a context and returns an ordered candidate list or an argmax unit. More advanced residual modes require a stable top-k ordering."
+                },
+                {
+                    kind: "example",
+                    label: "Predictor contract",
+                    language: "typescript",
+                    code: `type Unit = number;
+
+type Predictor = {
+  manifest: CanonicalManifest;
+  reset(seed: Unit[]): void;
+  observe(unit: Unit): void;
+  argmax(): Unit;
+  topK?(k: number): Unit[];
+};`,
+                    caption: "The predictor state is advanced only through observed true or decoded units."
+                },
+                {
+                    kind: "equation",
+                    label: "Deterministic ordering",
+                    tex: "score(a)=score(b) \\land a<b \\Rightarrow rank(a)<rank(b)",
+                    caption: "Ties must resolve by a declared total ordering, such as lowest unit id first."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The interface deliberately separates reset, prediction, and observation. This prevents an implementation from hiding state changes inside argmax calls and makes encoder/decoder equivalence easier to test."
                 }
             ],
         },
         {
             id: "implementation",
-            eyebrow: "VI",
+            eyebrow: "XI",
             title: "Implementation",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The compressor repo is structured as a reference codec plus experiments around practical predictor choices. The dependency-free toy-byte backend is useful for tests and demos, while the LZP byte backend provides fast deterministic full-file runs. Additional modes explore trained byte models, neural byte predictors, Hugging Face causal language models, and native acceleration through a C extension."
+                    text: "The compressor implementation is structured as a reference codec plus predictor backends. The dependency-free toy-byte backend is useful for tests and deterministic examples, while the LZP byte backend provides fast full-file runs. Additional modes cover trained byte models, neural byte predictors, Hugging Face causal language models, and native acceleration through a C extension."
                 },
                 {
                     kind: "paragraph",
-                    text: "The project also includes a local web workbench. It can manage corpora, run compression jobs, inspect archive metadata, train byte or neural sidecar models, and regenerate benchmark reports. That makes AIXC less like a single codec script and more like a small laboratory for testing predictor contracts."
+                    text: "The implementation also includes a local web workbench. It can manage corpora, run compression jobs, inspect archive metadata, train byte or neural sidecar models, and regenerate benchmark reports. That makes AIXC a laboratory for testing predictor contracts rather than a single codec script."
                 },
                 {
                     kind: "bullets",
@@ -195,8 +426,35 @@ export const aixcCompressorPaper: PaperDocument = {
             ],
         },
         {
+            id: "correctness",
+            eyebrow: "XII",
+            title: "Correctness Conditions",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Lossless decoding depends on three independent equalities: the seed must reconstruct the initial context, the predictor must produce the same ordered candidates, and the residual stream must be consumed in the same positions. If any equality fails, a decoder can still parse the archive but cannot guarantee the original text."
+                },
+                {
+                    kind: "equation",
+                    label: "Decode invariant",
+                    tex: "\\forall i,\\; \\hat{u}_{<i}=u_{<i} \\Rightarrow \\operatorname{pred}(\\hat{u}_{<i})=\\operatorname{pred}(u_{<i})",
+                    caption: "If the decoded prefix equals the original prefix and the predictor is deterministic, the next prediction is reproducible."
+                },
+                {
+                    kind: "equation",
+                    label: "Residual consumption",
+                    tex: "j_i = \\sum_{t < i}(1-d_t)",
+                    caption: "The residual pointer before position i equals the number of misses before i."
+                },
+                {
+                    kind: "paragraph",
+                    text: "By induction over positions, a hit reconstructs the original unit from the deterministic predictor, and a miss reconstructs it from the residual at pointer j. Feeding the reconstructed actual unit back into context preserves the induction hypothesis for the next position."
+                }
+            ],
+        },
+        {
             id: "results",
-            eyebrow: "VII",
+            eyebrow: "XIII",
             title: "Benchmark Results and Use Cases",
             blocks: [
                 {
@@ -209,7 +467,7 @@ export const aixcCompressorPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "That makes the project useful in a specific class of systems: repeated, related text streams where the predictor can be installed once and amortized across many archives. Log families, telemetry exports, generated reports, protocol traces, or corpora distributed with a known sidecar model fit the design better than one-off files. For arbitrary standalone compression, a mature native codec is still the practical choice."
+                    text: "That makes the format useful in a specific class of systems: repeated, related text streams where the predictor can be installed once and amortized across many archives. Log families, telemetry exports, generated reports, protocol traces, or corpora distributed with a known sidecar model fit the design better than one-off files. For arbitrary standalone compression, a mature native codec is still the practical choice."
                 },
                 {
                     kind: "bullets",
