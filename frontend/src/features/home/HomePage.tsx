@@ -242,23 +242,23 @@ function HomePage() {
         <SectionShell
           id="impact"
           eyebrow="Focus"
-          title="The work I’m most drawn to usually makes something **simpler, clearer, or easier to use**."
-          summary="That can mean **product features, platform work, developer tooling**, or just making a system easier for the next person to work in."
+          title="I like work that crosses **product, backend, data, infrastructure, and developer tooling**."
+          summary="For me that has meant **consumer apps, React and Three.js product surfaces, Node services, platform automation, data pipelines, mobile software, dashboards, and internal systems**."
         >
           <div className="impact-grid">
             <article className="glass-card feature-card">
-              <h3>Own the whole path</h3>
+              <h3>Work across the stack</h3>
               <p>
                 {renderInlineEmphasis(
-                  "I like being able to follow a problem from the **interface** all the way down to the **backend and operational details**."
+                  "I can work from the **user experience** through the **backend, data model, event flow, infrastructure, and runtime behavior**."
                 )}
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Bring systems thinking into product work</h3>
+              <h3>Use systems work in product work</h3>
               <p>
                 {renderInlineEmphasis(
-                  "A lot of what I’ve learned from **systems and platform work** shows up in how I build product software too."
+                  "Platform and data systems work has made me better at product engineering. I think carefully about boundaries, data flow, queues, observability, failure modes, and rollout paths."
                 )}
               </p>
             </article>
@@ -266,7 +266,7 @@ function HomePage() {
               <h3>Build things other engineers use</h3>
               <p>
                 {renderInlineEmphasis(
-                  "Some of the most satisfying work for me is **tooling, visibility, onboarding, and internal abstractions**."
+                  "I like building tools, dashboards, APIs, deployment paths, Terraform workflows, CI/CD systems, and abstractions that other engineers use."
                 )}
               </p>
             </article>
@@ -276,8 +276,8 @@ function HomePage() {
         <SectionShell
           id="experience"
           eyebrow="Experience"
-          title="This is the fastest way to get a feel for the kinds of **work I’ve done**."
-          summary="It spans **product engineering, platform work, and leading teams** while still staying close to the code."
+          title="My experience spans **product, platform, data, mobile, infrastructure, and leadership**."
+          summary="That includes senior startup work, Google data systems, AWS platform engineering, internal developer platforms, production apps, and team leadership."
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -293,8 +293,8 @@ function HomePage() {
         <SectionShell
           id="projects"
           eyebrow="Projects"
-          title="These projects fill in the rest of the picture."
-          summary="They’re the ones that say the most about **what I like building when nobody is assigning it to me**."
+          title="The projects show how I build outside of work."
+          summary="They’re practical and technical: languages, parsers, runtimes, WebAssembly, games, simulations, compression, renderers, libraries, and backend utilities."
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
@@ -310,8 +310,8 @@ function HomePage() {
         <SectionShell
           id="craft"
           eyebrow="How I work"
-          title="The stack matters less to me than **how the pieces connect**."
-          summary="I care a lot about **good boundaries, good defaults, and making software easier to work in over time**."
+          title="I care about **clear systems**, practical architecture, and maintainable code."
+          summary="I like code with clear boundaries, obvious ownership, useful tests, good observability, and tradeoffs the team can explain."
         >
           <div className="skill-grid">
             {profileContent.skillClusters.map((cluster) => (
@@ -323,36 +323,37 @@ function HomePage() {
         <SectionShell
           id="leadership"
           eyebrow="Leadership"
-          title="I prefer to create clarity, take ownership, and keep the team moving."
-          summary="When a project needs direction, I’m comfortable stepping forward to **define the path, organize the work, and make decisions**. I stay close enough to the implementation to understand the real constraints while making sure every developer has the context and support they need to execute."
+          title="I lead by making the work clear and staying involved in the implementation."
+          summary="I set direction, make tradeoffs, mentor engineers, organize execution, review code, and take implementation work myself."
         >
           <div className="leadership-principles">
             <div className="glass-card">
               <strong>Set a clear direction</strong>
               <p>
-                Turn an ambiguous goal into a practical plan with explicit priorities,
-                ownership, milestones, and technical boundaries.
+                Turn an ambiguous goal into a plan with clear priorities, ownership,
+                milestones, technical decisions, and a path to delivery.
               </p>
             </div>
             <div className="glass-card">
               <strong>Lead from the work</strong>
               <p>
-                Make architectural decisions, take on difficult implementation problems,
-                and use firsthand context to keep plans grounded.
+                Make architecture decisions with firsthand context, and take on difficult
+                implementation work when the team needs it: APIs, data flow, platform code,
+                UI state, or deployment logic.
               </p>
             </div>
             <div className="glass-card">
               <strong>Organize for momentum</strong>
               <p>
                 Break work into parallel tracks, surface dependencies early, and keep
-                communication direct so developers can move without unnecessary blockers.
+                communication direct across product, design, engineering, and operations.
               </p>
             </div>
             <div className="glass-card">
               <strong>Raise the whole team</strong>
               <p>
-                Share context, review thoughtfully, and help other engineers build the
-                confidence and judgment to own increasingly important parts of the system.
+                Share context, review thoughtfully, and help engineers take ownership of
+                larger parts of the system, from feature work to architecture and production support.
               </p>
             </div>
           </div>
@@ -361,13 +362,13 @@ function HomePage() {
         <SectionShell
           id="contact"
           eyebrow="Contact"
-          title="If this looks like the kind of background you need, reach out."
+          title="If you need a senior engineer who can lead and build, reach out."
         >
           <div className="contact-layout">
             <div className="glass-card contact-card__intro">
               <p>
                 {renderInlineEmphasis(
-                  "Email is the most direct way to reach me. I’m always interested in hearing about **technically meaningful product work, platform challenges, and teams that value engineers who can lead while staying hands-on**. I tend to be most useful when a project needs someone who can **steady the direction, keep the work moving, and stay close enough to the code to make the decisions real**."
+                  "Email is the most direct way to reach me. I’m interested in **startups, product engineering, platform work, data-heavy systems, infrastructure-heavy teams, and senior roles where I still write code**."
                 )}
               </p>
               <a className="contact-card__cta" href={`mailto:${profileContent.email}`}>
@@ -378,11 +379,11 @@ function HomePage() {
             <div className="glass-card contact-card__panel">
               <div className="contact-card__fit">
                 <span className="contact-card__eyebrow">Strong fit</span>
-                <strong>A strong fit usually includes</strong>
+                <strong>I’m usually a good fit for</strong>
                 <ul>
-                  <li>Real ownership over a product, system, or technical direction</li>
-                  <li>Problems that cross frontend, backend, platform, or operational boundaries</li>
-                  <li>A team that values clear communication and pragmatic technical leadership</li>
+                  <li>Ownership over a product, platform, system, or technical direction</li>
+                  <li>Problems that cross frontend, backend, data, infrastructure, CI/CD, or operations</li>
+                  <li>A team that values direct communication, high ownership, and hands-on leadership</li>
                 </ul>
               </div>
               <div className="contact-card__actions">

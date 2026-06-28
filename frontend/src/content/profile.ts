@@ -25,20 +25,20 @@ export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
-  title: "Sr. Full-stack engineer across product, platform, and language tooling.",
+  title: "Senior full-stack engineer across product, systems, platform, and infrastructure work.",
   location: "United States",
   email: "jagger@jaggerbrulato.com",
   heroSummary:
-    "I like work that makes me understand the **whole system**: the product surface, the backend, the tooling around it, and the operational reality once it is live.",
+    "I’m a senior engineer who works across **product, backend, platform, data, infrastructure, and developer tooling**. I like roles where those pieces connect.",
   heroBullets: [
-    "I have shipped **frontend product work, backend services, internal platforms, dashboards, mobile apps, and developer-facing tooling**.",
-    "I do my best work when I can **move across layers** instead of treating the UI, the backend, and operations like separate worlds.",
-    "The side projects here are a good sample too: **interpreters, simulations, games, and backend utilities**."
+    "I’ve worked at **Google, startups, platform teams, and product teams**.",
+    "I can **lead the work, make technical decisions, write the code, mentor engineers, and keep the system understandable as it grows**.",
+    "My side projects follow the same pattern: **languages, runtimes, compilers, simulations, games, compression, renderers, and backend utilities**."
   ],
   metrics: [
     { label: "Main lane", value: "Full-stack" },
     { label: "Favorite work", value: "Product" },
-    { label: "Also drawn to", value: "Platform + PL" },
+    { label: "Also into", value: "Platform + PL" },
     { label: "Start Here", value: "OJaml" }
   ],
   links: [
@@ -52,9 +52,9 @@ export const profileContent: ProfileContent = {
       id: "hero",
       label: "Intro",
       eyebrow: "Intro",
-      title: "I’m a Sr. Full-Stack Engineer who likes work with real technical depth.",
+      title: "I’m a senior full-stack engineer across product, platform, data, and infrastructure.",
       summary:
-        "Most of the work I’m proud of sits somewhere between product engineering, backend systems, internal tools, and the kinds of projects that force you to understand the whole stack.",
+        "I’ve built customer apps, backend services, platform automation, data pipelines, dashboards, mobile software, and developer tooling.",
       position: [-8, 3, -1],
       camera: [-1, 1.8, 14],
       target: [-4, 1.4, 0],
@@ -64,9 +64,9 @@ export const profileContent: ProfileContent = {
       id: "impact",
       label: "Focus",
       eyebrow: "Focus",
-      title: "The work I like most usually makes something easier for someone.",
+      title: "I like making products, platforms, and internal tools easier to use.",
       summary:
-        "Sometimes that means a user-facing feature. Sometimes it means a platform, a dashboard, a reusable abstraction, or a cleaner path for the next engineer who touches the code.",
+        "That can be a React product surface, a Node service, a Terraform workflow, a Beam pipeline, a Grafana dashboard, or a cleaner API for another engineer.",
       position: [-2, 0, 1],
       camera: [2, 1.2, 12],
       target: [0, 0.2, 0],
@@ -76,9 +76,9 @@ export const profileContent: ProfileContent = {
       id: "experience",
       label: "Experience",
       eyebrow: "Experience",
-      title: "I’ve worked in startups, big companies, internal platform teams, and student-led product teams.",
+      title: "I’ve worked at Google, startups, platform teams, and product teams.",
       summary:
-        "Taken together, these roles show the range of environments I’ve worked in and the kinds of technical work I keep getting pulled toward.",
+        "I’ve owned systems end to end: product behavior, backend design, data flow, deployment, observability, and the workflow around it.",
       position: [4, 1.8, -2],
       camera: [5.5, 2.1, 11],
       target: [4.2, 1, -1.5],
@@ -88,9 +88,9 @@ export const profileContent: ProfileContent = {
       id: "projects",
       label: "Projects",
       eyebrow: "Projects",
-      title: "These are the projects that show how I think best.",
+      title: "The projects show how I build outside of work.",
       summary:
-        "They are the strongest examples of the things I tend to build on my own: interpreters, simulations, games, utilities, and systems with real behavior instead of static demos.",
+        "I build compilers, interpreters, runtimes, simulations, games, compression experiments, renderers, engines, libraries, and backend utilities.",
       position: [7, -1.6, 0],
       camera: [6.5, 0.6, 12.5],
       target: [6.2, -0.8, 0],
@@ -100,9 +100,9 @@ export const profileContent: ProfileContent = {
       id: "craft",
       label: "Craft",
       eyebrow: "How I work",
-      title: "I care a lot about how the pieces fit together across the whole system.",
+      title: "I care about clear boundaries, practical architecture, and maintainable systems.",
       summary:
-        "The through-line for me is usually the same: make the thing clearer, make it easier to change, and make it less painful for the next person who has to work in it.",
+        "I like code that is easy to understand, easy to change, observable, testable, and built around clear tradeoffs.",
       position: [1, -3.4, -1],
       camera: [1.8, -1.1, 12.8],
       target: [1.5, -2, -0.5],
@@ -112,9 +112,9 @@ export const profileContent: ProfileContent = {
       id: "leadership",
       label: "Leadership",
       eyebrow: "Leadership",
-      title: "I prefer to create clarity, take ownership, and keep the team moving.",
+      title: "I lead while staying close to the code and the production details.",
       summary:
-        "When a project needs direction, I am comfortable defining the path, organizing the work, and making decisions while staying close to the implementation.",
+        "I set direction, make decisions, mentor engineers, organize execution, review code, and do implementation work myself.",
       position: [-5.6, -3.2, 0],
       camera: [-3.9, -0.95, 12.6],
       target: [-4.9, -1.75, 0],
@@ -124,7 +124,7 @@ export const profileContent: ProfileContent = {
       id: "contact",
       label: "Contact",
       eyebrow: "Contact",
-      title: "If this sounds like the kind of engineer you need, reach out.",
+      title: "If you need a senior engineer who can lead and build, reach out.",
       summary:
         "Email is the easiest way to reach me. The resume, GitHub, and LinkedIn are here too if you want the longer version first.",
       position: [-10.4, -1.5, 1],
@@ -297,7 +297,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Built complex distributed data systems using Apache Beam and Dataflow, where arbitrary graph pipeline definitions were generated at runtime and executed through a self-service internal tool.",
         "Worked with Bazel, Pub/Sub, Spanner, BigQuery, Bigtable, Cloud SQL, PostgreSQL, GoogleSQL, Capacitor, Cloud Storage, and other databases, sources, and sinks to support flexible batch and streaming pipeline execution.",
-        "Built custom reporting and data pipelines around Google's internal shared data layer for mergers and acquisitions, automating manual report creation and exposing M&A data more broadly across the company."
+        "Built custom reporting and data pipelines around Google's internal shared data layer for mergers and acquisitions, automating manual report creation and exposing M&A data more broadly across the company.",
+        "Focused on systems that had to translate flexible user-defined pipeline graphs into reliable execution plans while preserving correctness across mixed batch, streaming, and reporting workloads."
       ],
       tags: [
         { label: "Java", tone: "language" },
@@ -315,14 +316,15 @@ export const profileContent: ProfileContent = {
         { label: "Cloud SQL", tone: "infrastructure" },
         { label: "PostgreSQL", tone: "infrastructure" },
         { label: "Cloud Storage", tone: "infrastructure" },
-        { label: "ETL", tone: "practice" },
         { label: "Code generation", tone: "practice" },
         { label: "Streaming pipelines", tone: "practice" },
+        { label: "ETL", tone: "practice" },
         { label: "Batch processing", tone: "practice" },
         { label: "Protocol buffers", tone: "practice" },
         { label: "Pipeline orchestration", tone: "practice" },
         { label: "Self-service tooling", tone: "practice" },
         { label: "Internal developer tools", tone: "practice" },
+        { label: "Graph execution", tone: "practice" },
         { label: "Analytics", tone: "domain" },
         { label: "M&A systems", tone: "domain" },
         { label: "Data pipelines", tone: "domain" },
@@ -344,7 +346,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Oversaw development across DTI apps on multiple platforms, including native iOS in Swift, native Android in Java and Kotlin, and cross-platform work in Flutter.",
         "Supported teams building applications in React, React Native, Angular, Vue, Svelte, and Next.js, with backends primarily in Node and supporting services built with MongoDB, Firebase, Firestore, GraphQL, and REST APIs.",
-        "Balanced leadership responsibilities with hands-on implementation, product management, design collaboration, code review, mentoring, CI/CD, and deployment support."
+        "Balanced leadership responsibilities with hands-on implementation, product management, design collaboration, code review, mentoring, CI/CD, and deployment support.",
+        "Helped teams make practical architecture decisions across student-built products, keeping code quality, maintainability, and developer onboarding in view while still shipping usable software."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -375,6 +378,8 @@ export const profileContent: ProfileContent = {
         { label: "Product management", tone: "practice" },
         { label: "Design collaboration", tone: "practice" },
         { label: "Deployment pipelines", tone: "practice" },
+        { label: "Developer onboarding", tone: "practice" },
+        { label: "Architecture review", tone: "practice" },
         { label: "Web", tone: "domain" },
         { label: "iOS", tone: "domain" },
         { label: "Android", tone: "domain" },
@@ -485,7 +490,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Built native iOS and Android application features in Swift, Java, and Kotlin, along with supporting web interfaces and other client surfaces used by the team.",
         "Worked across backends in Python with Django and Node with Express, with MongoDB, Firebase, Firestore, and GraphQL supporting product data and APIs.",
-        "Contributed across both frontend and backend responsibilities, which established the multi-platform full-stack workflow that later carried into team leadership work."
+        "Contributed across both frontend and backend responsibilities, which established the multi-platform full-stack workflow that later carried into team leadership work.",
+        "Worked in a product-team environment where frontend changes, mobile behavior, backend APIs, and shared data models all had to move together."
       ],
       tags: [
         { label: "Python", tone: "language" },
@@ -499,6 +505,8 @@ export const profileContent: ProfileContent = {
         { label: "Firebase", tone: "infrastructure" },
         { label: "Firestore", tone: "infrastructure" },
         { label: "Full-stack", tone: "practice" },
+        { label: "REST APIs", tone: "practice" },
+        { label: "Shared data models", tone: "practice" },
         { label: "Web", tone: "domain" },
         { label: "Desktop", tone: "domain" },
         { label: "iOS", tone: "domain" },
@@ -519,7 +527,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Implemented frontend work in Angular and TypeScript for a large internal pricing system, including a data filtering view for a data aggregator microservice that I owned end to end.",
         "Built and maintained several Spring Boot microservices in Java with Maven, PostgreSQL, REST APIs, SQL/NoSQL data access, and JUnit coverage supporting merchandising and pricing workflows.",
-        "Worked with the surrounding delivery, testing, security, and infrastructure tooling including Jenkins, Jira, Bitbucket, GCP, Google Container Registry, and Docker, so the internship covered far more than writing feature code."
+        "Worked with the surrounding delivery, testing, security, and infrastructure tooling including Jenkins, Jira, Bitbucket, GCP, Google Container Registry, and Docker, so the internship covered far more than writing feature code.",
+        "Owned a full slice of internal enterprise software, connecting frontend filtering behavior to backend aggregation services and the delivery pipeline around them."
       ],
       tags: [
         { label: "Java", tone: "language" },
@@ -542,6 +551,7 @@ export const profileContent: ProfileContent = {
         { label: "Integration testing", tone: "practice" },
         { label: "CI/CD", tone: "practice" },
         { label: "Security", tone: "practice" },
+        { label: "End-to-end ownership", tone: "practice" },
         { label: "Web", tone: "domain" },
         { label: "Microservices", tone: "domain" },
         { label: "Enterprise retail systems", tone: "domain" },
@@ -563,7 +573,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Built user-facing mobile interfaces in Swift for iOS and Java for Android for the company's client applications.",
         "Worked on backend systems and Django-based database management with SQL/PostgreSQL/MySQL, REST APIs, cloud hosting, ETL/reporting, testing, and patient-data workflows supporting cardiovascular health product behavior.",
-        "Worked in a smaller startup environment where communication between product behavior, web/mobile implementation, HIPAA-aware data concerns, and clinical analytics mattered just as much as the code itself."
+        "Worked in a smaller startup environment where communication between product behavior, web/mobile implementation, HIPAA-aware data concerns, and clinical analytics mattered just as much as the code itself.",
+        "Helped connect mobile patient-facing workflows with backend data management so product decisions stayed close to real healthcare use cases and reporting needs."
       ],
       tags: [
         { label: "Python", tone: "language" },
@@ -582,6 +593,7 @@ export const profileContent: ProfileContent = {
         { label: "ETL", tone: "practice" },
         { label: "Reporting", tone: "practice" },
         { label: "Testing", tone: "practice" },
+        { label: "Product engineering", tone: "practice" },
         { label: "Health tech", tone: "domain" },
         { label: "Startup engineering", tone: "domain" },
         { label: "Patient data", tone: "domain" },
@@ -605,7 +617,8 @@ export const profileContent: ProfileContent = {
       highlights: [
         "Used C# with Xamarin.Forms, Xamarin.iOS, Xamarin.Android, .NET, and binding libraries to support simultaneous cross-platform development.",
         "Wrote platform-specific code in Java for Android and Objective-C for iOS alongside the shared mobile application layer, REST APIs, local storage, SQLite, testing, debugging, and app-store deployment work.",
-        "Worked on applications for inventory management, live GPS driver tracking, logistics, fleet management, bus scheduling, and device integrations, so the software was tied directly to real operational use cases."
+        "Worked on applications for inventory management, live GPS driver tracking, logistics, fleet management, and bus scheduling, so the software was tied directly to real operational use cases.",
+        "Built in an environment where cross-platform abstractions still had to respect native mobile behavior, device APIs, offline/local data, and client-specific operational workflows."
       ],
       tags: [
         { label: "C#", tone: "language" },
@@ -622,6 +635,8 @@ export const profileContent: ProfileContent = {
         { label: "Debugging", tone: "practice" },
         { label: "App store deployment", tone: "practice" },
         { label: "Binding libraries", tone: "practice" },
+        { label: "Cross-platform apps", tone: "practice" },
+        { label: "Native interop", tone: "practice" },
         { label: "Mobile", tone: "domain" },
         { label: "Android", tone: "domain" },
         { label: "iOS", tone: "domain" },
@@ -629,8 +644,7 @@ export const profileContent: ProfileContent = {
         { label: "Scheduling software", tone: "domain" },
         { label: "GPS tracking", tone: "domain" },
         { label: "Logistics software", tone: "domain" },
-        { label: "Fleet management", tone: "domain" },
-        { label: "Device integrations", tone: "domain" }
+        { label: "Fleet management", tone: "domain" }
       ]
     }
   ],
@@ -828,9 +842,9 @@ export const profileContent: ProfileContent = {
       slug: "genetic-ts",
       title: "Genetic Algorithms in TypeScript",
       description:
-        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing physics.",
+        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing gravity, wind, mutation, and population settings.",
       impact:
-        "Change gravity and wind, rerun the population, and watch the algorithm **adapt in real time**.",
+        "Change the environment, drag the target, rerun the population, and watch the algorithm **adapt in real time** through best-path traces, ghost trajectories, hit-rate metrics, and generation-by-generation feedback.",
       stack: [
         "TypeScript",
         "React",
@@ -839,10 +853,12 @@ export const profileContent: ProfileContent = {
         "Vitest",
         "Genetic algorithms",
         "Seeded randomness",
+        "Population evolution",
         "Interactive simulation",
         "Physics modeling",
         "Trajectory search",
-        "Data visualization"
+        "Data visualization",
+        "Parameter tuning"
       ],
       image: geneticPreview,
       icon: "genetic",
@@ -984,16 +1000,18 @@ export const profileContent: ProfileContent = {
         "It is a smaller project, but it still shows a practical skill I value: designing a clean component API, shipping types with the library, and making customization flexible instead of bolted on.",
       stack: [
         "React",
-        "React 17",
         "TypeScript",
-        "React library",
         "Component API design",
+        "Library design",
+        "Reusable components",
         "NPM Packaging",
         "Type declarations",
+        "Package publishing",
+        "Cursor customization",
+        "Text animation",
         "TSLint",
         "Prettier",
-        "Animation components",
-        "Developer experience"
+        "Animation components"
       ],
       image: newReactTypingEffectDemo,
       icon: "typing-effect",
@@ -1006,19 +1024,21 @@ export const profileContent: ProfileContent = {
       slug: "chains",
       title: "Chains",
       description:
-        "A monadic pattern for wrapping a value, composing transformations over it, and layering side behaviors like history or undo on top.",
+        "A TypeScript monadic pattern for wrapping a value, composing transformations over it, changing output types, and layering side behaviors like history or undo on top.",
       impact:
-        "It is the kind of abstraction work I enjoy most: simple at the call site, but strong enough to support richer behavior underneath.",
+        "It is the kind of abstraction work I enjoy most: simple at the call site, but strong enough to support richer behavior underneath through generic metadata, fluent chaining, history tracking, and undoable state transitions.",
       stack: [
         "TypeScript",
         "Monads",
         "Generics",
         "Type-changing chains",
         "Composable abstractions",
+        "Generic metadata",
         "API design",
         "Functional patterns",
         "History / undo",
-        "Fluent APIs"
+        "Fluent APIs",
+        "State transitions"
       ],
       image: monadPreview,
       links: [
@@ -1032,9 +1052,9 @@ export const profileContent: ProfileContent = {
       slug: "materialize",
       title: "materialize()",
       description:
-        "A Firestore utility for turning reference-heavy data into something easier to read and use.",
+        "A Firestore utility for turning reference-heavy data into something easier to read and use by recursively resolving document references into materialized objects.",
       impact:
-        "It is a small utility, but it captures a kind of backend work I genuinely enjoy: taking something awkward and making it simple enough to use everywhere.",
+        "It is a small utility, but it captures a kind of backend work I genuinely enjoy: taking awkward data access patterns, hiding the repeated reference traversal, and making nested Firestore data simple enough to use everywhere.",
       stack: [
         "TypeScript",
         "Firestore",
@@ -1043,9 +1063,11 @@ export const profileContent: ProfileContent = {
         "Recursive traversal",
         "Async utilities",
         "Backend utilities",
+        "Nested data",
         "Data shaping",
         "Data access",
-        "Reference materialization"
+        "Reference materialization",
+        "Utility design"
       ],
       image: materializePreview,
       icon: "materialize",
@@ -1061,7 +1083,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Working with a team",
       summary:
-        "I usually end up doing some mix of **implementation, technical direction, and unblocking other people** at the same time.",
+        "I’m useful when a team needs **technical direction, implementation, code review, architecture decisions, and help unblocking other engineers**.",
       items: [
         "Technical leadership",
         "Developer onboarding",
@@ -1073,7 +1095,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Systems and platform work",
       summary:
-        "A lot of the backend work I enjoy sits around **reliability, observability, internal platforms, and the infrastructure that makes product teams faster**.",
+        "A lot of my strongest work is around **platforms, reliability, observability, CI/CD, deployment paths, cloud infrastructure, and asynchronous systems**.",
       items: [
         "Distributed systems",
         "Platform engineering",
@@ -1085,7 +1107,7 @@ export const profileContent: ProfileContent = {
     {
       title: "Range",
       summary:
-        "I like being able to **move between layers** instead of getting stuck in only one of them.",
+        "I’ve worked across enough layers to **connect product decisions to frontend state, backend APIs, data models, infrastructure, and developer experience**.",
       items: [
         "Frontend engineering",
         "Backend APIs",
@@ -1096,13 +1118,13 @@ export const profileContent: ProfileContent = {
     }
   ],
   jaggerscriptIntro: {
-    headline: "A language project I built all the way through.",
+    headline: "A language project I built end to end.",
     summary:
-      "JaggerScript is a browser-runnable interpreter for a small typed scripting language. I built it because I wanted a project that forced me to own the parser, the runtime, and the actual interface people would use to explore it.",
+      "JaggerScript is a browser-runnable interpreter for a small typed scripting language. I built the parser, compiler stage, runtime, examples, diagnostics, and playground as one complete project.",
     bullets: [
-      "The parser, compiler stage, and interpreter are all real parts of the project, not placeholders.",
-      "The examples are actual language programs from the repo, not fake demo text.",
-      "I wanted the browser route to be interactive and useful, not a static demo."
+      "The parser, compiler stage, and interpreter are separate parts of the implementation.",
+      "The examples are actual programs from the repo, not placeholder demo text.",
+      "The browser route is meant to be a usable playground, not a screenshot of an idea."
     ]
   }
 };
