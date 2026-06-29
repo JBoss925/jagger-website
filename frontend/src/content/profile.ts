@@ -249,8 +249,7 @@ export const profileContent: ProfileContent = {
         { label: "Platform engineering", tone: "domain" },
         { label: "Web", tone: "domain" },
         { label: "Internal developer platform", tone: "domain" },
-        { label: "High-traffic systems", tone: "domain" },
-        { label: "Multi-cloud platforms", tone: "domain" }
+        { label: "High-traffic systems", tone: "domain" }
       ]
     },
     /*
