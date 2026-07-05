@@ -10,6 +10,7 @@ export function inferChipTone(label: string) {
     "javascript",
     "jaggerscript",
     "kotlin",
+    "max",
     "objective-c",
     "ojaml",
     "python",

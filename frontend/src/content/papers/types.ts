@@ -42,6 +42,12 @@ export type PaperSectionBlock = {
     body: string;
     caption: string;
 } | {
+    kind: "image";
+    label: string;
+    image: string;
+    alt: string;
+    caption: string;
+} | {
     kind: "equation";
     label: string;
     tex: string;

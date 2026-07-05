@@ -12,7 +12,7 @@ import hearthPreview from "../assets/papers/hearth/hearth-1-0-ui.jpg";
 import jaggerscriptPreview from "../assets/jaggerscript-preview.jpg";
 import jaggerGamesPreview from "../assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../assets/jetstream-preview.jpg";
-import materializePreview from "../assets/materialize-preview.jpg";
+import liveboardPreview from "../assets/liveboard-canvas-editor.jpg";
 import monadPreview from "../assets/monad-preview.jpg";
 import newReactTypingEffectDemo from "../assets/new-react-typing-effect-demo.gif";
 import ojamlPreview from "../assets/ojaml-preview.jpg";
@@ -680,6 +680,68 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
+      slug: "liveboard",
+      title: "LiveBoard",
+      description:
+        "A collaborative whiteboard with **realtime canvas editing, shared undo/redo history, folder organization, access control, presence, grouping, transforms, and infinite-canvas navigation**.",
+      impact:
+        "The useful part is the full-system shape: **PostgreSQL-owned state, WebSocket collaboration, server-side history, access revocation, Drive-style file management, and a serious editor UI** that all have to stay coherent together.",
+      stack: [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "WebSockets",
+        "Docker",
+        "SVG editor",
+        "Realtime collaboration",
+        "Server-side history",
+        "Undo / redo",
+        "Presence",
+        "Access control",
+        "Folder trees",
+        "Drag and drop",
+        "Infinite canvas",
+        "Operational state"
+      ],
+      image: liveboardPreview,
+      links: [
+        { label: "Open Paper", href: "/papers/liveboard" },
+        { label: "Source", href: "https://github.com/JBoss925/LiveBoard" }
+      ]
+    },
+    {
+      slug: "hearth",
+      title: "Hearth",
+      description:
+        "A Max for Live warm-saturation device with **GenExpr DSP, adaptive tone control, anti-aliased tube drive, flux memory, and transient bloom**.",
+      impact:
+        "The project combines implementation and research: a real M4L audio effect plus a technical paper explaining the pleasantness-constrained DSP architecture behind it.",
+      stack: [
+        "Max",
+        "Max for Live",
+        "Ableton Live",
+        "Max 10",
+        "GenExpr",
+        "Gen DSP",
+        "Node.js build tooling",
+        "Audio DSP",
+        "Saturation",
+        "ADAA",
+        "Hysteresis",
+        "Transient processing",
+        "Stereo processing",
+        "Research writing"
+      ],
+      image: hearthPreview,
+      links: [
+        { label: "Open Paper", href: "/papers/hearth" },
+        { label: "Source", href: "https://github.com/JBoss925/Hearth" }
+      ]
+    },
+    {
       slug: "jaggerscript",
       title: "JaggerScript",
       description:
@@ -707,34 +769,6 @@ export const profileContent: ProfileContent = {
         { label: "Open Playground", href: "/jaggerscript" },
         { label: "Open Paper", href: "/papers/jaggerscript" },
         { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
-      ]
-    },
-    {
-      slug: "hearth",
-      title: "Hearth",
-      description:
-        "A Max for Live warm-saturation device with **GenExpr DSP, adaptive tone control, anti-aliased tube drive, flux memory, and transient bloom**.",
-      impact:
-        "The project combines implementation and research: a real M4L audio effect plus a technical paper explaining the pleasantness-constrained DSP architecture behind it.",
-      stack: [
-        "Max for Live",
-        "Ableton Live",
-        "Max 10",
-        "GenExpr",
-        "Gen DSP",
-        "Node.js build tooling",
-        "Audio DSP",
-        "Saturation",
-        "ADAA",
-        "Hysteresis",
-        "Transient processing",
-        "Stereo processing",
-        "Research writing"
-      ],
-      image: hearthPreview,
-      links: [
-        { label: "Open Paper", href: "/papers/hearth" },
-        { label: "Source", href: "https://github.com/JBoss925/Hearth" }
       ]
     },
     {
@@ -766,6 +800,39 @@ export const profileContent: ProfileContent = {
       links: [
         { label: "Open Paper", href: "/papers/aixc-compressor" },
         { label: "Source", href: "https://github.com/JBoss925/aixc-compressor" }
+      ]
+    },
+    {
+      slug: "genetic-ts",
+      title: "Genetic Algorithms in TypeScript",
+      description:
+        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing gravity, wind, mutation, and population settings.",
+      impact:
+        "Change the environment, drag the target, rerun the population, and watch the algorithm **adapt in real time** through best-path traces, ghost trajectories, hit-rate metrics, and generation-by-generation feedback.",
+      stack: [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Matter.js",
+        "Vitest",
+        "Genetic algorithms",
+        "Seeded randomness",
+        "Population evolution",
+        "Interactive simulation",
+        "Physics modeling",
+        "Trajectory search",
+        "Data visualization",
+        "Parameter tuning"
+      ],
+      image: geneticPreview,
+      icon: "genetic",
+      links: [
+        {
+          label: "Open Demo",
+          href: "/genetic-ts"
+        },
+        { label: "Open Paper", href: "/papers/genetic-ts" },
+        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
     {
@@ -834,39 +901,6 @@ export const profileContent: ProfileContent = {
           label: "Source",
           href: "https://github.com/JBoss925/jagger-website/tree/main/frontend/src/features/games"
         }
-      ]
-    },
-    {
-      slug: "genetic-ts",
-      title: "Genetic Algorithms in TypeScript",
-      description:
-        "An interactive simulation where a **genetic algorithm** learns the launch velocity needed to hit a target under changing gravity, wind, mutation, and population settings.",
-      impact:
-        "Change the environment, drag the target, rerun the population, and watch the algorithm **adapt in real time** through best-path traces, ghost trajectories, hit-rate metrics, and generation-by-generation feedback.",
-      stack: [
-        "TypeScript",
-        "React",
-        "Vite",
-        "Matter.js",
-        "Vitest",
-        "Genetic algorithms",
-        "Seeded randomness",
-        "Population evolution",
-        "Interactive simulation",
-        "Physics modeling",
-        "Trajectory search",
-        "Data visualization",
-        "Parameter tuning"
-      ],
-      image: geneticPreview,
-      icon: "genetic",
-      links: [
-        {
-          label: "Open Demo",
-          href: "/genetic-ts"
-        },
-        { label: "Open Paper", href: "/papers/genetic-ts" },
-        { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
     {
@@ -1043,36 +1077,6 @@ export const profileContent: ProfileContent = {
         {
           label: "Reference",
           href: "https://gist.github.com/JBoss925/183ba9fa079ebab1d5f908fbf7725243"
-        }
-      ]
-    },
-    {
-      slug: "materialize",
-      title: "materialize()",
-      description:
-        "A Firestore utility for turning reference-heavy data into something easier to read and use by recursively resolving document references into materialized objects.",
-      impact:
-        "It is a small utility, but it captures a kind of backend work I genuinely enjoy: taking awkward data access patterns, hiding the repeated reference traversal, and making nested Firestore data simple enough to use everywhere.",
-      stack: [
-        "TypeScript",
-        "Firestore",
-        "Firebase",
-        "Document references",
-        "Recursive traversal",
-        "Async utilities",
-        "Backend utilities",
-        "Nested data",
-        "Data shaping",
-        "Data access",
-        "Reference materialization",
-        "Utility design"
-      ],
-      image: materializePreview,
-      icon: "materialize",
-      links: [
-        {
-          label: "Reference",
-          href: "https://gist.github.com/JBoss925/192cad63b955f41e9615622b5c943d15"
         }
       ]
     }

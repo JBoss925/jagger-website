@@ -20,6 +20,7 @@ export const hearthPaper: PaperDocument = {
     tags: [
         "Audio DSP",
         "Saturation",
+        "Max",
         "Max for Live",
         "Ableton Live",
         "Max 10",

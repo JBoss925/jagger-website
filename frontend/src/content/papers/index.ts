@@ -2,15 +2,17 @@ import { aixcCompressorPaper } from "./aixcCompressor";
 import { geneticTsPaper } from "./geneticTs";
 import { hearthPaper } from "./hearth";
 import { jaggerscriptPaper } from "./jaggerscript";
+import { liveboardPaper } from "./liveboard";
 import { ojamlPaper } from "./ojaml";
 import { renginePaper } from "./rengine";
 import { tsxlightRendererPaper } from "./tsxlightRenderer";
 
 export const papers = [
-  hearthPaper,
-  aixcCompressorPaper,
   ojamlPaper,
+  liveboardPaper,
+  hearthPaper,
   jaggerscriptPaper,
+  aixcCompressorPaper,
   geneticTsPaper,
   renginePaper,
   tsxlightRendererPaper

@@ -86,7 +86,7 @@ function PaperPage() {
               {paper.sections.map((section) => (<section key={section.id} id={section.id} className="paper-section">
                   {section.eyebrow ? <p className="paper-section__eyebrow">{section.eyebrow}</p> : null}
                   <h2>{section.title}</h2>
-                  {section.blocks.map((block, index) => renderSectionBlock(block, index, paper.audioSamples))}
+                  {section.blocks.map((block, index) => renderSectionBlock(block, index, paper.audioSamples, setOpenImage))}
                 </section>))}
             </div>
           </div>
@@ -95,7 +95,12 @@ function PaperPage() {
       {openImage ? (<ImageViewer alt={openImage.alt} caption={openImage.caption} image={openImage.image} onClose={() => setOpenImage(null)}/>) : null}
     </div>);
 }
-function renderSectionBlock(block: PaperSectionBlock, index: number, audioSamples: PaperAudioSample[]) {
+function renderSectionBlock(
+    block: PaperSectionBlock,
+    index: number,
+    audioSamples: PaperAudioSample[],
+    onOpenImage?: (image: { alt: string; caption: string; image: string }) => void
+) {
     switch (block.kind) {
         case "paragraph":
             return <p key={`${block.kind}-${index}`}>{block.text}</p>;
@@ -113,6 +118,21 @@ function renderSectionBlock(block: PaperSectionBlock, index: number, audioSample
         case "diagram":
             return (<figure key={`${block.kind}-${block.label}-${index}`} className="paper-diagram">
           <pre>{block.body}</pre>
+          <figcaption>
+            <strong>{block.label}.</strong> {block.caption}
+          </figcaption>
+        </figure>);
+        case "image":
+            return (<figure key={`${block.kind}-${block.label}-${index}`} className="paper-device-figure paper-inline-image">
+          <button type="button" className="paper-device-figure__image-button" onClick={() => {
+                    onOpenImage?.({
+                        alt: block.alt,
+                        caption: `${block.label}. ${block.caption}`,
+                        image: block.image
+                    });
+                }}>
+            <img src={block.image} alt={block.alt}/>
+          </button>
           <figcaption>
             <strong>{block.label}.</strong> {block.caption}
           </figcaption>
