@@ -685,7 +685,7 @@ export const profileContent: ProfileContent = {
       description:
         "A collaborative whiteboard with **realtime canvas editing, shared undo/redo history, folder organization, access control, presence, grouping, transforms, and infinite-canvas navigation**.",
       impact:
-        "The useful part is the full-system shape: **PostgreSQL-owned state, WebSocket collaboration, server-side history, access revocation, Drive-style file management, and a serious editor UI** that all have to stay coherent together.",
+        "The useful part is the full-system shape: **PostgreSQL-owned state, WebSocket collaboration, server-side history, access control, Drive-style file management, and a serious editor UI** that all have to stay coherent together.",
       stack: [
         "TypeScript",
         "React",
