@@ -737,6 +737,10 @@ export const profileContent: ProfileContent = {
       ],
       image: hearthPreview,
       links: [
+        {
+          label: "Download Hearth 1.0",
+          href: "https://github.com/JBoss925/Hearth/releases/download/v1.0/Hearth.1.0.amxd"
+        },
         { label: "Open Paper", href: "/papers/hearth" },
         { label: "Source", href: "https://github.com/JBoss925/Hearth" }
       ]
