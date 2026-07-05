@@ -45,6 +45,7 @@ function ProjectCard({ project, id }: ProjectCardProps) {
 
     return (
       normalized.includes("open") ||
+      normalized.includes("download") ||
       normalized.includes("play") ||
       normalized.includes("demo") ||
       normalized.includes("game") ||
