@@ -24,8 +24,20 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("scene-backdrop")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /These projects fill in the rest of the picture/i })
+      screen.getByRole("heading", { name: /The projects show how I build outside of work/i })
     ).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "LinkedIn" })[0]).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/jaggerbrulato/"
+    );
+    expect(screen.getAllByRole("link", { name: "GitHub" })[0]).toHaveAttribute(
+      "href",
+      "https://github.com/JBoss925"
+    );
+    expect(screen.getAllByRole("link", { name: "Resume" })[0]).toHaveAttribute(
+      "href",
+      "/files/resume.pdf"
+    );
     expect(
       screen.getByRole("heading", { name: /^JaggerScript$/i })
     ).toBeInTheDocument();
@@ -36,7 +48,7 @@ describe("HomePage", () => {
     );
     expect(
       screen.getByRole("heading", {
-        name: /I prefer to create clarity, take ownership, and keep the team moving/i,
+        name: /I lead by making the work clear and staying involved in the implementation/i,
       })
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Leadership" })).toHaveAttribute(
@@ -57,9 +69,6 @@ describe("HomePage", () => {
         .getAllByRole("link", { name: /Open Demo/i })
         .some((link) => link.getAttribute("href") === "/rengine")
     ).toBe(true);
-    expect(
-      screen.getAllByRole("link", { name: /Resume/i })[0]
-    ).toHaveAttribute("href", "/files/resume.pdf");
     expect(
       screen.getByRole("button", { name: /Go to|Return to top/i })
     ).toBeInTheDocument();
