@@ -145,11 +145,10 @@ export const profileContent: ProfileContent = {
       summary:
         "Senior software engineering role at a clean-energy startup, focused on the Palmetto app and the backend services behind its home-energy product experience.",
       highlights: [
-        "Working across the MERN stack, building scalable Node and Express services, MongoDB integrations, React surfaces, responsive Three.js scenes, and testable product flows.",
-        "Contributing to app features around solar production, electricity usage, grid exports, utility connections, daily/weekly/monthly energy trends, and the newer Solar and Electricity usage experience.",
-        "Using RabbitMQ, BullMQ, Kafka, API gateways, and related queue/event infrastructure for asynchronous workflows around onboarding, utility connection, account state changes, and third-party provider integrations.",
-        "Supporting customer-facing workflows such as the marketplace, gamification through rewards and quests, personalized recommendations, badges, referrals, support, Learning Center/news content, and project/onboarding requirements like utility bills, HOA details, and virtual site surveys.",
-        "Working on software that has to make messy home-energy data feel reliable and useful: OAuth/JWT/Auth0 authentication, account state, energy history/statistics, and integrations across iOS, Android, and web clients."
+        "Building MERN-stack backend services, React product surfaces, and testable flows that help the Palmetto app turn complex home-energy data into a clearer customer experience.",
+        "Delivering customer-facing marketplace, rewards, recommendations, referrals, and onboarding features for homeowners moving through solar and energy workflows.",
+        "Improving reliability and performance across utility authentication, account state, energy history, statistics, and cross-platform integrations.",
+        "Supporting event-driven onboarding, account-state, and third-party integration workflows so customer actions move reliably across internal services and app clients."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -202,14 +201,12 @@ export const profileContent: ProfileContent = {
       logo: redVenturesLogo,
       logoAlt: "Red Ventures logo",
       summary:
-        "Built internal platform capabilities that made it easier for engineering teams to launch, operate, and understand applications without rebuilding the same infrastructure each time.",
+        "Built internal platform capabilities used by Red Ventures engineers to launch, operate, and understand applications without rebuilding the same infrastructure each time.",
       highlights: [
-        "Designed, prototyped, and developed flexible internal applications for common platform use cases so new services could be launched through a streamlined platform experience instead of bespoke setup work.",
-        "Built frontend product surfaces for platform tooling in TypeScript and React, backed by Golang runtime work that generated and deployed Terraform through a custom Terraform provider.",
-        "Managed Kubernetes clusters with Helm charts, Docker images, ECS, and CI/CD-style builder and workhorse services that provisioned and ran client applications.",
-        "Built on AWS services including DynamoDB, RDS/PostgreSQL, SQS, Lambda, Lambda@Edge, ECS/Fargate, API gateways, Route 53, and nginx reverse proxies for platform routing, domains, asynchronous work, and deployment flows.",
-        "Built Grafana dashboards and monitoring surfaces that gave engineers visibility into cost, availability, and process health, feeding back into architecture and operational decisions.",
-        "Used Databricks to build ETL pipelines on top of platform data for reporting and operational analysis."
+        "Designed, prototyped, and developed internal applications that turned common launch paths into a few-click platform experience for engineering teams.",
+        "Built prototype applications and reusable infrastructure patterns as guides for client teams, allowing future teams to spin up similar projects in minutes.",
+        "Built React platform surfaces backed by Golang runtime automation and a custom Terraform provider that generated and deployed infrastructure repeatably.",
+        "Built Grafana dashboards, monitoring, and reporting pipelines that let engineers analyze cost, availability, process health, and other architecture-shaping metrics."
       ],
       tags: [
         { label: "Golang", tone: "language" },
@@ -264,9 +261,9 @@ export const profileContent: ProfileContent = {
       summary:
         "Worked as a full-time software engineer after interning there earlier, contributing in a large enterprise environment with real production delivery expectations.",
       highlights: [
-        "Built and maintained enterprise retail systems using Java, Spring, Spring Boot, and Kafka in a mature production environment with established delivery processes.",
-        "Maintained a suite of 20+ microservices, updating Docker images and runtimes, upgrading Alpine base versions, and addressing security vulnerabilities across the service fleet.",
-        "Worked across existing systems, stakeholders, and release workflows rather than building in isolation, which meant shipping changes that fit into a much larger operational environment.",
+        "Built and maintained enterprise retail systems in a mature production environment with established delivery processes.",
+        "Maintained a suite of 20+ Java microservices, updating Docker images and runtimes, upgrading Alpine base versions, and addressing security vulnerabilities across the service fleet.",
+        "Shipped backend changes inside existing stakeholder, review, and release workflows rather than in isolation, keeping changes compatible with a larger retail platform.",
         "Built on earlier experience with Lowe's merchandising and pricing systems, adding more depth in large-scale backend delivery and enterprise software coordination."
       ],
       tags: [
@@ -291,12 +288,14 @@ export const profileContent: ProfileContent = {
       logo: googleLogo,
       logoAlt: "Google logo",
       summary:
-        "Built distributed data systems at Google, spanning self-service pipeline generation, shared data infrastructure, and internal reporting systems in a high-scale production environment.",
+        "Built distributed data systems at Google for M&A integrations, shared data infrastructure, and internal reporting in a high-scale production environment.",
       highlights: [
-        "Built complex distributed data systems using Apache Beam and Dataflow, where arbitrary graph pipeline definitions were generated at runtime and executed through a self-service internal tool.",
+        "Designed a Beam/Dataflow integration service from scratch that automated tech stack integrations between Google and acquisitions, saving hundreds of engineering hours and ETL software licenses.",
+        "Led L3 developers and TVCs on a high-performance, reusable, self-service platform for Google's M&A integration needs.",
+        "Built and executed pipelines dynamically from protobuf definitions and user-provided variables, with a live UI for tracking execution so teams could reuse, reconfigure, launch, and iterate on pipelines quickly.",
+        "Built the Java codebase from first line to live service, including execution, security, encryption, parallelization, deployment, custom transforms, and custom endpoints.",
         "Worked with Bazel, Pub/Sub, Spanner, BigQuery, Bigtable, Cloud SQL, PostgreSQL, GoogleSQL, Capacitor, Cloud Storage, and other databases, sources, and sinks to support flexible batch and streaming pipeline execution.",
-        "Built custom reporting and data pipelines around Google's internal shared data layer for mergers and acquisitions, automating manual report creation and exposing M&A data more broadly across the company.",
-        "Focused on systems that had to translate flexible user-defined pipeline graphs into reliable execution plans while preserving correctness across mixed batch, streaming, and reporting workloads."
+        "Surfaced data and metrics used by other Google teams, including accounting, HR, Google Cloud, and acquisition teams powering their own systems."
       ],
       tags: [
         { label: "Java", tone: "language" },
@@ -340,12 +339,14 @@ export const profileContent: ProfileContent = {
       logo: cornellDtiLogo,
       logoAlt: "Cornell Design and Tech Initiative logo",
       summary:
-        "Oversaw development across DTI applications and the technology around their maintenance and deployment while still staying hands-on with implementation and developer support.",
+        "Oversaw development across Cornell DTI, a 100+ member student product organization, while staying hands-on with implementation and developer support.",
       highlights: [
-        "Oversaw development across DTI apps on multiple platforms, including native iOS in Swift, native Android in Java and Kotlin, and cross-platform work in Flutter.",
-        "Supported teams building applications in React, React Native, Angular, Vue, Svelte, and Next.js, with backends primarily in Node and supporting services built with MongoDB, Firebase, Firestore, GraphQL, and REST APIs.",
-        "Balanced leadership responsibilities with hands-on implementation, product management, design collaboration, code review, mentoring, CI/CD, and deployment support.",
-        "Helped teams make practical architecture decisions across student-built products, keeping code quality, maintainability, and developer onboarding in view while still shipping usable software."
+        "Helped teams build products for Cornell undergrads, professors, Disability Services, CULift dispatchers, housing search, course planning, office hours, student research, and DTI's own internal operations.",
+        "Supported CoursePlan's automatic degree-requirement tracking, Queue Me In's office-hours queue and analytics, Carriage's accessibility ride scheduling, CU Apartments' housing reviews, and IDOL's 100+ member org automation.",
+        "Guided teams across React, Vue, Angular, React Native, Flutter, Node, Firebase, GraphQL, and native mobile work without turning leadership into distance from the code.",
+        "Balanced hands-on implementation, product management, design collaboration, code review, mentoring, release support, and practical architecture decisions across multiple student-built products.",
+        "Worked with PMs, designers, TPMs, and developers to keep scopes clear, ownership explicit, and production releases moving across semester-based teams.",
+        "Improved developer onboarding and review practices so teams could keep shipping software that real Cornell communities used."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -395,9 +396,10 @@ export const profileContent: ProfileContent = {
       summary:
         "Created an open-source scheduler and roster organizer for Alvin Ailey Dance Company in NYC, building a multi-user full-stack experience shaped closely with clients and stakeholders.",
       highlights: [
-        "Held weekly meetings with clients and stakeholders to design and refine the product around the company's real scheduling and operational needs.",
-        "Built custom user interfaces in Angular, Angular Material, and TypeScript, along with the data structures behind workflows like drag-and-drop roster editing, administration tools, and dancer self-service time-off requests.",
-        "Built the backend in Java with Spring Boot and PostgreSQL, alongside REST APIs, authentication/authorization, mobile notifications, automatic roster backup rotations, and collaboration-friendly scheduling flows."
+        "Held weekly meetings with Alvin Ailey clients and stakeholders to design the product around real scheduling, roster, and dancer operations.",
+        "Translated a manual coordination process into role-specific workflows for administrators, schedulers, and dancers using the same shared roster data.",
+        "Built Angular interfaces and custom data structures for drag-and-drop roster editing, administration tools, and dancer self-service time-off requests.",
+        "Built the Spring Boot backend, APIs, access controls, notifications, backup rotations, and collaboration-friendly scheduling flows behind the open-source product."
       ],
       tags: [
         { label: "Java", tone: "language" },
@@ -436,9 +438,9 @@ export const profileContent: ProfileContent = {
       summary:
         "Led the Cue app subteam while also doing full-stack product work across the interface, backend APIs, and deployment setup that kept the project moving.",
       highlights: [
-        "Led a team building native iOS and Android applications in Swift, Java, and Kotlin, alongside the backend systems that powered them.",
-        "Worked across TypeScript/JavaScript, Python with Django, and Node with Express, with data and service infrastructure using MongoDB, Firebase, Firestore, GraphQL, REST APIs, Heroku, AWS, and GCP.",
-        "Helped make technical decisions, coordinate developers, mentor teammates, review code, collaborate with design in Figma, manage sprints, and move the product toward app-store and play-store deployment."
+        "Led the Cue app subteam building native iOS and Android apps and the backend systems that powered them, while still contributing across the product surface.",
+        "Worked across frontend, backend, data, API, and deployment responsibilities so technical decisions stayed connected to the user experience.",
+        "Coordinated developers, mentored teammates, reviewed code, collaborated with design, managed sprints, and moved the product toward app-store deployment."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -447,10 +449,15 @@ export const profileContent: ProfileContent = {
         { label: "Swift", tone: "language" },
         { label: "Java", tone: "language" },
         { label: "Kotlin", tone: "language" },
+        { label: "React", tone: "framework" },
+        { label: "Redux", tone: "framework" },
         { label: "Django", tone: "framework" },
+        { label: "Django REST Framework", tone: "framework" },
         { label: "Node.js", tone: "framework" },
         { label: "Express", tone: "framework" },
         { label: "GraphQL", tone: "framework" },
+        { label: "Material UI", tone: "framework" },
+        { label: "Webpack", tone: "framework" },
         { label: "MongoDB", tone: "infrastructure" },
         { label: "Firebase", tone: "infrastructure" },
         { label: "Firestore", tone: "infrastructure" },
@@ -486,27 +493,30 @@ export const profileContent: ProfileContent = {
       summary:
         "Worked as a full-stack developer on a Cornell DTI project team, building user interfaces and backend systems across multiple platforms.",
       highlights: [
-        "Built native iOS and Android application features in Swift, Java, and Kotlin, along with supporting web interfaces and other client surfaces used by the team.",
-        "Worked across backends in Python with Django and Node with Express, with MongoDB, Firebase, Firestore, and GraphQL supporting product data and APIs.",
+        "Built native mobile features, supporting web interfaces, and other client surfaces used by the team.",
+        "Contributed to Django and Node backend systems, product data, and APIs that kept the mobile and web experiences moving together.",
+        "Worked on the Cue events platform across the student-facing mobile app, organization-facing event management website, and backend APIs for Cornell campus events.",
         "Contributed across both frontend and backend responsibilities, which established the multi-platform full-stack workflow that later carried into team leadership work.",
-        "Worked in a product-team environment where frontend changes, mobile behavior, backend APIs, and shared data models all had to move together."
+        "Kept event creation, organization data, discovery flows, and API behavior aligned across the web manager, mobile clients, and backend service."
       ],
       tags: [
+        { label: "TypeScript", tone: "language" },
+        { label: "JavaScript", tone: "language" },
         { label: "Python", tone: "language" },
         { label: "Swift", tone: "language" },
         { label: "Java", tone: "language" },
-        { label: "Kotlin", tone: "language" },
+        { label: "React", tone: "framework" },
+        { label: "Redux", tone: "framework" },
         { label: "Django", tone: "framework" },
+        { label: "Django REST Framework", tone: "framework" },
+        { label: "Node.js", tone: "framework" },
         { label: "Express", tone: "framework" },
-        { label: "GraphQL", tone: "framework" },
-        { label: "MongoDB", tone: "infrastructure" },
-        { label: "Firebase", tone: "infrastructure" },
-        { label: "Firestore", tone: "infrastructure" },
+        { label: "Material UI", tone: "framework" },
+        { label: "Webpack", tone: "framework" },
+        { label: "Heroku", tone: "infrastructure" },
         { label: "Full-stack", tone: "practice" },
         { label: "REST APIs", tone: "practice" },
-        { label: "Shared data models", tone: "practice" },
         { label: "Web", tone: "domain" },
-        { label: "Desktop", tone: "domain" },
         { label: "iOS", tone: "domain" },
         { label: "Android", tone: "domain" },
         { label: "Mobile", tone: "domain" }
@@ -523,10 +533,10 @@ export const profileContent: ProfileContent = {
       summary:
         "Worked on Lowe's Central Price Master, contributing across frontend, backend microservices, and the surrounding delivery tooling.",
       highlights: [
-        "Implemented frontend work in Angular and TypeScript for a large internal pricing system, including a data filtering view for a data aggregator microservice that I owned end to end.",
-        "Built and maintained several Spring Boot microservices in Java with Maven, PostgreSQL, REST APIs, SQL/NoSQL data access, and JUnit coverage supporting merchandising and pricing workflows.",
-        "Worked with the surrounding delivery, testing, security, and infrastructure tooling including Jenkins, Jira, Bitbucket, GCP, Google Container Registry, and Docker, so the internship covered far more than writing feature code.",
-        "Owned a full slice of internal enterprise software, connecting frontend filtering behavior to backend aggregation services and the delivery pipeline around them."
+        "Owned an Angular data-filtering view for an internal pricing system end to end, connecting frontend behavior to a backend aggregation service.",
+        "Built and maintained Spring Boot microservices supporting Lowe's merchandising and pricing workflows, with database access, APIs, and test coverage around the delivery path.",
+        "Worked with the surrounding delivery, testing, security, and infrastructure tooling, so the internship covered far more than writing feature code.",
+        "Learned how internal enterprise software moves through real review, release, and operational constraints."
       ],
       tags: [
         { label: "Java", tone: "language" },
@@ -569,8 +579,8 @@ export const profileContent: ProfileContent = {
       summary:
         "Worked at a cardiovascular health startup, building product functionality that helped track and detect heart problems in patients across mobile clients and backend systems.",
       highlights: [
-        "Built user-facing mobile interfaces in Swift for iOS and Java for Android for the company's client applications.",
-        "Worked on backend systems and Django-based database management with SQL/PostgreSQL/MySQL, REST APIs, cloud hosting, ETL/reporting, testing, and patient-data workflows supporting cardiovascular health product behavior.",
+        "Built patient-facing mobile interfaces for the company's cardiovascular health applications.",
+        "Worked on Django backend systems, database management, APIs, hosting, reporting, testing, and patient-data workflows supporting cardiovascular health product behavior.",
         "Worked in a smaller startup environment where communication between product behavior, web/mobile implementation, HIPAA-aware data concerns, and clinical analytics mattered just as much as the code itself.",
         "Helped connect mobile patient-facing workflows with backend data management so product decisions stayed close to real healthcare use cases and reporting needs."
       ],
@@ -613,8 +623,8 @@ export const profileContent: ProfileContent = {
       summary:
         "Built cross-platform mobile software in C# and Xamarin for large-client operational applications, while also contributing platform-specific code on both Android and iOS.",
       highlights: [
-        "Used C# with Xamarin.Forms, Xamarin.iOS, Xamarin.Android, .NET, and binding libraries to support simultaneous cross-platform development.",
-        "Wrote platform-specific code in Java for Android and Objective-C for iOS alongside the shared mobile application layer, REST APIs, local storage, SQLite, testing, debugging, and app-store deployment work.",
+        "Supported simultaneous C# and Xamarin development while still handling platform-specific mobile behavior when shared abstractions were not enough.",
+        "Wrote native mobile code alongside the shared application layer, including API integration, local storage, testing, debugging, and app-store deployment work.",
         "Worked on applications for inventory management, live GPS driver tracking, logistics, fleet management, and bus scheduling, so the software was tied directly to real operational use cases.",
         "Built in an environment where cross-platform abstractions still had to respect native mobile behavior, device APIs, offline/local data, and client-specific operational workflows."
       ],
