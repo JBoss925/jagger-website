@@ -26,6 +26,16 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", { name: /The projects show how I build outside of work/i })
     ).toBeInTheDocument();
+    expect(
+      screen
+        .getByLabelText("Profile links")
+        .querySelectorAll("a")
+    ).toHaveLength(4);
+    expect(
+      Array.from(screen.getByLabelText("Profile links").querySelectorAll("a")).map((link) =>
+        link.textContent
+      )
+    ).toEqual(["GitHub", "LinkedIn", "Resume", "Email"]);
     expect(screen.getAllByRole("link", { name: "LinkedIn" })[0]).toHaveAttribute(
       "href",
       "https://www.linkedin.com/in/jaggerbrulato/"
@@ -37,6 +47,10 @@ describe("HomePage", () => {
     expect(screen.getAllByRole("link", { name: "Resume" })[0]).toHaveAttribute(
       "href",
       "/files/resume.pdf"
+    );
+    expect(screen.getAllByRole("link", { name: "Email" })[0]).toHaveAttribute(
+      "href",
+      "mailto:jagger@jaggerbrulato.com"
     );
     expect(
       screen.getByRole("heading", { name: /^JaggerScript$/i })
@@ -55,10 +69,7 @@ describe("HomePage", () => {
       "href",
       "#leadership"
     );
-    expect(screen.getByRole("link", { name: "Email" })).toHaveAttribute(
-      "href",
-      "mailto:jagger@jaggerbrulato.com"
-    );
+    expect(screen.getAllByRole("link", { name: "Email" })).toHaveLength(2);
     expect(screen.getByRole("link", { name: /Email me directly/i })).toHaveAttribute(
       "href",
       "mailto:jagger@jaggerbrulato.com"

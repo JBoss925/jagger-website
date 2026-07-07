@@ -3425,7 +3425,8 @@ button:hover {
 .contact-card__action {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 9px;
   min-height: 46px;
   padding: 11px 14px;
   border: 1px solid var(--line);
@@ -3443,6 +3444,12 @@ button:hover {
   transform: translateY(-1px);
   border-color: rgba(110, 164, 129, 0.36);
   background: rgba(49, 86, 66, 0.14);
+}
+
+.contact-card__action svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
 }
 
 .scene-canvas,
