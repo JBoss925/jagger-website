@@ -3883,6 +3883,10 @@ button:hover {
     padding-top: 0;
   }
 
+  .hero-panel__quick-links {
+    margin-bottom: 18px;
+  }
+
   .hero-panel__aside {
     width: 100%;
     max-width: 760px;
@@ -4256,8 +4260,8 @@ button:hover {
     padding: 0;
   }
 
-  .hero-panel__quick-link {
-    flex: 1 1 120px;
+  .hero-panel__quick-links {
+    justify-content: flex-start;
   }
 
   .hero-panel__portrait-wrap {
@@ -4340,6 +4344,15 @@ button:hover {
   .contact-links {
     justify-content: flex-start;
     justify-self: start;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-panel__quick-links {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: flex-start;
+    align-items: start;
   }
 }
 
