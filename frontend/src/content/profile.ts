@@ -329,7 +329,8 @@ export const profileContent: ProfileContent = {
         { label: "Data pipelines", tone: "domain" },
         { label: "Data warehousing", tone: "domain" },
         { label: "Reporting systems", tone: "domain" },
-        { label: "Distributed systems", tone: "domain" }
+        { label: "Distributed systems", tone: "domain" },
+        { label: "Integration systems", tone: "domain" }
       ]
     },
     {
@@ -346,7 +347,7 @@ export const profileContent: ProfileContent = {
         "Helped teams build products for Cornell undergrads, professors, Disability Services, CULift dispatchers, housing search, course planning, office hours, student research, and DTI's own internal operations.",
         "Supported CoursePlan's automatic degree-requirement tracking, Queue Me In's office-hours queue and analytics, Carriage's accessibility ride scheduling, CU Apartments' housing reviews, and IDOL's 100+ member org automation.",
         "Guided React, Vue, Angular, React Native, Flutter, Node, Firebase, GraphQL, and native mobile teams through architecture decisions, release issues, and code review without turning leadership into distance from the code.",
-        "Balanced hands-on implementation, product management, design collaboration, code review, mentoring, release support, and practical architecture decisions across multiple student-built products.",
+        "Balanced hands-on implementation, product management, design collaboration, code review, mentoring, release support, and practical architecture decisions across multiple products.",
         "Worked with PMs, designers, TPMs, and developers to keep scopes clear, ownership explicit, and production releases moving across semester-based teams.",
         "Improved developer onboarding and review practices so teams could keep shipping software that real Cornell communities used."
       ],
@@ -379,12 +380,16 @@ export const profileContent: ProfileContent = {
         { label: "Product management", tone: "practice" },
         { label: "Design collaboration", tone: "practice" },
         { label: "Deployment pipelines", tone: "practice" },
+        { label: "Release support", tone: "practice" },
         { label: "Developer onboarding", tone: "practice" },
         { label: "Architecture review", tone: "practice" },
         { label: "Web", tone: "domain" },
         { label: "iOS", tone: "domain" },
         { label: "Android", tone: "domain" },
-        { label: "Mobile", tone: "domain" }
+        { label: "Mobile", tone: "domain" },
+        { label: "Accessibility", tone: "domain" },
+        { label: "EdTech", tone: "domain" },
+        { label: "Campus apps", tone: "domain" }
       ]
     },
     {
