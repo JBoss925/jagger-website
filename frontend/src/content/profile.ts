@@ -145,10 +145,11 @@ export const profileContent: ProfileContent = {
       summary:
         "Senior software engineering role at a clean-energy startup, focused on the Palmetto app and the backend services behind its home-energy product experience.",
       highlights: [
-        "Building MERN-stack backend services, React product surfaces, and testable flows that help the Palmetto app turn complex home-energy data into a clearer customer experience.",
+        "Building Node/Express services, MongoDB integrations, React product surfaces, and testable flows that help the Palmetto app turn complex home-energy data into a clearer customer experience.",
         "Delivering customer-facing marketplace, rewards, recommendations, referrals, and onboarding features for homeowners moving through solar and energy workflows.",
-        "Improving reliability and performance across utility authentication, account state, energy history, statistics, and cross-platform integrations.",
-        "Supporting event-driven onboarding, account-state, and third-party integration workflows so customer actions move reliably across internal services and app clients."
+        "Contributing to solar production, electricity usage, grid export, utility connection, and energy-trend analytics for the newer Solar and Electricity usage experience.",
+        "Improving OAuth/JWT/Auth0-backed utility authentication, account state, energy history, and statistics flows across iOS, Android, and web clients.",
+        "Supporting event-driven onboarding, account-state, and third-party provider workflows with queue infrastructure so customer actions move reliably across internal services and app clients."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -206,7 +207,8 @@ export const profileContent: ProfileContent = {
         "Designed, prototyped, and developed internal applications that turned common launch paths into a few-click platform experience for engineering teams.",
         "Built prototype applications and reusable infrastructure patterns as guides for client teams, allowing future teams to spin up similar projects in minutes.",
         "Built React platform surfaces backed by Golang runtime automation and a custom Terraform provider that generated and deployed infrastructure repeatably.",
-        "Built Grafana dashboards, monitoring, and reporting pipelines that let engineers analyze cost, availability, process health, and other architecture-shaping metrics."
+        "Worked across Kubernetes/Helm workflows, ECS/Fargate services, routing, domains, and async work queues so client applications could be provisioned and operated through the platform.",
+        "Built Grafana dashboards and Databricks reporting pipelines that let engineers analyze cost, availability, process health, and other architecture-shaping metrics."
       ],
       tags: [
         { label: "Golang", tone: "language" },
