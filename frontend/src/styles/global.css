@@ -5612,8 +5612,6 @@ button:hover {
 }
 
 .paper-graph__node rect {
-  width: 108px;
-  height: 48px;
   rx: 2px;
   fill: var(--paper-surface-strong);
   stroke: var(--paper-line);

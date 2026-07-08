@@ -149,7 +149,7 @@ export const profileContent: ProfileContent = {
         "Delivering customer-facing marketplace, rewards, recommendations, referrals, and onboarding features for homeowners moving through solar and energy workflows.",
         "Contributing to solar production, electricity usage, grid export, utility connection, and energy-trend analytics for the newer Solar and Electricity usage experience.",
         "Improving OAuth/JWT/Auth0-backed utility authentication, account state, energy history, and statistics flows across iOS, Android, and web clients.",
-        "Supporting event-driven onboarding, account-state, and third-party provider workflows with queue infrastructure so customer actions move reliably across internal services and app clients."
+        "Supporting idempotent onboarding, account-state, and third-party provider workflows with queue infrastructure so customer actions move reliably across services and app clients."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },
@@ -182,7 +182,7 @@ export const profileContent: ProfileContent = {
         { label: "Authentication", tone: "practice" },
         { label: "Async event handling", tone: "practice" },
         { label: "Event-driven workflows", tone: "practice" },
-        { label: "Inter-service communication", tone: "practice" },
+        { label: "Idempotent systems", tone: "practice" },
         { label: "Startup engineering", tone: "domain" },
         { label: "Energy data", tone: "domain" },
         { label: "Backend systems", tone: "domain" },
@@ -668,25 +668,37 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language with **type checking, polymorphic collections, first-class functions, and a native WebAssembly browser runtime**.",
+        "An OCaml-inspired language and compiler implemented end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, pattern matching, polymorphic collections, WebAssembly emission, and a browser-native Monaco playground**.",
       impact:
-        "It pushes the language-workbench idea further: **real compiler behavior, Monaco diagnostics, reusable editor packaging, and runnable WASM output** in one browser surface.",
+        "The compiler pipeline **lexes source text, builds an AST, type-checks declarations and expressions, emits WAT, compiles through WABT, and instantiates the resulting WebAssembly in both the browser editor and Node CLI**. The checker also feeds Monaco diagnostics, hovers, and completions; closure conversion, arrays, lists, maps, higher-order functions, and runtime tests make it a compact language workbench rather than a parser demo.",
       stack: [
         "OJaml",
         "TypeScript",
         "React",
         "Vite",
         "WebAssembly",
+        "WAT emission",
         "Runtime systems",
         "WABT",
         "Monaco Editor",
+        "Hover metadata",
+        "Autocomplete",
         "Recursive descent parser",
+        "Static analysis",
         "Hindley-Milner typing",
+        "Type inference",
+        "Polymorphic stdlib",
+        "Closure conversion",
+        "Pattern matching",
+        "First-class functions",
+        "Polymorphic collections",
+        "Higher-order functions",
         "CLI tooling",
         "Vitest",
+        "Browser runtime",
         "Language design",
         "Type systems",
-        "Compiler tooling"
+        "Compilers"
       ],
       image: ojamlPreview,
       icon: "ojaml",
@@ -700,9 +712,9 @@ export const profileContent: ProfileContent = {
       slug: "liveboard",
       title: "LiveBoard",
       description:
-        "A collaborative whiteboard with **realtime canvas editing, shared undo/redo history, folder organization, access control, presence, grouping, transforms, and infinite-canvas navigation**.",
+        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/color previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling and alignment controls, and infinite-canvas navigation**.",
       impact:
-        "The useful part is the full-system shape: **PostgreSQL-owned state, WebSocket collaboration, server-side history, access control, Drive-style file management, and a serious editor UI** that all have to stay coherent together.",
+        "The architecture is the point: **FastAPI replicas coordinate through Redis Pub/Sub and shared rate-limit counters while PostgreSQL remains the source of truth for revisions, history, memberships, and canvas JSON**. Clients optimistically preview transient operations, reconcile on durable revisions, refresh on revision gaps or rate-limit resets, and keep remote cursors/live canvas state in sync without trusting local history.",
       stack: [
         "TypeScript",
         "React",
@@ -710,10 +722,20 @@ export const profileContent: ProfileContent = {
         "Python",
         "FastAPI",
         "PostgreSQL",
+        "Redis",
         "WebSockets",
         "Docker",
+        "Docker Compose",
         "SVG editor",
         "Realtime collaboration",
+        "Multi-server support",
+        "Redis Pub/Sub",
+        "Durable storage",
+        "Transient operations",
+        "Live sync",
+        "Cursor syncing",
+        "Rate limiting",
+        "Revision reconciliation",
         "Server-side history",
         "Undo / redo",
         "Presence",
@@ -721,6 +743,9 @@ export const profileContent: ProfileContent = {
         "Folder trees",
         "Drag and drop",
         "Infinite canvas",
+        "Text controls",
+        "Shape grouping",
+        "Z-ordering",
         "Operational state"
       ],
       image: liveboardPreview,
@@ -787,7 +812,7 @@ export const profileContent: ProfileContent = {
       image: jaggerscriptPreview,
       icon: "jaggerscript",
       links: [
-        { label: "Open Playground", href: "/jaggerscript" },
+        { label: "Open Editor", href: "/jaggerscript" },
         { label: "Open Paper", href: "/papers/jaggerscript" },
         { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
       ]

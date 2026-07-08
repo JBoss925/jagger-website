@@ -5,24 +5,28 @@ import type { PaperDocument } from "./types";
 
 export const liveboardPaper: PaperDocument = {
     slug: "liveboard",
-    title: "LiveBoard: A Realtime Collaborative Whiteboard With Server-Owned History",
-    subtitle: "A full-stack whiteboard system for shared canvas editing, synchronized undo/redo, access control, folder organization, presence, and durable operational state.",
+    title: "LiveBoard: A Multi-Server Realtime Whiteboard With Durable Collaboration State",
+    subtitle: "A full-stack collaborative canvas system with Redis-coordinated backend replicas, PostgreSQL-owned revisions, transient previews, shared undo/redo, access control, presence, and Drive-style organization.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, a FastAPI backend, PostgreSQL-owned durable state, and WebSocket collaboration rooms. The application supports realtime shape editing, presence cursors, invite and removal flows, Drive-style canvas/folder organization, infinite-canvas navigation, grouping, z-ordering, text editing, opacity, stroke width, text sizing, rotation, multi-selection transforms, and shared undo/redo. The central architectural choice is that durable canvas history is owned by the backend rather than by individual clients. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against the locked state, and broadcast to connected editors. This paper describes the data model, operation algebra, collaboration protocol, access lifecycle, frontend interaction model, and file-management layer in sufficient detail to reconstruct the system.",
-    description: "A technical paper for LiveBoard: realtime whiteboard collaboration, PostgreSQL state, WebSocket rooms, server-side history, access control, Drive-style folders, and SVG editor transforms.",
+    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, horizontally scalable FastAPI backend replicas, PostgreSQL-owned durable state, Redis-coordinated ephemeral state, and WebSocket collaboration rooms. The application supports realtime shape editing, presence cursors, invite and removal flows, Drive-style canvas/folder organization, infinite-canvas navigation, grouping, z-ordering, text editing with whole-object style and alignment controls, opacity, stroke width, rotation, multi-selection transforms, rate-limit recovery, and shared undo/redo. The central architectural choice is that durable canvas state, revision ordering, and undo/redo history remain owned by PostgreSQL and the backend, while Redis is used only for cross-server fanout, presence, invalidation, and counters. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against locked state, and broadcast to connected editors. This paper describes the data model, operation algebra, collaboration protocol, multi-server runtime, access lifecycle, frontend interaction model, and operational tradeoffs in sufficient detail to reconstruct the system.",
+    description: "A technical paper for LiveBoard: Redis-backed multi-server realtime collaboration, PostgreSQL durable state, WebSocket rooms, server-side history, rate-limit recovery, access control, Drive-style folders, and SVG editor transforms.",
     categories: ["Systems", "Research Notes"],
     tags: [
         "TypeScript",
         "React",
         "FastAPI",
         "PostgreSQL",
+        "Redis",
         "WebSockets",
         "Docker",
+        "Multi-Server",
         "Realtime Collaboration",
         "Undo Redo",
         "SVG Editing",
         "Access Control",
+        "Rate Limiting",
+        "Transient Operations",
         "Operational State"
     ],
     repoUrl: "https://github.com/JBoss925/LiveBoard",
@@ -45,32 +49,33 @@ export const liveboardPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "LiveBoard is best understood as a product surface wrapped around an operation-processing core. The visible application has two major user spaces: the dashboard, where canvases and folders are managed, and the editor, where one canvas is edited collaboratively. The backend owns identities, sessions, access, canvas state, history, revision numbers, and folder structure."
+                    text: "LiveBoard is best understood as a product surface wrapped around an operation-processing core. The visible application has two major user spaces: the dashboard, where canvases and folders are managed, and the editor, where one canvas is edited collaboratively. The backend owns identities, sessions, access, canvas state, history, revision numbers, folder structure, and validation. Redis owns only ephemeral coordination for scaled backend replicas."
+                },
+                {
+                    kind: "paragraph",
+                    text: "That division is the through-line for the system. The application has to feel immediate while people drag objects, move cursors, and change styles, but it also has to converge to one saved canvas after reconnects, rate limits, missed messages, and multiple backend servers. LiveBoard handles that by treating every user-visible edit as either a temporary preview or a durable operation. Temporary state can be fast and disposable; durable state has to pass through one ordered backend path."
                 },
                 {
                     kind: "equation",
                     label: "LiveBoard state",
-                    tex: "\\mathcal{L} = (U, S, C, F, A, H, R, W)",
-                    caption: "The system is composed of users U, sessions S, canvases C, folders F, access edges A, history H, active room state R, and WebSocket streams W."
+                    tex: "\\mathcal{L} = (U, S, C, F, A, H, O, P, W)",
+                    caption: "The system is composed of users U, sessions S, canvases C, folders F, access edges A, history H, durable operations O, presence P, and WebSocket streams W."
                 },
                 {
                     kind: "paragraph",
-                    text: "The important separation is durable versus transient state. PostgreSQL stores users, session tokens, canvases, folder rows, membership rows, operation logs, and undo/redo history. React state stores the current view, selected ids, toolbar defaults, temporary drag previews, modal state, and local viewport. WebSocket rooms store active sockets, presence, cursor color, and preview fanout."
+                    text: "The important separation is durable versus transient state. PostgreSQL stores users, session tokens, canvases, folder rows, membership rows, operation logs, and undo/redo history. Redis stores cross-process Pub/Sub messages, presence TTL records, invalidation messages, and fixed-window rate-limit counters. React state stores the current view, selected ids, toolbar defaults, temporary drag and color previews, modal state, and local viewport."
                 },
                 {
-                    kind: "diagram",
-                    label: "Runtime boundary",
-                    body: `browser/editor
-  |  HTTP: list/create/rename/share/folders
-  |  WS: cursor, op, preview_op, undo, redo
-  v
-FastAPI application
-  |  validates access/session and operation shape
-  |  locks canvas row during durable mutations
-  v
-PostgreSQL
-  users, sessions, canvases, members, folders, ops, history`,
-                    caption: "HTTP handles resource management and WebSockets handle live editing; both converge on the same authoritative PostgreSQL state."
+                    kind: "paragraph",
+                    text: "A useful way to read the runtime diagram is to ask what happens if any one layer disappears. If a browser refreshes, the canvas returns from PostgreSQL. If a Redis Pub/Sub event is missed, the next revision gap causes the client to refresh from PostgreSQL. If one backend replica dies, sockets reconnect through the proxy to another replica that shares the same database and Redis coordination layer. The architecture is designed so the fastest paths are not the only correctness paths."
+                },
+                {
+                    kind: "graph",
+                    graph: {
+                        kind: "liveboard-runtime",
+                        title: "Runtime boundary",
+                        description: "HTTP and WebSocket traffic can land on any backend replica. PostgreSQL remains authoritative for durable state; Redis coordinates events that must cross process boundaries."
+                    }
                 }
             ]
         },
@@ -89,6 +94,10 @@ PostgreSQL
                 {
                     kind: "paragraph",
                     text: "The dashboard model intentionally resembles a small Drive-like file manager. Owned canvases and folders are siblings inside an implicit root or a parent folder. Shared canvases are not allowed to appear inside the owner's folder tree because folders are an owner-local organization primitive, not an access-control primitive."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This distinction matters because it prevents the folder system from becoming a second permissions system. A folder answers the question, \"Where did the owner put this canvas?\" Membership answers the question, \"Who can open this canvas?\" Keeping those questions separate makes deletion, moving, sharing, and rendering easier to reason about. Deleting a folder can delete an owned subtree, while removing a member only removes an access edge."
                 },
                 {
                     kind: "equation",
@@ -137,7 +146,11 @@ type CanvasSummary = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "A canvas stores a JSON state object with a background color and ordered shape list. Shape ordering is the z-order: later shapes draw above earlier shapes. Every durable shape mutation is expressed as create, update, delete, reorder, or batch."
+                    text: "A canvas stores a JSON state object with an optional background color and ordered shape list. Shape ordering is the z-order: later shapes draw above earlier shapes. Every durable shape mutation is expressed as create, update, delete, reorder, update_canvas, or batch. The backend validates the operation surface before any mutation is written or broadcast."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The shape model is intentionally plain. Instead of building a deep object hierarchy with separate tables for rectangles, ellipses, text, groups, and lines, the canvas state stores serializable shape records in one JSON document. That makes the editor fast to evolve and keeps realtime messages small: most edits are just patches against a shape id. The tradeoff is that the backend must be strict about validating which fields are allowed for which shape type."
                 },
                 {
                     kind: "equation",
@@ -166,12 +179,36 @@ type CanvasSummary = {
 
 type RectLike = BaseShape & { x: number; y: number; width: number; height: number };
 type LineShape = BaseShape & { x1: number; y1: number; x2: number; y2: number };
-type TextShape = RectLike & { text: string; textColor: string; textOpacity: number; fontSize: number };`,
+type TextShape = RectLike & {
+  text: string;
+  textColor: string;
+  textOpacity: number;
+  fontSize: number;        // validated as 4..512
+  textAlign?: "left" | "center" | "right";
+};`,
                     caption: "The editor keeps shape objects plain and serializable so operations can patch JSON state directly."
                 },
                 {
                     kind: "paragraph",
+                    text: "Text is intentionally whole-object styling rather than per-span rich text. A text shape can edit content, text color, text opacity, font size, and left/center/right alignment. Older text shapes without textAlign render as left-aligned. The toolbar keeps text controls visible for discoverability, but disables and mutes them unless the selection contains only unlocked text shapes."
+                },
+                {
+                    kind: "paragraph",
+                    text: "That is a product and architecture choice, not a missing parser detail. Per-span rich text would require text-range operations, selection ranges, conflict handling inside a string, and more complex undo semantics. LiveBoard's current text object behaves like a styled diagram label: the whole label can be aligned, resized, colored, moved, grouped, rotated, and undone as one canvas object."
+                },
+                {
+                    kind: "equation",
+                    label: "Validated text style",
+                    tex: "fontSize \\in [4,512],\\quad textAlign \\in \\{left,center,right\\}",
+                    caption: "The frontend clamps committed values and the backend rejects invalid durable text-style patches."
+                },
+                {
+                    kind: "paragraph",
                     text: "Grouping is represented as a stack rather than as a separate group node. Each shape may carry groupIds, where the last element is the current active group. Creating a parent group appends a new id to every selected unit. Ungrouping removes only the active id, preserving child groups below it."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The stack representation keeps grouping compatible with the rest of the operation model. Moving a group is still a batch of shape patches, deleting a group is still a batch of shape deletes, and undoing either action still uses the same inverse machinery as ordinary shape edits. There is no separate group object whose lifetime could drift away from its members."
                 },
                 {
                     kind: "equation",
@@ -188,7 +225,11 @@ type TextShape = RectLike & { text: string; textColor: string; textOpacity: numb
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The most important correctness decision in LiveBoard is moving undo/redo out of the client. If every editor kept a private history stack, two users editing the same object could undo different local stories over one shared state. LiveBoard instead treats history as a server-owned sequence of invertible operations."
+                    text: "The most important correctness decision in LiveBoard is moving undo/redo out of the client. If every editor kept a private history stack, two users editing the same object could undo different local stories over one shared state. LiveBoard instead treats history as a server-owned sequence of invertible operations serialized by the canvas row."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The key practical detail is that the server derives the inverse from the state it actually locked, not from the state a browser thought it had. Suppose one client changes a rectangle from blue to red while another client is slightly behind. The undo record must restore blue from the authoritative pre-operation state, not from a stale or optimistic client snapshot. This is why durable edits go through a transaction that reads the canvas row, validates the operation, computes the next state, and records both forward and inverse operations together."
                 },
                 {
                     kind: "equation",
@@ -217,13 +258,31 @@ type TextShape = RectLike & { text: string; textColor: string; textOpacity: numb
                 },
                 {
                     kind: "paragraph",
-                    text: "Multi-shape movement, group transforms, folder-independent shape grouping, and shared style edits all become batch operations. The inverse of a batch is the reversed list of child inverses. That preserves atomic user intent: one drag of six objects creates one undo step rather than six unrelated updates."
+                    text: "Multi-shape movement, group transforms, folder-independent shape grouping, and shared style edits all become batch operations. The inverse of a batch is the reversed list of child inverses. That preserves atomic user intent: one drag of six objects creates one undo step rather than six unrelated updates. Operation ids also act as an idempotency surface: duplicate durable submissions can return the already recorded revision rather than applying the same mutation twice."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Batches also make the UI feel honest. If a user rotates a selected cluster, the system should not expose the implementation detail that five individual shape records changed. The history entry should say, in effect, \"undo that rotation.\" The server still stores the precise patches needed to reverse the change, but the user-facing unit remains the gesture that created it."
                 },
                 {
                     kind: "equation",
                     label: "Batch inverse",
                     tex: "invert(S, [op_1,\\ldots,op_n]) = [op_n^{-1},\\ldots,op_1^{-1}]",
                     caption: "Batch inversion reverses child order because each inverse must undo the latest applied child first."
+                },
+                {
+                    kind: "example",
+                    label: "Durable mutation transaction",
+                    language: "sql",
+                    code: `BEGIN;
+SELECT state, revision FROM canvases WHERE id = $1 FOR UPDATE;
+-- validate operation and derive inverse from locked state
+UPDATE canvases SET state = $next_state, revision = revision + 1 WHERE id = $1;
+INSERT INTO canvas_ops(canvas_id, revision, op) VALUES ($1, $next_revision, $op);
+INSERT INTO canvas_history(canvas_id, forward_op, inverse_op, applied_revision)
+  VALUES ($1, $op, $inverse, $next_revision);
+COMMIT;`,
+                    caption: "The durable write path validates, inverts, applies, logs, and publishes after a single authoritative revision is created."
                 }
             ]
         },
@@ -241,7 +300,11 @@ type TextShape = RectLike & { text: string; textColor: string; textOpacity: numb
                 },
                 {
                     kind: "paragraph",
-                    text: "WebSocket collaboration separates previews from durable commits. During drag, resize, and rotation, the frontend sends throttled preview operations so other users see motion without inflating the revision counter. On pointer up, the frontend sends one durable operation with history enabled."
+                    text: "WebSocket collaboration separates previews from durable commits. During drag, resize, and rotation, the frontend sends throttled preview operations so other users see motion without inflating the revision counter. Color picker movement is local-only preview state until the picker rests or blurs, so dragging through a spectrum does not create hundreds of saved revisions. On pointer up, blur, Enter, or another commit boundary, the frontend sends one durable operation with history enabled."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This preview/commit split is what lets LiveBoard feel live without turning every pixel of movement into saved history. Other clients can see an object moving during a drag, but the durable record only contains the final resting position. The same idea applies to color selection: intermediate swatch values help the local user preview the result, while the saved canvas receives one final color change."
                 },
                 {
                     kind: "equation",
@@ -265,19 +328,129 @@ client A pointer up
                     caption: "The same operation shape is used for previews and commits, but only committed operations enter PostgreSQL history."
                 },
                 {
+                    kind: "diagram",
+                    label: "Revision-gap recovery",
+                    body: `client current revision = 17
+receives op_applied revision = 19
+  -> expected 18, observed 19
+  -> pause operation application
+  -> GET /api/canvases/:canvasId
+  -> replace local canvas state, revision, history
+  -> resume from durable PostgreSQL snapshot`,
+                    caption: "Redis Pub/Sub is best-effort. Durable correctness comes from revision numbers plus snapshot refresh when a client detects that it missed an operation."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Revision-gap recovery is deliberately simple. The client does not try to replay a partial event stream or ask Redis for missed messages. It notices that the next durable revision is not the one it expected and replaces local canvas state with the authoritative HTTP snapshot. This makes Pub/Sub acceptable for realtime delivery because PostgreSQL remains the replay source for durable state."
+                },
+                {
+                    kind: "graph",
+                    graph: {
+                        kind: "liveboard-recovery",
+                        title: "Rate-limit recovery",
+                        description: "Rejected writes are never persisted or fanned out. The sender and peers both return to the last durable canvas so transient previews cannot become visible drift."
+                    }
+                },
+                {
                     kind: "paragraph",
                     text: "Presence is a separate stream: cursor messages carry canvas-space coordinates, selected shape id, user id, username, and a deterministic user color. Remote cursors are inverse-scaled by the local zoom so the cursor glyph stays the same screen size as each editor pans or zooms."
                 }
             ]
         },
         {
-            id: "editor-geometry",
+            id: "multi-server-runtime",
             eyebrow: "VI",
+            title: "Multi-Server Runtime",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "LiveBoard can run several FastAPI backend containers behind a backend proxy. This required separating local socket ownership from room-wide collaboration semantics. Each replica owns only the WebSocket objects connected to that process. Redis carries room events, presence records, invalidation messages, and rate-limit counters across replicas."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Without Redis, a single process can broadcast to the sockets it owns, but two backend processes would become two isolated rooms. A user connected to replica A would not automatically reach a user connected to replica B. Redis closes that gap by acting as the shared notification layer between replicas while leaving each process responsible for its own in-memory WebSocket objects."
+                },
+                {
+                    kind: "graph",
+                    graph: {
+                        kind: "liveboard-fanout",
+                        title: "Cross-replica fanout",
+                        description: "A room is logical, not process-local. A replica commits durable operations to PostgreSQL, then uses Redis Pub/Sub so every other replica can forward the event to its local sockets."
+                    }
+                },
+                {
+                    kind: "equation",
+                    label: "Authority split",
+                    tex: "Durable = PostgreSQL,\\quad Ephemeral = Redis \\cup Browser",
+                    caption: "Redis is deliberately not a cache for canvas state. It coordinates events that are either transient or recoverable from PostgreSQL."
+                },
+                {
+                    kind: "example",
+                    label: "Redis keys",
+                    language: "text",
+                    code: `liveboard:canvas:{canvas_id}:events
+liveboard:presence:{canvas_id}:connections
+liveboard:presence:conn:{connection_id}
+rate:{scope}:{bucket}`,
+                    caption: "The scaled runtime uses Pub/Sub channels for canvas events, TTL records for presence, and fixed-window counters for shared rate limits."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Presence is user-level even when the same user has multiple tabs open. Redis stores connection ids with short TTLs. A join is broadcast when a user moves from zero connections to one or more, and a leave is delayed briefly so a refresh or tab handoff does not flicker the collaborator list."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The TTL detail is important in a distributed WebSocket system. If a backend process exits without running its disconnect cleanup, Redis will eventually expire its connection records. That means the presence layer is eventually self-healing instead of depending on perfect shutdown behavior. The short delayed leave avoids the opposite problem: making ordinary reconnects look like people rapidly leaving and rejoining."
+                },
+                {
+                    kind: "diagram",
+                    label: "Presence transition",
+                    body: `socket accepted
+  -> add connection id to canvas set
+  -> write connection record with TTL
+  -> if previous user connection count was 0: presence_join
+
+socket closed
+  -> remove connection id
+  -> wait briefly
+  -> if user connection count is still 0: presence_leave`,
+                    caption: "The collaborator list is derived from Redis presence in scaled mode and from local sockets in single-process fallback mode."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Rate limits are shared across replicas when Redis is enabled. Authentication routes, HTTP API routes, cursor messages, preview messages, history messages, and durable writes each have separate counters. The write limit is the most important collaboration guard because it protects revision churn and history growth. Cursor and preview limits are intentionally higher so normal collaboration remains fluid."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The rate-limit behavior is tied back into collaboration recovery. When a durable write is rejected, the server does not let the rejected operation leak to peers as if it had succeeded. The writer receives the saved canvas snapshot and briefly stops interacting with the canvas while it syncs. Peers receive a preview reset so any transient movement they saw from that writer is discarded. This is less magical than trying to patch over rejected writes, and it makes the failure mode visible."
+                },
+                {
+                    kind: "example",
+                    label: "Scaled local runtime",
+                    language: "bash",
+                    code: `docker compose up --build --scale server=3
+curl http://localhost:3001/health
+# {"ok": true, "postgres": true, "redis": true}`,
+                    caption: "The Docker Compose path runs backend replicas behind Caddy, with all replicas sharing PostgreSQL and Redis."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The single-process development path still works when REDIS_URL is unset: fanout, presence, and rate limits fall back to in-memory process state. That fallback is useful for simple backend work, but it is intentionally not treated as a multi-server mode."
+                }
+            ]
+        },
+        {
+            id: "editor-geometry",
+            eyebrow: "VII",
             title: "Editor Geometry and Interaction Model",
             blocks: [
                 {
                     kind: "paragraph",
                     text: "The editor uses SVG as the scene representation. The canvas viewport is effectively infinite by rendering a very large background rectangle and treating the SVG viewBox as the camera window. Wheel input changes zoom around the cursor. Middle-button or background drag changes the viewport origin."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Using SVG keeps the editor close to the document model. Rectangles, ellipses, lines, text, selection outlines, and handles are all inspectable vector elements rather than pixels in a canvas bitmap. The cost is that geometry has to be explicit: zoom, rotation, hit targets, transformed bounds, and text editing all need careful coordinate conversion."
                 },
                 {
                     kind: "equation",
@@ -288,6 +461,10 @@ client A pointer up
                 {
                     kind: "paragraph",
                     text: "Selection behavior distinguishes object editing from viewport movement. Left-dragging the background with the select tool draws a box selection. Dragging any selected object moves the whole selection. Combined selection handles scale selected units, and the rotation handle rotates every selected unit around the selection center."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The interaction model tries to make the same gesture mean the same thing for one object, many objects, and a grouped unit. A drag moves the selected unit, a corner handle scales it, and the rotation handle rotates it. The implementation may produce one shape patch or a batch of many shape patches, but the user's mental model stays centered on the visible selection box."
                 },
                 {
                     kind: "equation",
@@ -304,12 +481,26 @@ client A pointer up
                     label: "Rendered bounds",
                     tex: "bounds_{rendered}(s) = AABB(\\{R_\\theta q_i\\}_{i=1}^{4})",
                     caption: "The overlay uses the axis-aligned bounding box of rotated corners for wrapping selected artwork."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The canvas is visually infinite and operationally finite only in the mathematical sense that coordinates must be valid finite numbers. The backend does not validate movement against the initial viewport dimensions, so dragging far left, right, up, or down can still produce a durable operation that every client will converge on."
+                },
+                {
+                    kind: "equation",
+                    label: "Coordinate validity",
+                    tex: "valid(p) \\Leftrightarrow isFinite(p_x) \\land isFinite(p_y)",
+                    caption: "Durable movement validation follows the infinite-canvas model by rejecting non-finite values rather than rejecting coordinates outside the starting view."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Read-only canvas text is not browser-selectable, which keeps object drags from turning into accidental text selection. The one exception is the active inline text editor: while editing a text shape, that shape's editor allows normal browser text selection, caret movement, and typing."
                 }
             ]
         },
         {
             id: "access-control",
-            eyebrow: "VII",
+            eyebrow: "VIII",
             title: "Access Control, Sessions, and Removal",
             blocks: [
                 {
@@ -322,6 +513,10 @@ client A pointer up
                 {
                     kind: "paragraph",
                     text: "Canvas access is a graph edge from user to canvas, plus ownership. The owner is implicit from the canvas row. Shared access is stored in a membership table. A user may open a canvas if they are the owner or a current member."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Access control is enforced on both ordinary HTTP routes and the WebSocket path. That is necessary because a collaborative editor has two doors into the same resource: a user can fetch the canvas over HTTP, or they can join the live editing room. The same predicate has to guard both doors, and it has to remain true after the socket has already opened."
                 },
                 {
                     kind: "equation",
@@ -339,22 +534,31 @@ client A pointer up
                     body: `owner removes member
   -> DELETE /api/canvases/:id/members/:userId
   -> database membership row deleted
-  -> room manager finds matching active sockets
+  -> Redis invalidation reaches every backend replica
+  -> each room manager finds matching local sockets
   -> access_removed message
   -> socket close
   -> removed client stops receiving updates`,
                     caption: "Access changes affect both future authorization and currently connected editors."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The Redis invalidation path is an acceleration path, not the security boundary. Open sockets re-check their session and canvas membership before every incoming message and every 30 seconds while idle. If an invalidation message is missed, the next database-backed check still closes an unauthorized socket."
                 }
             ]
         },
         {
             id: "database",
-            eyebrow: "VIII",
+            eyebrow: "IX",
             title: "Durable Data Layout",
             blocks: [
                 {
                     kind: "paragraph",
                     text: "The database layout is small but deliberately complete. Users and sessions support authentication. Canvases own JSON state and revision. Members represent sharing. Folders organize only the owner's own canvases. Operations form an append-only record of durable mutations, and history rows point to forward/inverse operations for undo and redo."
+                },
+                {
+                    kind: "paragraph",
+                    text: "There are two different storage shapes in play. Relational tables model identity, ownership, membership, folders, and append-only operation metadata because those are relationships the database is good at enforcing. The canvas drawing itself is stored as JSON because the shape schema is polymorphic and evolves with editor features. The operation validator is the boundary that keeps the flexible JSON state from becoming arbitrary untrusted data."
                 },
                 {
                     kind: "diagram",
@@ -390,28 +594,79 @@ canvas_history
                 {
                     kind: "paragraph",
                     text: "The state column is JSON because shape variants evolve quickly and because operations already validate the patch surface. Relational rows are used where relationships matter: users, sessions, members, folders, operation metadata, and history entries."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The revision column is the bridge between those two worlds. It is stored with the canvas row, advanced under the same lock that writes JSON state, and echoed to clients in every durable WebSocket message. That single number lets clients detect missed operations, lets the UI display saved progress, and gives multi-server fanout a convergence check without requiring sticky sessions or durable Redis streams."
+                },
+                {
+                    kind: "diagram",
+                    label: "Durability boundary",
+                    body: `PostgreSQL
+  users, sessions, canvases, folders, members
+  canvas state snapshots
+  revision numbers
+  operation log
+  undo/redo history
+
+Redis
+  Pub/Sub fanout
+  presence TTLs
+  rate-limit counters
+  access/deletion invalidation
+
+Browser
+  viewport
+  selection
+  toolbar draft values
+  local color and drag previews`,
+                    caption: "The design keeps canonical collaboration data in PostgreSQL while allowing fast, discardable state to live closer to sockets and UI."
                 }
             ]
         },
         {
             id: "design-lessons",
-            eyebrow: "IX",
-            title: "Design Lessons",
+            eyebrow: "X",
+            title: "Design Choices and Tradeoffs",
             blocks: [
                 {
                     kind: "bullets",
                     items: [
                         "Shared undo/redo belongs near the authoritative state, not in each browser tab.",
                         "Preview operations should use the same data shape as durable operations but must not increment revision.",
+                        "Redis is a coordination layer, not a canvas-state cache; that keeps failure recovery tied to PostgreSQL snapshots and revisions.",
+                        "Revision-gap recovery is cheaper than making every realtime event durable because cursor, preview, and presence messages are intentionally ephemeral.",
+                        "Fixed-window rate limits are simple and predictable; the tradeoff is bucket-edge burstiness, which is acceptable for this collaboration workload.",
                         "Folders should organize owner-owned canvases only; sharing is a separate access graph.",
                         "Selection reconciliation must run after local, remote, undo, and redo operations so grouped children cannot remain individually editable.",
                         "SVG is a practical editor substrate when geometry helpers, rendered bounds, and viewport math are kept explicit.",
-                        "Access removal must affect live sockets, not just future HTTP requests."
+                        "Access removal must affect live sockets, not just future HTTP requests.",
+                        "Whole-object text styling keeps collaboration and undo semantics tractable; per-span rich text would require a deeper text operation model."
                     ]
                 },
                 {
+                    kind: "diagram",
+                    label: "Rejected alternatives",
+                    body: `sticky sessions only
+  -> rejected: correctness should not depend on load-balancer affinity
+
+PostgreSQL LISTEN/NOTIFY for everything
+  -> rejected: high-frequency preview/cursor traffic should not live in the durable database path
+
+Redis Streams for all collaboration events
+  -> rejected: durable operations are already recoverable by revision snapshot
+
+Redis canvas-state cache
+  -> rejected: adds invalidation around the most important state`,
+                    caption: "The chosen architecture is intentionally boring where correctness matters and fast where state is temporary."
+                },
+                {
                     kind: "paragraph",
-                    text: "The project is less about one isolated trick than about making many small contracts agree: JSON shape state, relational ownership, WebSocket rooms, React interaction state, server-side history, and a serious dashboard UI. LiveBoard works because each boundary is narrow enough to explain and direct enough to test."
+                    text: "The alternatives mostly fail by putting the wrong kind of state in the wrong layer. Sticky sessions make the load balancer part of the correctness story. PostgreSQL notifications make transient cursor traffic compete with durable database work. Redis Streams add replay machinery for events that either do not need replay or can already be recovered from PostgreSQL. A Redis canvas cache would speed up some reads but complicate the only state that must never be ambiguous."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The project is less about one isolated trick than about making many small contracts agree: JSON shape state, relational ownership, WebSocket rooms, Redis coordination, React interaction state, server-side history, and a serious dashboard UI. LiveBoard works because each boundary is narrow enough to explain and direct enough to test, while the complete product still feels like one continuous collaborative surface."
                 }
             ]
         }

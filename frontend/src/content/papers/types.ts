@@ -11,6 +11,18 @@ export type PaperGraph = {
     kind: "harmonic-profile";
     title: string;
     description: string;
+} | {
+    kind: "liveboard-runtime";
+    title: string;
+    description: string;
+} | {
+    kind: "liveboard-fanout";
+    title: string;
+    description: string;
+} | {
+    kind: "liveboard-recovery";
+    title: string;
+    description: string;
 };
 export type PaperAudioSample = {
     label: string;
