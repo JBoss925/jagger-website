@@ -9,7 +9,7 @@ export const liveboardPaper: PaperDocument = {
     subtitle: "A full-stack collaborative canvas system with Redis-coordinated backend replicas, PostgreSQL-owned revisions, transient previews, shared undo/redo, access control, presence, and Drive-style organization.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, horizontally scalable FastAPI backend replicas, PostgreSQL-owned durable state, Redis-coordinated ephemeral state, and WebSocket collaboration rooms. The application supports realtime shape editing, presence cursors, invite and removal flows, Drive-style canvas/folder organization, infinite-canvas navigation, grouping, z-ordering, text editing with whole-object style and alignment controls, opacity, stroke width, rotation, multi-selection transforms, rate-limit recovery, and shared undo/redo. The central architectural choice is that durable canvas state, revision ordering, and undo/redo history remain owned by PostgreSQL and the backend, while Redis is used only for cross-server fanout, presence, invalidation, and counters. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against locked state, and broadcast to connected editors. This paper describes the data model, operation algebra, collaboration protocol, distributed runtime, access lifecycle, frontend interaction model, and operational tradeoffs in sufficient detail to reconstruct the system.",
+    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, horizontally scalable FastAPI backend replicas, PostgreSQL-owned durable state, Redis-coordinated ephemeral state, and WebSocket collaboration rooms. The application supports account sessions, owned and shared canvases, nested drag-and-drop folders, arbitrary sibling reordering, search and owner filtering for shared boards, invite and removal flows, realtime shape editing, presence cursors, infinite-canvas navigation, grouping, nested grouping, z-ordering, text editing with whole-object style and alignment controls, opacity, stroke width, rotation, multi-selection transforms, rate-limit recovery, and shared undo/redo. The central architectural choice is that durable canvas state, revision ordering, and undo/redo history remain owned by PostgreSQL and the backend, while Redis is used only for cross-server fanout, presence, invalidation, and counters. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against locked state, and broadcast to connected editors. This paper describes the product feature set, data model, operation algebra, collaboration protocol, distributed runtime, access lifecycle, frontend interaction model, and operational tradeoffs in sufficient detail to reconstruct the system.",
     description: "A technical paper for LiveBoard: Redis-backed distributed realtime collaboration, PostgreSQL durable state, WebSocket rooms, server-side history, rate-limit recovery, access control, Drive-style folders, and SVG editor transforms.",
     categories: ["Systems", "Research Notes"],
     tags: [
@@ -96,6 +96,17 @@ export const liveboardPaper: PaperDocument = {
                     text: "The dashboard model intentionally resembles a small Drive-like file manager. Owned canvases and folders are siblings inside an implicit root or a parent folder. Shared canvases are not allowed to appear inside the owner's folder tree because folders are an owner-local organization primitive, not an access-control primitive."
                 },
                 {
+                    kind: "bullets",
+                    items: [
+                        "Owned canvases and folders render under Your canvases as one mixed, nested tree.",
+                        "Shared canvases render separately under Shared with You and can be searched by canvas name or owner username.",
+                        "Shared canvases can also be filtered by owner, which matters once a user has boards from several collaborators.",
+                        "Folders can be created at the root, from empty list space, or from an existing folder row to create a nested folder.",
+                        "Folders and canvases can be selected together, including single-click, Ctrl/Cmd toggle selection, Shift range selection, and Ctrl/Cmd+A across the owned list.",
+                        "Owned canvases and folders support context-menu open, share, rename, create nested folder, delete, and destructive confirmation flows where applicable."
+                    ]
+                },
+                {
                     kind: "paragraph",
                     text: "This distinction matters because it prevents the folder system from becoming a second permissions system. A folder answers the question, \"Where did the owner put this canvas?\" Membership answers the question, \"Who can open this canvas?\" Keeping those questions separate makes deletion, moving, sharing, and rendering easier to reason about. Deleting a folder can delete an owned subtree, while removing a member only removes an access edge."
                 },
@@ -129,6 +140,26 @@ type CanvasSummary = {
                 },
                 {
                     kind: "paragraph",
+                    text: "Drag and drop is not just a visual affordance. Dropping an owned canvas onto the center of a folder row changes its parent folder through PATCH /api/canvases/{canvas_id}/folder. Dropping a folder onto another folder changes the folder's parent through PATCH /api/folders/{folder_id}/parent, with the backend rejecting moves into itself or one of its descendants. Dropping a canvas or folder into an insertion zone before, between, or after siblings sends the complete desired sibling order to PATCH /api/dashboard/order."
+                },
+                {
+                    kind: "diagram",
+                    label: "Dashboard drag/drop flow",
+                    body: `drag owned item
+  -> hover center of folder row
+     -> PATCH canvas folder or folder parent
+     -> backend verifies ownership and cycle rules
+     -> frontend refreshes owned tree placement
+
+drag owned item
+  -> hover insertion zone before/between/after siblings
+     -> PATCH /api/dashboard/order with full mixed order
+     -> backend rewrites sort_order for that parent
+     -> frontend renders arbitrary sibling order`,
+                    caption: "The dashboard supports both parent changes and arbitrary sibling reordering. The backend stores order explicitly instead of inferring it from names or creation time."
+                },
+                {
+                    kind: "paragraph",
                     text: "The frontend computes tree rail segments statically from the sibling relationship at each level. A row receives one rail segment per indent: a straight rail when an ancestor has a following sibling, a T rail when the row itself has following siblings, and an L rail when it is the last child for its parent. This avoids CSS guessing and makes nested folder drawings deterministic from the tree data."
                 },
                 {
@@ -136,6 +167,10 @@ type CanvasSummary = {
                     label: "Rail classifier",
                     tex: "rail(d, i) \\in \\{none, straight, tee, elbow\\}",
                     caption: "Each row computes a rail token for depth d and sibling index i, then renders static segments rather than relying on cascading pseudo-element state."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Deletion is also folder-aware. Deleting a canvas removes that canvas and cascades its membership, operations, and history rows. Deleting a folder removes the entire owned folder subtree, including nested folders and owned canvases inside it. The frontend routes destructive actions through the shared confirmation modal, and the backend closes live sockets for any deleted canvases so open editors do not keep editing a resource that no longer exists."
                 }
             ]
         },
@@ -147,6 +182,16 @@ type CanvasSummary = {
                 {
                     kind: "paragraph",
                     text: "A canvas stores a JSON state object with an optional background color and ordered shape list. Shape ordering is the z-order: later shapes draw above earlier shapes. Every durable shape mutation is expressed as create, update, delete, reorder, update_canvas, or batch. The backend validates the operation surface before any mutation is written or broadcast."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Rectangles and ellipses store x/y/width/height, stroke, fill, opacity, stroke width, rotation, and grouping metadata.",
+                        "Lines store endpoint coordinates, stroke styling, opacity, stroke width, and grouping metadata; rotation is represented by endpoint updates rather than a separate angle.",
+                        "Text shapes store a rectangular text box, text content, text color, text opacity, font size, alignment, wrapping behavior, and ordinary shape styling.",
+                        "The canvas itself can store backgroundColor, which is updated by the paint bucket when the user clicks the background.",
+                        "The ordered shapes array doubles as z-order, so bring-forward/send-back operations are durable reorder_shape operations."
+                    ]
                 },
                 {
                     kind: "paragraph",
@@ -194,6 +239,10 @@ type TextShape = RectLike & {
                 },
                 {
                     kind: "paragraph",
+                    text: "The text editing flow is designed around commit boundaries. Double-clicking or creating a text shape opens an inline textarea inside the SVG foreignObject. While the user types, text is local editor state. Blur, Escape, Tab, or Cmd/Ctrl+Enter commits one update_shape operation. That keeps typing responsive, avoids character-by-character collaborative editing complexity, and still gives undo/redo a clear unit: the completed text edit."
+                },
+                {
+                    kind: "paragraph",
                     text: "That is a product and architecture choice, not a missing parser detail. Per-span rich text would require text-range operations, selection ranges, conflict handling inside a string, and more complex undo semantics. LiveBoard's current text object behaves like a styled diagram label: the whole label can be aligned, resized, colored, moved, grouped, rotated, and undone as one canvas object."
                 },
                 {
@@ -205,6 +254,20 @@ type TextShape = RectLike & {
                 {
                     kind: "paragraph",
                     text: "Grouping is represented as a stack rather than as a separate group node. Each shape may carry groupIds, where the last element is the current active group. Creating a parent group appends a new id to every selected unit. Ungrouping removes only the active id, preserving child groups below it."
+                },
+                {
+                    kind: "diagram",
+                    label: "Nested grouping flow",
+                    body: `select units
+  -> unit can be one unlocked shape or one already-grouped object
+  -> Group appends new parent group id to every selected unit
+  -> selection reconciles to the new top group
+  -> move/scale/rotate operate on the group as one unit
+
+Ungroup
+  -> remove only the active/top group id
+  -> preserve child group ids underneath`,
+                    caption: "Groups are stored directly on member shapes. Nested grouping is a stack operation, not a separate tree of group nodes."
                 },
                 {
                     kind: "paragraph",
@@ -230,6 +293,17 @@ type TextShape = RectLike & {
                 {
                     kind: "paragraph",
                     text: "The key practical detail is that the server derives the inverse from the state it actually locked, not from the state a browser thought it had. Suppose one client changes a rectangle from blue to red while another client is slightly behind. The undo record must restore blue from the authoritative pre-operation state, not from a stale or optimistic client snapshot. This is why durable edits go through a transaction that reads the canvas row, validates the operation, computes the next state, and records both forward and inverse operations together."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "create_shape records newly drawn rectangles, ellipses, lines, and text boxes.",
+                        "update_shape records moves, resizes, rotations, text commits, style changes, grouping metadata changes, and endpoint updates for lines.",
+                        "update_canvas records canvas-level changes such as backgroundColor from the paint bucket.",
+                        "reorder_shape records bring-to-front, bring-forward, send-backward, and send-to-back context menu actions.",
+                        "delete_shape records toolbar delete, keyboard delete, and context-menu delete for unlocked shapes.",
+                        "batch records multi-shape gestures: multi-selection movement, group transforms, multi-style edits, grouping, ungrouping, and grouped deletes."
+                    ]
                 },
                 {
                     kind: "equation",
@@ -263,6 +337,20 @@ type TextShape = RectLike & {
                 {
                     kind: "paragraph",
                     text: "Batches also make the UI feel honest. If a user rotates a selected cluster, the system should not expose the implementation detail that five individual shape records changed. The history entry should say, in effect, \"undo that rotation.\" The server still stores the precise patches needed to reverse the change, but the user-facing unit remains the gesture that created it."
+                },
+                {
+                    kind: "diagram",
+                    label: "Feature to operation mapping",
+                    body: `draw shape              -> create_shape
+drag one shape          -> preview_op update_shape, then durable update_shape
+drag group or selection -> preview_op batch, then durable batch
+edit text content       -> local textarea draft, then durable update_shape
+change style            -> update_shape or batch
+paint background        -> update_canvas
+bring forward/back      -> reorder_shape
+group/ungroup           -> batch of groupIds patches
+undo/redo               -> server applies stored inverse/forward op`,
+                    caption: "The editor has many features, but they collapse into a small operation vocabulary that the backend can validate, persist, invert, and broadcast."
                 },
                 {
                     kind: "equation",
@@ -304,7 +392,22 @@ COMMIT;`,
                 },
                 {
                     kind: "paragraph",
+                    text: "Opening a canvas uses both HTTP and WebSocket paths. The whiteboard first fetches canvas metadata and the current durable state through GET /api/canvases/{canvas_id}. It then opens /ws/canvases/{canvas_id}, authenticated by the same httpOnly session cookie. The socket returns a snapshot containing state, revision, active users, and undo/redo availability. From that point forward, ordinary resource management remains HTTP, while live editing, cursors, previews, undo, and redo travel over the socket."
+                },
+                {
+                    kind: "paragraph",
                     text: "This preview/commit split is what lets LiveBoard feel live without turning every pixel of movement into saved history. Other clients can see an object moving during a drag, but the durable record only contains the final resting position. The same idea applies to color selection: intermediate swatch values help the local user preview the result, while the saved canvas receives one final color change."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "cursor messages keep collaborators visible without changing canvas state.",
+                        "preview_op messages show remote drag, resize, and rotation motion without incrementing revision.",
+                        "op messages represent committed changes that must be validated, persisted, inverted, and broadcast with a new revision.",
+                        "undo and redo messages ask the server to apply shared history, so every connected editor sees the same result.",
+                        "presence_join and presence_leave messages maintain the active collaborator list.",
+                        "access_removed, session_expired, rate_limited, and preview_reset messages are recovery/control events that keep users and canvases in a correct state."
+                    ]
                 },
                 {
                     kind: "equation",
@@ -354,6 +457,10 @@ receives op_applied revision = 19
                 {
                     kind: "paragraph",
                     text: "Presence is a separate stream: cursor messages carry canvas-space coordinates, selected shape id, user id, username, and a deterministic user color. Remote cursors are inverse-scaled by the local zoom so the cursor glyph stays the same screen size as each editor pans or zooms."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Local optimism is intentionally bounded. A sender applies its own durable operation immediately so the UI does not wait on the network, but useCanvasSocket tracks operation ids so the sender does not double-apply the broadcast echo. If the server sends a snapshot, rate-limit event, or revision-gap refresh, the optimistic queue is cleared and local canvas state is replaced with PostgreSQL truth."
                 }
             ]
         },
@@ -449,6 +556,18 @@ curl http://localhost:3001/health
                     text: "The editor uses SVG as the scene representation. The canvas viewport is effectively infinite by rendering a very large background rectangle and treating the SVG viewBox as the camera window. Wheel input changes zoom around the cursor. Middle-button or background drag changes the viewport origin."
                 },
                 {
+                    kind: "bullets",
+                    items: [
+                        "Toolbar tools include select, rectangle, ellipse, line, text, and paint bucket.",
+                        "The header shows canvas metadata, revision state, active presence, navigation, and sharing controls.",
+                        "Mouse wheel zooms around the pointer, and middle-button dragging pans without touching shared canvas state.",
+                        "Select-tool background drag draws a box selection; dragging selected artwork moves selected units.",
+                        "Delete/Backspace removes selected unlocked shapes; Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z, and Cmd/Ctrl+Y call server undo/redo.",
+                        "Right-click shape menus expose z-order actions, group/ungroup, and delete.",
+                        "The paint bucket can apply fill style to a shape or update the canvas background color."
+                    ]
+                },
+                {
                     kind: "paragraph",
                     text: "Using SVG keeps the editor close to the document model. Rectangles, ellipses, lines, text, selection outlines, and handles are all inspectable vector elements rather than pixels in a canvas bitmap. The cost is that geometry has to be explicit: zoom, rotation, hit targets, transformed bounds, and text editing all need careful coordinate conversion."
                 },
@@ -463,6 +582,21 @@ curl http://localhost:3001/health
                     text: "Selection behavior distinguishes object editing from viewport movement. Left-dragging the background with the select tool draws a box selection. Dragging any selected object moves the whole selection. Combined selection handles scale selected units, and the rotation handle rotates every selected unit around the selection center."
                 },
                 {
+                    kind: "diagram",
+                    label: "Pointer interaction states",
+                    body: `idle
+  -> background pointer down with select tool: box-selecting
+  -> drawing tool pointer down: drawing draft shape
+  -> selected shape pointer down: moving
+  -> resize handle pointer down: resizing
+  -> rotation handle pointer down: rotating
+  -> middle button down: panning local viewport
+
+pointer up
+  -> local preview becomes one durable operation when the gesture changed shared canvas state`,
+                    caption: "The frontend keeps local interaction state explicit so it can decide which gestures are local-only, transient previews, or durable history entries."
+                },
+                {
                     kind: "paragraph",
                     text: "The interaction model tries to make the same gesture mean the same thing for one object, many objects, and a grouped unit. A drag moves the selected unit, a corner handle scales it, and the rotation handle rotates it. The implementation may produce one shape patch or a batch of many shape patches, but the user's mental model stays centered on the visible selection box."
                 },
@@ -475,6 +609,21 @@ curl http://localhost:3001/health
                 {
                     kind: "paragraph",
                     text: "Selection overlays are not simply the stored axis-aligned boxes. Single rotated shapes compute rendered corners from the stored rotation so the outline and handles remain aligned with the visual object. Multi-selection and group overlays compute the axis-aligned bounds of each member's rendered corners, producing a combined box that wraps what the user actually sees."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Toolbar synchronization follows the same respect for selection state. When every selected relevant shape shares a value, that value appears in the toolbar. If selected shapes disagree, the control remains useful as a next action but does not pretend there is one current value. Text controls stay visible so users can discover them, but they are muted and disabled unless the selection contains only unlocked text shapes."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Stroke controls: color, opacity, width.",
+                        "Fill controls: color and opacity.",
+                        "Text controls: text color, text opacity, pixel font size with increase/decrease buttons, and left/center/right alignment.",
+                        "Slider controls commit on release rather than on every movement.",
+                        "Color controls preview locally while the picker is moving and commit once the color rests or the picker blurs.",
+                        "Grouped members are locked from direct style, text, bucket, and delete mutations, while the group can still move, scale, rotate, or be nested into a parent group."
+                    ]
                 },
                 {
                     kind: "equation",
@@ -516,6 +665,10 @@ curl http://localhost:3001/health
                 },
                 {
                     kind: "paragraph",
+                    text: "The application bootstrap starts with the same security model. On load, the React app calls GET /api/me with same-origin credentials. If the liveboard_session cookie maps to a valid server-side session, the dashboard opens. If not, the user sees signup/login. Signup normalizes credentials, hashes the password, creates a session, and sets the httpOnly cookie. Login accepts username or email, verifies the stored password hash, and creates the same session shape."
+                },
+                {
+                    kind: "paragraph",
                     text: "Access control is enforced on both ordinary HTTP routes and the WebSocket path. That is necessary because a collaborative editor has two doors into the same resource: a user can fetch the canvas over HTTP, or they can join the live editing room. The same predicate has to guard both doors, and it has to remain true after the socket has already opened."
                 },
                 {
@@ -527,6 +680,19 @@ curl http://localhost:3001/health
                 {
                     kind: "paragraph",
                     text: "Session tokens are stored server-side, expire automatically, and are rechecked while WebSockets are open. This matters because deleting a stolen token should eventually stop an attacker even if they already established a socket. Membership removal also closes active sockets for the removed user and displays an access message on their screen."
+                },
+                {
+                    kind: "diagram",
+                    label: "Invite flow",
+                    body: `owner opens share modal
+  -> GET /api/canvases/:id/members
+  -> owner enters username or email
+  -> POST /api/canvases/:id/invite
+  -> backend verifies owner and target user
+  -> INSERT canvas_members
+  -> modal updates member list
+  -> invited user sees canvas in Shared with You`,
+                    caption: "Sharing is stored as membership rows. Folders remain owner-local and do not affect whether the invited user can open the canvas."
                 },
                 {
                     kind: "diagram",
@@ -544,6 +710,10 @@ curl http://localhost:3001/health
                 {
                     kind: "paragraph",
                     text: "The Redis invalidation path is an acceleration path, not the security boundary. Open sockets re-check their session and canvas membership before every incoming message and every 30 seconds while idle. If an invalidation message is missed, the next database-backed check still closes an unauthorized socket."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Canvas rename is intentionally split by ownership and context. Owners can rename from the dashboard context menu or inline from the board header; both use PATCH /api/canvases/{canvas_id}. Connected editors receive a canvas_renamed WebSocket event so the open header stays in sync. Non-owners can open shared canvases but cannot rename them or move them through the owner's folder tree."
                 }
             ]
         },
@@ -625,8 +795,100 @@ Browser
             ]
         },
         {
-            id: "design-lessons",
+            id: "feature-flow-catalog",
             eyebrow: "X",
+            title: "Feature Flow Catalog",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The useful test of LiveBoard's architecture is whether each product feature has a clear route through the system. A feature should have one obvious frontend owner, one obvious backend contract, one durable state owner when persistence is needed, and one realtime story when collaborators are affected. The following catalog summarizes those routes."
+                },
+                {
+                    kind: "example",
+                    label: "Dashboard feature flows",
+                    language: "text",
+                    code: `signup/login
+  AuthScreen -> /api/auth/signup or /api/auth/login -> sessions -> dashboard
+
+create canvas
+  Dashboard -> POST /api/canvases -> canvases + owner membership -> rename modal
+
+create nested folder
+  Dashboard/FolderModal -> POST /api/folders(parentId) -> canvas_folders
+
+move canvas into folder
+  drag/drop -> PATCH /api/canvases/:id/folder -> canvases.folder_id
+
+move folder into folder
+  drag/drop -> PATCH /api/folders/:id/parent -> canvas_folders.parent_id
+
+reorder mixed siblings
+  insertion zone drop -> PATCH /api/dashboard/order -> sort_order rewrite
+
+share canvas
+  ShareModal -> POST /api/canvases/:id/invite -> canvas_members
+
+delete folder subtree
+  ConfirmModal -> DELETE /api/folders/:id -> folders, canvases, sockets closed`,
+                    caption: "Dashboard features use HTTP because they are resource-management actions rather than high-frequency live canvas edits."
+                },
+                {
+                    kind: "example",
+                    label: "Editor feature flows",
+                    language: "text",
+                    code: `draw
+  pointer draft -> create_shape -> PostgreSQL revision -> op_applied
+
+move/resize/rotate
+  local optimistic preview -> preview_op fanout -> pointer-up durable op
+
+multi-select or group transform
+  combined bounds -> batch preview -> batch durable op -> one undo step
+
+style change
+  toolbar control -> update_shape or batch -> server-derived inverse
+
+text edit
+  inline textarea draft -> update_shape on commit -> one history entry
+
+paint bucket
+  shape click -> update_shape fill patch
+  background click -> update_canvas backgroundColor
+
+z-order action
+  context menu -> reorder_shape -> shapes array order changes
+
+undo/redo
+  toolbar/shortcut -> websocket undo/redo -> server history -> op_applied`,
+                    caption: "Editor features use WebSockets when collaborators should see the result live and use the same durable operation pipeline when the result should be saved."
+                },
+                {
+                    kind: "example",
+                    label: "Realtime and recovery flows",
+                    language: "text",
+                    code: `cursor movement
+  canvas coordinates -> cursor message -> Redis fanout -> inverse-scaled remote cursor
+
+durable op miss
+  client observes revision gap -> GET /api/canvases/:id -> replace local state
+
+rate-limited write
+  backend rejects before persistence -> rate_limited snapshot to sender
+  peers receive preview_reset -> refresh durable state
+
+access removal
+  DELETE member row -> Redis invalidation -> access_removed -> socket close
+
+server scale-out
+  any replica handles HTTP/WS -> PostgreSQL serializes writes
+  Redis fans out transient and committed room events`,
+                    caption: "Recovery flows are explicit product behavior, not incidental error handling. They keep the editor understandable when the network or rate limiter interrupts normal collaboration."
+                }
+            ]
+        },
+        {
+            id: "design-lessons",
+            eyebrow: "XI",
             title: "Design Choices and Tradeoffs",
             blocks: [
                 {
