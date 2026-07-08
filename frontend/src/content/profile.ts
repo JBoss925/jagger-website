@@ -668,9 +668,9 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language and compiler implemented end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, pattern matching, polymorphic collections, WebAssembly emission, and a browser-native Monaco playground**.",
+        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, pattern matching, polymorphic collections, and WebAssembly emission**.",
       impact:
-        "The compiler pipeline **lexes source text, builds an AST, type-checks declarations and expressions, emits WAT, compiles through WABT, and instantiates the resulting WebAssembly in both the browser editor and Node CLI**. The checker also feeds Monaco diagnostics, hovers, and completions; closure conversion, arrays, lists, maps, higher-order functions, and runtime tests make it a compact language workbench rather than a parser demo.",
+        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, arrays, lists, maps, higher-order functions, and runtime tests. Example programs cover recursion, collection transforms, closures, typed expression flows, and compiler edge cases.",
       stack: [
         "OJaml",
         "TypeScript",
@@ -712,9 +712,9 @@ export const profileContent: ProfileContent = {
       slug: "liveboard",
       title: "LiveBoard",
       description:
-        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/style previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling and alignment controls, and infinite-canvas navigation**.",
+        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/style previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling, and infinite-canvas navigation**.",
       impact:
-        "The architecture is the point: **FastAPI replicas coordinate through Redis Pub/Sub and shared rate-limit counters while PostgreSQL remains the source of truth for revisions, history, memberships, and canvas JSON**. Clients optimistically preview transient operations, reconcile on durable revisions, refresh on revision gaps or rate-limit resets, and keep remote cursors/live canvas state in sync without trusting local history.",
+        "FastAPI replicas coordinate through Redis Pub/Sub and shared rate-limit counters while PostgreSQL tracks revisions, history, memberships, and canvas JSON. Clients reconcile durable revisions, recover from gaps or rate limits, and keep remote cursors in sync.",
       stack: [
         "TypeScript",
         "React",
