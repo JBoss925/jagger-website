@@ -5,12 +5,12 @@ import type { PaperDocument } from "./types";
 
 export const liveboardPaper: PaperDocument = {
     slug: "liveboard",
-    title: "LiveBoard: A Multi-Server Realtime Whiteboard With Durable Collaboration State",
+    title: "LiveBoard: A Distributed Realtime Whiteboard With Durable Collaboration State",
     subtitle: "A full-stack collaborative canvas system with Redis-coordinated backend replicas, PostgreSQL-owned revisions, transient previews, shared undo/redo, access control, presence, and Drive-style organization.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, horizontally scalable FastAPI backend replicas, PostgreSQL-owned durable state, Redis-coordinated ephemeral state, and WebSocket collaboration rooms. The application supports realtime shape editing, presence cursors, invite and removal flows, Drive-style canvas/folder organization, infinite-canvas navigation, grouping, z-ordering, text editing with whole-object style and alignment controls, opacity, stroke width, rotation, multi-selection transforms, rate-limit recovery, and shared undo/redo. The central architectural choice is that durable canvas state, revision ordering, and undo/redo history remain owned by PostgreSQL and the backend, while Redis is used only for cross-server fanout, presence, invalidation, and counters. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against locked state, and broadcast to connected editors. This paper describes the data model, operation algebra, collaboration protocol, multi-server runtime, access lifecycle, frontend interaction model, and operational tradeoffs in sufficient detail to reconstruct the system.",
-    description: "A technical paper for LiveBoard: Redis-backed multi-server realtime collaboration, PostgreSQL durable state, WebSocket rooms, server-side history, rate-limit recovery, access control, Drive-style folders, and SVG editor transforms.",
+    abstract: "LiveBoard is a collaborative whiteboard application built around a React/SVG editor, horizontally scalable FastAPI backend replicas, PostgreSQL-owned durable state, Redis-coordinated ephemeral state, and WebSocket collaboration rooms. The application supports realtime shape editing, presence cursors, invite and removal flows, Drive-style canvas/folder organization, infinite-canvas navigation, grouping, z-ordering, text editing with whole-object style and alignment controls, opacity, stroke width, rotation, multi-selection transforms, rate-limit recovery, and shared undo/redo. The central architectural choice is that durable canvas state, revision ordering, and undo/redo history remain owned by PostgreSQL and the backend, while Redis is used only for cross-server fanout, presence, invalidation, and counters. User actions are represented as typed operations, applied under an authoritative canvas revision, inverted against locked state, and broadcast to connected editors. This paper describes the data model, operation algebra, collaboration protocol, distributed runtime, access lifecycle, frontend interaction model, and operational tradeoffs in sufficient detail to reconstruct the system.",
+    description: "A technical paper for LiveBoard: Redis-backed distributed realtime collaboration, PostgreSQL durable state, WebSocket rooms, server-side history, rate-limit recovery, access control, Drive-style folders, and SVG editor transforms.",
     categories: ["Systems", "Research Notes"],
     tags: [
         "TypeScript",
@@ -20,7 +20,7 @@ export const liveboardPaper: PaperDocument = {
         "Redis",
         "WebSockets",
         "Docker",
-        "Multi-Server",
+        "Distributed",
         "Realtime Collaboration",
         "Undo Redo",
         "SVG Editing",
@@ -358,9 +358,9 @@ receives op_applied revision = 19
             ]
         },
         {
-            id: "multi-server-runtime",
+            id: "distributed-runtime",
             eyebrow: "VI",
-            title: "Multi-Server Runtime",
+            title: "Distributed Runtime",
             blocks: [
                 {
                     kind: "paragraph",
@@ -435,7 +435,7 @@ curl http://localhost:3001/health
                 },
                 {
                     kind: "paragraph",
-                    text: "The single-process development path still works when REDIS_URL is unset: fanout, presence, and rate limits fall back to in-memory process state. That fallback is useful for simple backend work, but it is intentionally not treated as a multi-server mode."
+                    text: "The single-process development path still works when REDIS_URL is unset: fanout, presence, and rate limits fall back to in-memory process state. That fallback is useful for simple backend work, but it is intentionally not treated as a distributed mode."
                 }
             ]
         },
@@ -597,7 +597,7 @@ canvas_history
                 },
                 {
                     kind: "paragraph",
-                    text: "The revision column is the bridge between those two worlds. It is stored with the canvas row, advanced under the same lock that writes JSON state, and echoed to clients in every durable WebSocket message. That single number lets clients detect missed operations, lets the UI display saved progress, and gives multi-server fanout a convergence check without requiring sticky sessions or durable Redis streams."
+                    text: "The revision column is the bridge between those two worlds. It is stored with the canvas row, advanced under the same lock that writes JSON state, and echoed to clients in every durable WebSocket message. That single number lets clients detect missed operations, lets the UI display saved progress, and gives distributed fanout a convergence check without requiring sticky sessions or durable Redis streams."
                 },
                 {
                     kind: "diagram",

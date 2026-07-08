@@ -712,7 +712,7 @@ export const profileContent: ProfileContent = {
       slug: "liveboard",
       title: "LiveBoard",
       description:
-        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/style previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling, and infinite-canvas navigation**.",
+        "A distributed collaborative whiteboard with **realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/style previews, shared undo/redo history, live cursors, presence indicators, file management, access control, grouping, transforms, text styling, and infinite-canvas navigation**.",
       impact:
         "FastAPI replicas coordinate through Redis Pub/Sub and shared rate-limit counters while PostgreSQL tracks revisions, history, memberships, and canvas JSON. Clients reconcile durable revisions, recover from gaps or rate limits, and keep remote cursors in sync.",
       stack: [
@@ -728,7 +728,7 @@ export const profileContent: ProfileContent = {
         "Docker Compose",
         "SVG editor",
         "Realtime collaboration",
-        "Multi-server support",
+        "Distributed support",
         "Redis Pub/Sub",
         "Durable storage",
         "Transient operations",

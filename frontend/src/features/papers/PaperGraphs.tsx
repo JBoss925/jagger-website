@@ -131,7 +131,7 @@ function LiveBoardRuntimeGraph() {
   ] as const;
 
   return (
-    <svg viewBox="0 0 780 286" role="img" aria-label="LiveBoard multi-server runtime graph">
+    <svg viewBox="0 0 780 286" role="img" aria-label="LiveBoard distributed runtime graph">
       <defs>
         <marker id="paper-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" />
