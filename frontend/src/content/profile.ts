@@ -712,7 +712,7 @@ export const profileContent: ProfileContent = {
       slug: "liveboard",
       title: "LiveBoard",
       description:
-        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/color previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling and alignment controls, and infinite-canvas navigation**.",
+        "A production-style collaborative whiteboard with **multi-server realtime sync, Redis-backed fanout, durable PostgreSQL canvas state, transient drag/style previews, presence cursors, shared undo/redo, folders, access control, grouping, transforms, text styling and alignment controls, and infinite-canvas navigation**.",
       impact:
         "The architecture is the point: **FastAPI replicas coordinate through Redis Pub/Sub and shared rate-limit counters while PostgreSQL remains the source of truth for revisions, history, memberships, and canvas JSON**. Clients optimistically preview transient operations, reconcile on durable revisions, refresh on revision gaps or rate-limit resets, and keep remote cursors/live canvas state in sync without trusting local history.",
       stack: [
