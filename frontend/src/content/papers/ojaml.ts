@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, record and algebraic data type declarations, value and function parameter annotations, pattern matching with tuple, record, list, fixed-length array, set, map, and constructor destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, record and algebraic data type declarations with type parameters, value and function parameter annotations, pattern matching with tuple, record, list, fixed-length array, set, map, and constructor destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, polymorphic algebraic data type parameters, exceptions, or garbage collection yet."
+                        "The current scope is finite: no modules, exceptions, or garbage collection yet."
                     ]
                 }
             ],
@@ -89,7 +89,7 @@ export const ojamlPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "An OJaml program is a sequence of top-level let declarations, record type declarations, and non-generic algebraic data type declarations. A let declaration may be recursive, may bind parameters, may annotate those parameters, may carry a value annotation, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, constructor application, and match expressions."
+                    text: "An OJaml program is a sequence of top-level let declarations, record type declarations, and algebraic data type declarations with optional type parameters. A let declaration may be recursive, may bind parameters, may annotate those parameters, may carry a value annotation, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, constructor application, and match expressions."
                 },
                 {
                     kind: "example",
@@ -107,7 +107,7 @@ export const ojamlPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, record type declarations use type person = { name: string; year: int }, algebraic data type declarations use type status = Pending | Done of int, value annotations use let ada : person = ..., parameter annotations use let describe (person : person) = ..., and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which avoids module parsing while still allowing namespaced builtins."
+                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, record type declarations use type person = { name: string; year: int }, algebraic data type declarations use type status = Pending | Done of int and type 'a option = None | Some of 'a, value annotations use let ada : person = ... or let value : int option = ..., parameter annotations use let describe (person : person) = ..., and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which avoids module parsing while still allowing namespaced builtins."
                 },
                 {
                     kind: "example",
@@ -138,7 +138,7 @@ let main =
                     kind: "bullets",
                     items: [
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, braces, pipes, arrows, equals, separators, and EOF.",
-                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group values by position, zero-based postfix projection reads tuple elements, record type declarations name record shapes, algebraic data type declarations name constructor sets, structural records group values by label, and fst/snd remain pair-specific helpers.",
+                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group values by position, zero-based postfix projection reads tuple elements, record type declarations name record shapes, algebraic data type declarations name constructor sets and type parameters, structural records group values by label, and fst/snd remain pair-specific helpers.",
                         "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, and int-only mod.",
                         "Patterns cover int, float, string, bool, unit, tuple structure, record structure, list structure, fixed-length array structure, set structure, map structure, constructor structure, wildcard, and variable catch-all patterns."
                     ]
@@ -217,7 +217,7 @@ Pattern
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for tuples/records/arrays/lists/sets/maps, nominal variants, and function types. Record type declarations add named record shapes to the checker environment; algebraic data type declarations add nominal variant types and constructor bindings. Value and function parameter annotations resolve those names and unify the annotated position with the declared shape. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
+                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for tuples/records/arrays/lists/sets/maps, nominal variants with type arguments, and function types. Record type declarations add named record shapes to the checker environment; algebraic data type declarations add nominal variant type constructors and constructor bindings. Value and function parameter annotations resolve those names and unify the annotated position with the declared shape. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
                 },
                 {
                     kind: "paragraph",
@@ -235,8 +235,9 @@ Pattern
   app("tuple", [item0, item1, ...])
   app("record", {field: type, ...})
   app("map", [key, value])
+  variant("option", [item])
   fn(params[], result)`,
-                    caption: "Heap-backed compound values are not erased during checking; tuple positions, record labels, collection elements, map keys, and map values remain visible to unification."
+                    caption: "Heap-backed compound values are not erased during checking; tuple positions, record labels, collection elements, map keys, map values, and variant type arguments remain visible to unification."
                 },
                 {
                     kind: "example",
@@ -501,7 +502,7 @@ let main =
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The WebAssembly backend uses i32 as the universal value slot: every OJaml value that crosses a generated WebAssembly function boundary is carried in an i32 parameter or result. That does not mean every source value is an immediate integer. Integers and booleans are immediate i32 values, unit is zero, and floats are boxed f64 heap objects addressed by i32 pointers. Strings, tuples, records, arrays, lists, sets, maps, and closures are also heap pointers. WebAssembly function signatures stay uniform, while runtime interpretation depends on the static type chosen before emission."
+                    text: "The WebAssembly backend uses i32 as the universal value slot: every OJaml value that crosses a generated WebAssembly function boundary is carried in an i32 parameter or result. That does not mean every source value is an immediate integer. Integers and booleans are immediate i32 values, unit is zero, and floats are boxed f64 heap objects addressed by i32 pointers. Strings, tuples, records, algebraic data type values, arrays, lists, sets, maps, and closures are also heap pointers. WebAssembly function signatures stay uniform, while runtime interpretation depends on the static type chosen before emission."
                 },
                 {
                     kind: "paragraph",
@@ -527,6 +528,10 @@ record pointer r
   r + 0   field count
   r + 4   sorted field 0
   r + 8   sorted field 1
+
+variant pointer v
+  v + 0   constructor tag
+  v + 4   payload (when present)
 
 list pointer l
   l + 0   head
@@ -554,12 +559,12 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "The heap begins after static string data. Allocation is bump-pointer allocation: alloc(bytes) returns the current heap pointer and advances it by the requested byte count. There is no garbage collector in the current implementation. Allocated tuples, records, arrays, cons cells, set entries, map entries, and closures live for the lifetime of the module instance."
+                    text: "The heap begins after static string data. Allocation is bump-pointer allocation: alloc(bytes) returns the current heap pointer and advances it by the requested byte count. There is no garbage collector in the current implementation. Allocated tuples, records, variant values, arrays, cons cells, set entries, map entries, and closures live for the lifetime of the module instance."
                 },
                 {
                     kind: "equation",
                     label: "Uniform lowering",
-                    tex: "\\tau \\in \\{int,float,bool,unit,string,tuple,record,array,list,set,map,fn\\}\\Rightarrow \\operatorname{wasm}(\\tau)=i32",
+                    tex: "\\tau \\in \\{int,float,bool,unit,string,tuple,record,variant,array,list,set,map,fn\\}\\Rightarrow \\operatorname{wasm}(\\tau)=i32",
                     caption: "Static types differ in the checker, but emitted runtime values share the same WebAssembly value type."
                 },
                 {
@@ -714,14 +719,19 @@ closure pointer c
                     kind: "example",
                     label: "Constructor destructuring",
                     language: "ocaml",
-                    code: `type status = Pending | Done of int | Failed of string
+                    code: `type 'a option = None | Some of 'a
+type ('ok, 'err) result = Ok of 'ok | Error of 'err
 
-let score status =
-  match status with
-  | Pending -> 0
-  | Done value -> value
-  | Failed message -> String.length message`,
-                    caption: "Non-generic algebraic data types create nominal variant types and constructor bindings. Payload constructor patterns bind their payload under the declared payload type."
+let score maybe =
+  match maybe with
+  | None -> 0
+  | Some value -> value
+
+let label result =
+  match result with
+  | Ok name -> String.length name
+  | Error code -> code`,
+                    caption: "Algebraic data type declarations create nominal variant type constructors and constructor bindings. Payload constructor patterns bind their payload under the declared, freshly instantiated payload type."
                 },
                 {
                     kind: "equation",
@@ -762,7 +772,7 @@ let score status =
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, record and algebraic data type declarations, value annotations, function parameter annotations, structural records, field access, tuple/record/list/array/set/map/constructor destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, polymorphic algebraic data type parameters, exceptions, or a garbage collector."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, structural records, field access, tuple/record/list/array/set/map/constructor destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, exceptions, or a garbage collector."
                 },
                 {
                     kind: "paragraph",
@@ -840,7 +850,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations, value annotations, function parameter annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -884,6 +894,7 @@ hover Map.get:
                         "Local recursion tests cover local function syntax, self-capture, captured outer locals, non-function rejection, editor examples, and hover strings.",
                         "Tuple tests cover parsing, indexed projection, fst/snd helpers, nested formatting, tuple pattern destructuring, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
                         "Record tests cover parsing, field access, sorted-label formatting, collection nesting, record pattern destructuring, closure captures, missing-field diagnostics, duplicate-label diagnostics, direct-main rejection, editor examples, and hover strings.",
+                        "Algebraic data type tests cover nullary and payload constructors, polymorphic option/result-style declarations, generic record aliases, constructor exhaustiveness, parameter arity diagnostics, mismatched payload diagnostics, editor examples, and hover strings.",
                         "Array pattern tests cover parsing, empty and fixed-length patterns, nested element patterns, closure-bound matches, type mismatches, conservative exhaustiveness, editor examples, and hover strings.",
                         "List pattern tests cover [], right-associative cons patterns, recursive destructuring, closure captures, conservative exhaustiveness, diagnostics, editor examples, and hover strings.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
