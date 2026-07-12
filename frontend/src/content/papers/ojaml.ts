@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, tuples, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, tuples, pair projection, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, records, algebraic data type declarations, exceptions, tuple projection/destructuring, garbage collection, or structural tuple/collection patterns yet."
+                        "The current scope is finite: no modules, records, algebraic data type declarations, exceptions, tuple destructuring or general tuple projection beyond pairs, garbage collection, or structural tuple/collection patterns yet."
                     ]
                 }
             ],
@@ -138,7 +138,7 @@ let main =
                     kind: "bullets",
                     items: [
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, pipes, arrows, equals, separators, and EOF.",
-                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group two or more values.",
+                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group two or more values, and fst/snd project pairs.",
                         "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, and int-only mod.",
                         "Patterns cover int, float, string, bool, unit, wildcard, and variable catch-all patterns."
                     ]
@@ -258,7 +258,7 @@ Pattern
                 },
                 {
                     kind: "paragraph",
-                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, tuple arity or element mismatches, non-exhaustive matches without wildcard or variable catch-all arms, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
+                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, tuple arity or element mismatches, non-exhaustive matches without wildcard or variable catch-all arms, invalid pair projection, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
                 },
                 {
                     kind: "equation",
@@ -332,7 +332,7 @@ Pattern
                 {
                     kind: "equation",
                     label: "Scalar and string API",
-                    tex: "\\begin{aligned}\\operatorname{Float.of\\_int}&: int \\rightarrow float\\\\\\operatorname{Float.to\\_int}&: float \\rightarrow int\\\\\\operatorname{String.concat}&: string \\rightarrow string \\rightarrow string\\\\\\operatorname{String.length}&: string \\rightarrow int\\\\\\operatorname{String.split}&: string \\rightarrow string \\rightarrow string\\;list\\\\\\operatorname{to\\_string}&: 'a \\rightarrow string\\end{aligned}",
+                    tex: "\\begin{aligned}\\operatorname{Float.of\\_int}&: int \\rightarrow float\\\\\\operatorname{Float.to\\_int}&: float \\rightarrow int\\\\\\operatorname{String.concat}&: string \\rightarrow string \\rightarrow string\\\\\\operatorname{String.length}&: string \\rightarrow int\\\\\\operatorname{String.split}&: string \\rightarrow string \\rightarrow string\\;list\\\\\\operatorname{to\\_string}&: 'a \\rightarrow string\\\\\\operatorname{fst}&: ('a,'b) \\rightarrow 'a\\\\\\operatorname{snd}&: ('a,'b) \\rightarrow 'b\\end{aligned}",
                     caption: "Scalar conversion and string helpers are typed in the same table as collection helpers."
                 },
                 {
@@ -350,6 +350,7 @@ Pattern
                     items: [
                         "print and println are checked through custom call logic: they accept int, float, or string and return unit.",
                         "to_string accepts any value and formats primitives, tuples, arrays, lists, sets, maps, and functions for output.",
+                        "fst and snd are pair-specific projections; they reject non-tuples and tuples whose arity is not exactly two.",
                         "Array.iter and List.iter require callbacks returning unit.",
                         "Array.fold_left and List.fold_left keep accumulator type independent from element type.",
                         "Polymorphic builtins compile to uniform i32 functions at runtime; the checker preserves their static element, key, value, and callback relationships."
@@ -558,7 +559,7 @@ closure pointer c
                     kind: "bullets",
                     items: [
                         "Array.make traps negative lengths, and Array.get/Array.set trap null arrays, negative indexes, and indexes greater than or equal to the stored length.",
-                        "Tuple values allocate fixed-size blocks and rely on the checker for arity and element-position consistency.",
+                        "Tuple values allocate fixed-size blocks and rely on the checker for arity and element-position consistency; fst and snd lower to fixed slot loads from pair blocks.",
                         "List.empty, Set.empty, and Map.empty are represented by null pointer 0; List.head and List.tail trap on empty lists.",
                         "Set.add prepends a value only when Set.has cannot find an equal existing value; float sets compare unboxed f64 payloads.",
                         "Map.set prepends a key/value entry, making newer bindings shadow older equal keys.",
@@ -695,7 +696,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, tuple projection/destructuring, exceptions, a garbage collector, or structural tuple/list/set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, pair projection, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, tuple destructuring or general tuple projection beyond pairs, exceptions, a garbage collector, or structural tuple/list/set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -773,7 +774,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking and formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -813,7 +814,7 @@ hover Map.get:
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
-                        "Tuple tests cover parsing, nested formatting, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
+                        "Tuple tests cover parsing, fst/snd projection, nested formatting, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
                         "Editor tests assert diagnostics and hover strings for inferred local and stdlib types."
                     ]
@@ -859,7 +860,7 @@ tests/*.test.ts     positive runtime tests and negative checker tests`,
                 {
                     kind: "bullets",
                     items: [
-                        "Adding tuple destructuring requires tuple patterns, binder extraction by element offset, exhaustiveness interaction, examples, and tests.",
+                        "Adding tuple destructuring or general tuple projection requires tuple patterns or indexed access syntax, binder extraction by element offset, exhaustiveness interaction, examples, and tests.",
                         "Adding records requires labels in the type representation, deterministic field layout, pattern or access syntax, and hover metadata for fields.",
                         "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
                         "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
