@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -373,7 +373,7 @@ Pattern
                 },
                 {
                     kind: "paragraph",
-                    text: "Soundness here means the compiler never emits direct WebAssembly for a program with unresolved names, inconsistent branches, impossible call arity, or collection access whose key/value relationship is statically contradictory. It does not yet mean total runtime safety for every pointer operation; bounds checks, null checks for head/get, and garbage collection are explicitly outside the current core."
+                    text: "Soundness here means the compiler never emits direct WebAssembly for a program with unresolved names, inconsistent branches, impossible call arity, or collection access whose key/value relationship is statically contradictory. Runtime helpers also trap invalid collection access such as out-of-bounds array reads, empty-list head/tail, and missing map keys. This is still not a full safety proof for every pointer operation: garbage collection and recoverable language-level exceptions are outside the current core."
                 },
                 {
                     kind: "equation",
@@ -551,11 +551,11 @@ closure pointer c
                 {
                     kind: "bullets",
                     items: [
-                        "Array.get and Array.set compute address base + 4 + index * 4.",
-                        "List.empty, Set.empty, and Map.empty are represented by null pointer 0.",
+                        "Array.make traps negative lengths, and Array.get/Array.set trap null arrays, negative indexes, and indexes greater than or equal to the stored length.",
+                        "List.empty, Set.empty, and Map.empty are represented by null pointer 0; List.head and List.tail trap on empty lists.",
                         "Set.add prepends a value only when Set.has cannot find an equal existing value; float sets compare unboxed f64 payloads.",
                         "Map.set prepends a key/value entry, making newer bindings shadow older equal keys.",
-                        "Current runtime helpers do not implement general bounds or null safety checks."
+                        "Map.get traps if no matching key exists; Map.has remains the non-trapping presence check."
                     ]
                 }
             ],
@@ -692,7 +692,7 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "The runtime makes a similar bargain. Bump allocation and linked heap layouts keep allocation code short and predictable, but allocated data lives for the lifetime of the module instance. Bounds checks and null checks are limited. Browser-sized examples tolerate that memory discipline; a production ML runtime would need collection, stronger bounds checks, and better failure recovery."
+                    text: "The runtime makes a similar bargain. Bump allocation and linked heap layouts keep allocation code short and predictable, but allocated data lives for the lifetime of the module instance. Collection helpers now trap common invalid accesses instead of reading arbitrary memory, but those traps are not recoverable OJaml exceptions. A production ML runtime would need garbage collection, richer failure values, and a way to recover from or report runtime faults inside the language."
                 },
                 {
                     kind: "bullets",
@@ -766,7 +766,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -804,6 +804,7 @@ hover Map.get:
                         "Feature tests cover each supported syntax and standard-library family.",
                         "Compiler tests inspect generated WAT for scalar programs.",
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
+                        "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
                         "Editor tests assert diagnostics and hover strings for inferred local and stdlib types."
