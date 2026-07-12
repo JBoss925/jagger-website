@@ -668,9 +668,9 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, stdlib opens, tuples, records, polymorphic ADTs, structural pattern matching, polymorphic collections, and WebAssembly emission**.",
+        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, modules/opens, tuples, records, polymorphic ADTs, structural pattern matching, polymorphic collections, and WebAssembly emission**.",
       impact:
-        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, high-arity and staged function values, floats, strings, stdlib opens, sequencing/pipelines, tuples, polymorphic ADTs, records, collection patterns, sets, maps, runtime access checks, and compiler-specialization coverage.",
+        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, high-arity and staged function values, floats, strings, modules/opens, sequencing/pipelines, tuples, polymorphic ADTs, records, collection patterns, sets, maps, runtime access checks, and compiler-specialization coverage.",
       stack: [
         "OJaml",
         "TypeScript",
@@ -687,7 +687,7 @@ export const profileContent: ProfileContent = {
         "Hindley-Milner typing",
         "Type inference",
         "Polymorphic functions",
-        "Stdlib opens",
+        "Modules/opens",
         "Tuple projection",
         "Closure conversion",
         "Structural patterns",
