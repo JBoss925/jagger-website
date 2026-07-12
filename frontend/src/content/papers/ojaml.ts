@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching, first-class functions, closures, ints, floats, strings, unit, tuples, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -69,7 +69,7 @@ export const ojamlPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The main boundary is between the language surface and the representation the machine runs. The source language has ints, floats, functions, arrays, lists, sets, maps, strings, and pattern matching. The emitted WebAssembly mostly sees immediate integers and heap pointers. The type checker records the meaning that the backend erases from the raw i32 signatures."
+                    text: "The main boundary is between the language surface and the representation the machine runs. The source language has ints, floats, tuples, functions, arrays, lists, sets, maps, strings, and pattern matching. The emitted WebAssembly mostly sees immediate integers and heap pointers. The type checker records the meaning that the backend erases from the raw i32 signatures."
                 },
                 {
                     kind: "bullets",
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, records, tuples, algebraic data type declarations, exceptions, garbage collection, or structural collection patterns yet."
+                        "The current scope is finite: no modules, records, algebraic data type declarations, exceptions, tuple projection/destructuring, garbage collection, or structural tuple/collection patterns yet."
                     ]
                 }
             ],
@@ -89,7 +89,7 @@ export const ojamlPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, variables, unary and binary operations, conditionals, local lets, function application, anonymous functions, and match expressions."
+                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, tuples, variables, unary and binary operations, conditionals, local lets, function application, anonymous functions, and match expressions."
                 },
                 {
                     kind: "example",
@@ -127,8 +127,8 @@ let main =
                 {
                     kind: "equation",
                     label: "Expression grammar",
-                    tex: "e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;x=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
-                    caption: "The expression set covers the constructs needed for recursion, higher-order functions, and collection programs."
+                    tex: "e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid (e, e^{+})\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;x=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
+                    caption: "The expression set covers the constructs needed for recursion, higher-order functions, tuple grouping, and collection programs."
                 },
                 {
                     kind: "paragraph",
@@ -138,7 +138,7 @@ let main =
                     kind: "bullets",
                     items: [
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, pipes, arrows, equals, separators, and EOF.",
-                        "Supported primitive values are int, float, bool, string, and unit.",
+                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group two or more values.",
                         "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, and int-only mod.",
                         "Patterns cover int, float, string, bool, unit, wildcard, and variable catch-all patterns."
                     ]
@@ -171,7 +171,7 @@ Declaration
   span: SourceSpan
 
 Expr
-  Int | Float | String | Bool | Unit | Var
+  Int | Float | String | Bool | Unit | Tuple | Var
   Unary | Binary | If | LetIn
   Call | Fun | Match
 
@@ -212,7 +212,7 @@ Pattern
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for arrays/lists/sets/maps, and function types. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
+                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for tuples/arrays/lists/sets/maps, and function types. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
                 },
                 {
                     kind: "paragraph",
@@ -227,9 +227,10 @@ Pattern
   app("array", [elem])
   app("list", [elem])
   app("set", [elem])
+  app("tuple", [item0, item1, ...])
   app("map", [key, value])
   fn(params[], result)`,
-                    caption: "Collections are not erased during checking; their element, key, and value relationships remain visible to unification."
+                    caption: "Heap-backed compound values are not erased during checking; tuple positions, collection elements, map keys, and map values remain visible to unification."
                 },
                 {
                     kind: "example",
@@ -257,7 +258,7 @@ Pattern
                 },
                 {
                     kind: "paragraph",
-                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, non-exhaustive matches without wildcard or variable catch-all arms, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
+                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, tuple arity or element mismatches, non-exhaustive matches without wildcard or variable catch-all arms, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
                 },
                 {
                     kind: "equation",
@@ -348,7 +349,7 @@ Pattern
                     kind: "bullets",
                     items: [
                         "print and println are checked through custom call logic: they accept int, float, or string and return unit.",
-                        "to_string accepts any value and formats primitives, arrays, lists, sets, maps, and functions for output.",
+                        "to_string accepts any value and formats primitives, tuples, arrays, lists, sets, maps, and functions for output.",
                         "Array.iter and List.iter require callbacks returning unit.",
                         "Array.fold_left and List.fold_left keep accumulator type independent from element type.",
                         "Polymorphic builtins compile to uniform i32 functions at runtime; the checker preserves their static element, key, value, and callback relationships."
@@ -493,11 +494,11 @@ let main =
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The WebAssembly backend uses i32 as the universal value slot: every OJaml value that crosses a generated WebAssembly function boundary is carried in an i32 parameter or result. That does not mean every source value is an immediate integer. Integers and booleans are immediate i32 values, unit is zero, and floats are boxed f64 heap objects addressed by i32 pointers. Strings, arrays, lists, sets, maps, and closures are also heap pointers. WebAssembly function signatures stay uniform, while runtime interpretation depends on the static type chosen before emission."
+                    text: "The WebAssembly backend uses i32 as the universal value slot: every OJaml value that crosses a generated WebAssembly function boundary is carried in an i32 parameter or result. That does not mean every source value is an immediate integer. Integers and booleans are immediate i32 values, unit is zero, and floats are boxed f64 heap objects addressed by i32 pointers. Strings, tuples, arrays, lists, sets, maps, and closures are also heap pointers. WebAssembly function signatures stay uniform, while runtime interpretation depends on the static type chosen before emission."
                 },
                 {
                     kind: "paragraph",
-                    text: "The backend tradeoff is representation opacity. Uniform i32 values give direct calls, indirect calls, and polymorphic collection helpers the same WebAssembly signature shape. The cost is that WebAssembly itself no longer knows whether an i32 is an immediate integer, a boxed-float pointer, a string pointer, a list pointer, a set pointer, or a closure pointer. OJaml relies on the checker and specialization pass to preserve that meaning before emission."
+                    text: "The backend tradeoff is representation opacity. Uniform i32 values give direct calls, indirect calls, and polymorphic collection helpers the same WebAssembly signature shape. The cost is that WebAssembly itself no longer knows whether an i32 is an immediate integer, a boxed-float pointer, a string pointer, a tuple pointer, a list pointer, a set pointer, or a closure pointer. OJaml relies on the checker and specialization pass to preserve that meaning before emission."
                 },
                 {
                     kind: "diagram",
@@ -509,6 +510,11 @@ array pointer a
   a + 0   length
   a + 4   element 0
   a + 8   element 1
+
+tuple pointer t
+  t + 0   arity
+  t + 4   item 0
+  t + 8   item 1
 
 list pointer l
   l + 0   head
@@ -536,12 +542,12 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "The heap begins after static string data. Allocation is bump-pointer allocation: alloc(bytes) returns the current heap pointer and advances it by the requested byte count. There is no garbage collector in the current implementation. Allocated arrays, cons cells, set entries, map entries, and closures live for the lifetime of the module instance."
+                    text: "The heap begins after static string data. Allocation is bump-pointer allocation: alloc(bytes) returns the current heap pointer and advances it by the requested byte count. There is no garbage collector in the current implementation. Allocated tuples, arrays, cons cells, set entries, map entries, and closures live for the lifetime of the module instance."
                 },
                 {
                     kind: "equation",
                     label: "Uniform lowering",
-                    tex: "\\tau \\in \\{int,float,bool,unit,string,array,list,set,map,fn\\}\\Rightarrow \\operatorname{wasm}(\\tau)=i32",
+                    tex: "\\tau \\in \\{int,float,bool,unit,string,tuple,array,list,set,map,fn\\}\\Rightarrow \\operatorname{wasm}(\\tau)=i32",
                     caption: "Static types differ in the checker, but emitted runtime values share the same WebAssembly value type."
                 },
                 {
@@ -552,6 +558,7 @@ closure pointer c
                     kind: "bullets",
                     items: [
                         "Array.make traps negative lengths, and Array.get/Array.set trap null arrays, negative indexes, and indexes greater than or equal to the stored length.",
+                        "Tuple values allocate fixed-size blocks and rely on the checker for arity and element-position consistency.",
                         "List.empty, Set.empty, and Map.empty are represented by null pointer 0; List.head and List.tail trap on empty lists.",
                         "Set.add prepends a value only when Set.has cannot find an equal existing value; float sets compare unboxed f64 payloads.",
                         "Map.set prepends a key/value entry, making newer bindings shadow older equal keys.",
@@ -623,7 +630,7 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "Expression emission follows the AST. Literals become constants, boxed floats, or string offsets. Binary operators become i32 or f64 operations depending on checked expression shape. Power is right-associative; int ** int lowers through an integer result helper, while any float operand routes through pow_f64 and returns a boxed float. Local lets become blocks that set locals then evaluate the body. Conditionals and matches become structured WebAssembly if expressions. Function values become closure pointers."
+                    text: "Expression emission follows the AST. Literals become constants, boxed floats, or string offsets. Tuple expressions allocate a fixed-size block, store the arity, then store each element in order. Binary operators become i32 or f64 operations depending on checked expression shape. Power is right-associative; int ** int lowers through an integer result helper, while any float operand routes through pow_f64 and returns a boxed float. Local lets become blocks that set locals then evaluate the body. Conditionals and matches become structured WebAssembly if expressions. Function values become closure pointers."
                 },
                 {
                     kind: "bullets",
@@ -688,7 +695,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, tuples, exceptions, a garbage collector, or structural list/set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, tuple projection/destructuring, exceptions, a garbage collector, or structural tuple/list/set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -766,7 +773,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking and formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -806,6 +813,7 @@ hover Map.get:
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
+                        "Tuple tests cover parsing, nested formatting, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
                         "Editor tests assert diagnostics and hover strings for inferred local and stdlib types."
                     ]
@@ -846,12 +854,12 @@ tests/*.test.ts     positive runtime tests and negative checker tests`,
                 },
                 {
                     kind: "paragraph",
-                    text: "The second cross-file invariant is representation agreement. The checker distinguishes int, float, bool, string, unit, arrays, lists, sets, maps, and functions. The emitter erases those distinctions to i32 only after type checking. Runtime helpers then interpret the i32 according to the static type that selected the helper."
+                    text: "The second cross-file invariant is representation agreement. The checker distinguishes int, float, bool, string, unit, tuples, arrays, lists, sets, maps, and functions. The emitter erases those distinctions to i32 only after type checking. Runtime helpers then interpret the i32 according to the static type that selected the helper."
                 },
                 {
                     kind: "bullets",
                     items: [
-                        "Adding tuples requires an AST node, a tuple type constructor, unification over element positions, a heap layout, WAT emitter cases, examples, and tests.",
+                        "Adding tuple destructuring requires tuple patterns, binder extraction by element offset, exhaustiveness interaction, examples, and tests.",
                         "Adding records requires labels in the type representation, deterministic field layout, pattern or access syntax, and hover metadata for fields.",
                         "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
                         "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
