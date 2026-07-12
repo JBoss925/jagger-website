@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching with tuple, record, list, and fixed-length array destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, record type declarations, value annotations, pattern matching with tuple, record, list, and fixed-length array destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, nominal record type declarations, algebraic data type declarations, exceptions, garbage collection, or structural set/map patterns yet."
+                        "The current scope is finite: no modules, algebraic data type declarations, exceptions, garbage collection, function parameter annotations, or structural set/map patterns yet."
                     ]
                 }
             ],
@@ -89,7 +89,7 @@ export const ojamlPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, and match expressions."
+                    text: "An OJaml program is a sequence of top-level let declarations and record type declarations. A let declaration may be recursive, may bind parameters, may carry a value annotation, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, and match expressions."
                 },
                 {
                     kind: "example",
@@ -107,7 +107,7 @@ export const ojamlPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which avoids module parsing while still allowing namespaced builtins."
+                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, record type declarations use type person = { name: string; year: int }, value annotations use let ada : person = ..., and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which avoids module parsing while still allowing namespaced builtins."
                 },
                 {
                     kind: "example",
@@ -127,7 +127,7 @@ let main =
                 {
                     kind: "equation",
                     label: "Expression grammar",
-                    tex: "e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid (e, e^{+})\\mid \\{x=e;\\ldots\\}\\mid e.x\\mid e.k\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;\\texttt{rec?}\\;x\\;x^{*}=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
+                    tex: "d ::= \\texttt{type}\\;x=\\{x:\\tau;\\ldots\\}\\mid \\texttt{let}\\;\\texttt{rec?}\\;x\\;x^{*}\\;(:\\tau)?=e\\\\ e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid (e, e^{+})\\mid \\{x=e;\\ldots\\}\\mid e.x\\mid e.k\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;\\texttt{rec?}\\;x\\;x^{*}\\;(:\\tau)?=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
                     caption: "Local function parameters are parsed into anonymous functions; local rec is restricted to function bindings so the compiler can build a self-referential closure."
                 },
                 {
@@ -138,7 +138,7 @@ let main =
                     kind: "bullets",
                     items: [
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, braces, pipes, arrows, equals, separators, and EOF.",
-                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group values by position, zero-based postfix projection reads tuple elements, structural records group values by label, and fst/snd remain pair-specific helpers.",
+                        "Supported primitive values are int, float, bool, string, and unit; tuple expressions group values by position, zero-based postfix projection reads tuple elements, record type declarations name record shapes for value annotations, structural records group values by label, and fst/snd remain pair-specific helpers.",
                         "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, and int-only mod.",
                         "Patterns cover int, float, string, bool, unit, tuple structure, record structure, list structure, fixed-length array structure, wildcard, and variable catch-all patterns."
                     ]
@@ -217,11 +217,11 @@ Pattern
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for tuples/records/arrays/lists/sets/maps, and function types. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
+                    text: "OJaml uses a Hindley-Milner-style constraint system. Types are primitives, type variables, applications for tuples/records/arrays/lists/sets/maps, and function types. Record type declarations add named record shapes to the checker environment; value annotations resolve those names and unify the annotated expression with the declared shape. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as expressions demand relationships between values."
                 },
                 {
                     kind: "paragraph",
-                    text: "In plain terms, inference means type annotations are not required everywhere. The checker invents placeholders, then replaces or links those placeholders as it learns facts from literals, operators, branches, function calls, and standard-library signatures. If two facts disagree, such as a branch being both int and string, the program is rejected before code generation."
+                    text: "In plain terms, inference means type annotations are not required everywhere. The checker invents placeholders, then replaces or links those placeholders as it learns facts from literals, operators, branches, function calls, annotations, and standard-library signatures. If two facts disagree, such as a branch being both int and string or an annotated record missing a declared field, the program is rejected before code generation."
                 },
                 {
                     kind: "diagram",
@@ -734,7 +734,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, structural records, field access, tuple/record/list/array destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, nominal record type declarations, exceptions, a garbage collector, or structural set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, record type declarations, value annotations, structural records, field access, tuple/record/list/array destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, function parameter annotations, exceptions, a garbage collector, or structural set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -812,7 +812,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, tuple projection, pair helpers, tuple, record, list, and array pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record type declarations, value annotations, tuple projection, pair helpers, tuple, record, list, and array pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -903,7 +903,7 @@ tests/*.test.ts     positive runtime tests and negative checker tests`,
                 {
                     kind: "bullets",
                     items: [
-                        "Adding nominal record type declarations requires type-declaration syntax and a way to relate structural record values to named source types.",
+                        "Adding function parameter annotations requires extending parameter parsing and deciding how explicit parameter types interact with polymorphic inference.",
                         "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
                         "Adding array, set, or map patterns requires syntax and exhaustiveness rules that fit their runtime shapes.",
                         "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
