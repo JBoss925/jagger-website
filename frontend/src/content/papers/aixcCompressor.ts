@@ -46,6 +46,10 @@ export const aixcCompressorPaper: PaperDocument = {
                     text: "That premise turns compression into an explicit contract between a file and a predictor. The hard part is not packing bits. The hard part is making sure any conforming decoder can reproduce the same prediction sequence, tokenizer behavior, and residual interpretation without guessing."
                 },
                 {
+                    kind: "paragraph",
+                    text: "This is not magic compression and it is not a claim that a language model makes arbitrary files free. The predictor must either be cheap enough to include, already installed at the decoder, or shared across many related archives. If every file has to carry a large model beside it, the model bytes can overwhelm the archive savings."
+                },
+                {
                     kind: "bullets",
                     items: [
                         "Primary goal: exact round-trip text compression using a deterministic predictor contract.",
@@ -72,7 +76,7 @@ export const aixcCompressorPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "A crucial implementation detail is that both encoder and decoder feed the actual decoded unit back into the predictor state. They do not let an incorrect prediction become the next context item. That keeps one miss from cascading into a permanently divergent decode."
+                    text: "A crucial implementation detail is that both encoder and decoder feed the actual decoded unit back into the predictor state. They do not let an incorrect prediction become the next context item, so one miss cannot cascade into a permanently divergent decode."
                 },
                 {
                     kind: "equation",
@@ -99,7 +103,11 @@ export const aixcCompressorPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The useful representation compresses the decision stream toward its binary entropy and avoids raw literals when the correct unit is still near the top of the predictor ranking. A rank residual, sparse top-k residual, Huffman section, or range/ANS-style section coder can use more of the predictor distribution than a single hit bit."
+                    text: "A stronger representation compresses the decision stream toward its binary entropy and avoids raw literals when the correct unit is still near the top of the predictor ranking. A rank residual, sparse top-k residual, Huffman section, or range/ANS-style section coder can use more of the predictor distribution than a single hit bit."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The economics resemble a spelling test with hints. A perfect predictor costs almost nothing after the seed because every answer is a hit. A poor predictor degenerates toward storing the original text plus overhead. The format earns its keep when the predictor is often right, or at least wrong in a ranked way that can be encoded more cheaply than a full literal."
                 },
                 {
                     kind: "equation",
@@ -411,8 +419,32 @@ type Predictor = {
             ],
         },
         {
-            id: "implementation",
+            id: "predictor-families",
             eyebrow: "XI",
+            title: "Predictor Families and Practical Meaning",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "The repository includes several predictor families because the format question is broader than any one model. The toy backend is for tests, the LZP byte backend is a fast deterministic full-file baseline, trained-byte models explore shared corpus priors, neural-byte models test learned next-byte prediction, and Hugging Face token models test the higher-overhead language-model path."
+                },
+                {
+                    kind: "paragraph",
+                    text: "These predictors have different economics. LZP adapts from the file itself and has no large sidecar, but it cannot know a corpus before seeing it. Trained-byte and neural predictors can be much stronger when the model is shared, but their model files must be counted unless the deployment environment already provides them. Hugging Face models add tokenizer and runtime reproducibility problems on top of model size."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Adaptive byte predictors are easiest to reproduce and benchmark.",
+                        "Shared trained predictors can make archives tiny, but only after the model cost is amortized.",
+                        "Neural predictors are useful research baselines, not currently the fastest or smallest path in the repo.",
+                        "Token-model predictors require exact tokenizer round trips and pinned runtime behavior."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "implementation",
+            eyebrow: "XII",
             title: "Implementation",
             blocks: [
                 {
@@ -421,7 +453,7 @@ type Predictor = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The implementation also includes a local web workbench. It can manage corpora, run compression jobs, inspect archive metadata, train byte or neural sidecar models, and regenerate benchmark reports. That makes AIXC a laboratory for testing predictor contracts rather than a single codec script."
+                    text: "The implementation also includes a local web workbench. It can manage corpora, run compression jobs, inspect archive metadata, train byte or neural sidecar models, and regenerate benchmark reports. AIXC is therefore a laboratory for testing predictor contracts rather than a single codec script."
                 },
                 {
                     kind: "bullets",
@@ -436,7 +468,7 @@ type Predictor = {
         },
         {
             id: "correctness",
-            eyebrow: "XII",
+            eyebrow: "XIII",
             title: "Correctness Conditions",
             blocks: [
                 {
@@ -463,7 +495,7 @@ type Predictor = {
         },
         {
             id: "results",
-            eyebrow: "XIII",
+            eyebrow: "XIV",
             title: "Benchmark Results and Use Cases",
             blocks: [
                 {
@@ -472,11 +504,11 @@ type Predictor = {
                 },
                 {
                     kind: "paragraph",
-                    text: "AIXC becomes more interesting when the predictor is shared out of band. With corpus-specific max-context byte models, the order-64 archive-only ratios beat the best native archive ratio on all five selected logs: Linux reaches 0.012, Zookeeper 0.018, Apache 0.020, Mac 0.022, and Proxifier 0.022. Higher orders can drive some archive-only ratios below 0.001, but the model bytes dominate if each archive has to carry its own model."
+                    text: "AIXC earns its best ratios when the predictor is shared out of band. With corpus-specific max-context byte models, the order-64 archive-only ratios beat the best native archive ratio on all five selected logs: Linux reaches 0.012, Zookeeper 0.018, Apache 0.020, Mac 0.022, and Proxifier 0.022. Higher orders can drive some archive-only ratios below 0.001, but the model bytes dominate if each archive has to carry its own model."
                 },
                 {
                     kind: "paragraph",
-                    text: "That makes the format useful in a specific class of systems: repeated, related text streams where the predictor can be installed once and amortized across many archives. Log families, telemetry exports, generated reports, protocol traces, or corpora distributed with a known sidecar model fit the design better than one-off files. For arbitrary standalone compression, a mature native codec is still the practical choice."
+                    text: "The format fits a specific class of systems: repeated, related text streams where the predictor can be installed once and amortized across many archives. Log families, telemetry exports, generated reports, protocol traces, or corpora distributed with a known sidecar model fit the design better than one-off files. For arbitrary standalone compression, a mature native codec is still the practical choice."
                 },
                 {
                     kind: "bullets",

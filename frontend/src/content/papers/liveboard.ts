@@ -56,6 +56,10 @@ export const liveboardPaper: PaperDocument = {
                     text: "That division is the through-line for the system. The application has to feel immediate while people drag objects, move cursors, and change styles, but it also has to converge to one saved canvas after reconnects, rate limits, missed messages, and multiple backend servers. LiveBoard handles that by treating every user-visible edit as either a temporary preview or a durable operation. Temporary state can be fast and disposable; durable state has to pass through one ordered backend path."
                 },
                 {
+                    kind: "paragraph",
+                    text: "The intended product setting is a focused working session: a small group of authenticated collaborators sketching diagrams, reviewing ideas, or arranging notes while talking elsewhere. LiveBoard optimizes for a shared editable canvas that can be reopened later, not for a public infinite whiteboard with anonymous links, asset uploads, export pipelines, or thousands of simultaneous cursors."
+                },
+                {
                     kind: "equation",
                     label: "LiveBoard state",
                     tex: "\\mathcal{L} = (U, S, C, F, A, H, O, P, W)",
@@ -67,7 +71,11 @@ export const liveboardPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "A useful way to read the runtime diagram is to ask what happens if any one layer disappears. If a browser refreshes, the canvas returns from PostgreSQL. If a Redis Pub/Sub event is missed, the next revision gap causes the client to refresh from PostgreSQL. If one backend replica dies, sockets reconnect through the proxy to another replica that shares the same database and Redis coordination layer. The architecture is designed so the fastest paths are not the only correctness paths."
+                    text: "That separation gives a simple rule for reading the rest of the paper: if losing the data would change the saved canvas, it belongs in PostgreSQL; if losing it would only make the live room briefly less smooth, it can live in Redis or browser memory. This rule explains why previews, cursors, and presence are treated differently from committed shape edits and history entries."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The runtime diagram is a failure map. If a browser refreshes, the canvas returns from PostgreSQL. If a Redis Pub/Sub event is missed, the next revision gap causes the client to refresh from PostgreSQL. If one backend replica dies, sockets reconnect through the proxy to another replica that shares the same database and Redis coordination layer. The fastest paths improve latency, but correctness falls back to durable state."
                 },
                 {
                     kind: "graph",
@@ -100,7 +108,7 @@ export const liveboardPaper: PaperDocument = {
                     items: [
                         "Owned canvases and folders render under Your canvases as one mixed, nested tree.",
                         "Shared canvases render separately under Shared with You and can be searched by canvas name or owner username.",
-                        "Shared canvases can also be filtered by owner, which matters once a user has boards from several collaborators.",
+                        "Shared canvases can also be filtered by owner, which keeps several collaborators' boards from becoming one undifferentiated list.",
                         "Folders can be created at the root, from empty list space, or from an existing folder row to create a nested folder.",
                         "Folders and canvases can be selected together, including single-click, Ctrl/Cmd toggle selection, Shift range selection, and Ctrl/Cmd+A across the owned list.",
                         "Owned canvases and folders support context-menu open, share, rename, create nested folder, delete, and destructive confirmation flows where applicable."
@@ -108,7 +116,7 @@ export const liveboardPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "This distinction matters because it prevents the folder system from becoming a second permissions system. A folder answers the question, \"Where did the owner put this canvas?\" Membership answers the question, \"Who can open this canvas?\" Keeping those questions separate makes deletion, moving, sharing, and rendering easier to reason about. Deleting a folder can delete an owned subtree, while removing a member only removes an access edge."
+                    text: "This distinction prevents the folder system from becoming a second permissions system. A folder answers the question, \"Where did the owner put this canvas?\" Membership answers the question, \"Who can open this canvas?\" Keeping those questions separate makes deletion, moving, sharing, and rendering easier to reason about. Deleting a folder can delete an owned subtree, while removing a member only removes an access edge."
                 },
                 {
                     kind: "equation",
@@ -195,7 +203,11 @@ drag owned item
                 },
                 {
                     kind: "paragraph",
-                    text: "The shape model is intentionally plain. Instead of building a deep object hierarchy with separate tables for rectangles, ellipses, text, groups, and lines, the canvas state stores serializable shape records in one JSON document. That makes the editor fast to evolve and keeps realtime messages small: most edits are just patches against a shape id. The tradeoff is that the backend must be strict about validating which fields are allowed for which shape type."
+                    text: "The shape model is intentionally plain. Instead of building a deep object hierarchy with separate tables for rectangles, ellipses, text, groups, and lines, the canvas state stores serializable shape records in one JSON document. The editor can evolve quickly and realtime messages stay small: most edits are just patches against a shape id. The tradeoff is that the backend must be strict about validating which fields are allowed for which shape type."
+                },
+                {
+                    kind: "paragraph",
+                    text: "This is a document-model choice before it is a database-model choice. The canvas is edited as one ordered JSON document because the operations users perform are document operations: draw this shape, patch that shape, move this group, reorder this layer. Relational tables still own users, access, folders, and history, but the drawing itself remains a compact serializable object."
                 },
                 {
                     kind: "equation",
@@ -239,7 +251,7 @@ type TextShape = RectLike & {
                 },
                 {
                     kind: "paragraph",
-                    text: "The text editing flow is designed around commit boundaries. Double-clicking or creating a text shape opens an inline textarea inside the SVG foreignObject. While the user types, text is local editor state. Blur, Escape, Tab, or Cmd/Ctrl+Enter commits one update_shape operation. That keeps typing responsive, avoids character-by-character collaborative editing complexity, and still gives undo/redo a clear unit: the completed text edit."
+                    text: "The text editing flow is designed around commit boundaries. Double-clicking or creating a text shape opens an inline textarea inside the SVG foreignObject. While the user types, text is local editor state. Blur, Escape, Tab, or Cmd/Ctrl+Enter commits one update_shape operation. Typing stays responsive, character-by-character collaboration stays out of scope, and undo/redo receives a clear unit: the completed text edit."
                 },
                 {
                     kind: "paragraph",
@@ -444,7 +456,7 @@ receives op_applied revision = 19
                 },
                 {
                     kind: "paragraph",
-                    text: "Revision-gap recovery is deliberately simple. The client does not try to replay a partial event stream or ask Redis for missed messages. It notices that the next durable revision is not the one it expected and replaces local canvas state with the authoritative HTTP snapshot. This makes Pub/Sub acceptable for realtime delivery because PostgreSQL remains the replay source for durable state."
+                    text: "Revision-gap recovery is deliberately simple. The client does not try to replay a partial event stream or ask Redis for missed messages. It notices that the next durable revision is not the one it expected and replaces local canvas state with the authoritative HTTP snapshot. Pub/Sub can stay ephemeral because PostgreSQL remains the replay source for durable state."
                 },
                 {
                     kind: "graph",
@@ -529,7 +541,7 @@ socket closed
                 },
                 {
                     kind: "paragraph",
-                    text: "The rate-limit behavior is tied back into collaboration recovery. When a durable write is rejected, the server does not let the rejected operation leak to peers as if it had succeeded. The writer receives the saved canvas snapshot and briefly stops interacting with the canvas while it syncs. Peers receive a preview reset so any transient movement they saw from that writer is discarded. This is less magical than trying to patch over rejected writes, and it makes the failure mode visible."
+                    text: "The rate-limit behavior is tied back into collaboration recovery. When a durable write is rejected, the server does not let the rejected operation leak to peers as if it had succeeded. The writer receives the saved canvas snapshot and briefly stops interacting with the canvas while it syncs. Peers receive a preview reset so any transient movement they saw from that writer is discarded. The failure mode is visible instead of being hidden behind a best-effort patch over a rejected write."
                 },
                 {
                     kind: "example",
@@ -542,7 +554,7 @@ curl http://localhost:3001/health
                 },
                 {
                     kind: "paragraph",
-                    text: "The single-process development path still works when REDIS_URL is unset: fanout, presence, and rate limits fall back to in-memory process state. That fallback is useful for simple backend work, but it is intentionally not treated as a distributed mode."
+                    text: "The single-process development path still works when REDIS_URL is unset: fanout, presence, and rate limits fall back to in-memory process state. That fallback supports local backend work, but it is intentionally not treated as a distributed mode."
                 }
             ]
         },
@@ -608,7 +620,7 @@ pointer up
                 },
                 {
                     kind: "paragraph",
-                    text: "Selection overlays are not simply the stored axis-aligned boxes. Single rotated shapes compute rendered corners from the stored rotation so the outline and handles remain aligned with the visual object. Multi-selection and group overlays compute the axis-aligned bounds of each member's rendered corners, producing a combined box that wraps what the user actually sees."
+                    text: "Selection overlays are not the stored axis-aligned boxes. Single rotated shapes compute rendered corners from the stored rotation so the outline and handles remain aligned with the visual object. Multi-selection and group overlays compute the axis-aligned bounds of each member's rendered corners, producing a combined box that wraps what the user actually sees."
                 },
                 {
                     kind: "paragraph",
@@ -648,8 +660,32 @@ pointer up
             ]
         },
         {
-            id: "access-control",
+            id: "tradeoffs",
             eyebrow: "VIII",
+            title: "Product and Architecture Tradeoffs",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "LiveBoard deliberately avoids several features that would change the collaboration model. Character-by-character text editing would require string-range operations and conflict handling inside one text object. Share links and role tiers would expand the access model beyond owner-managed membership. Image uploads and export would introduce storage, rendering, and security surfaces that are orthogonal to the core realtime operation engine."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The central architecture tradeoff is using server-serialized operations rather than a fully peer-to-peer or CRDT-first editor. Offline merging becomes less ambitious, but the system gains one authoritative revision order, one shared undo/redo history, and straightforward recovery after missed Pub/Sub messages. For small synchronous sessions, that exchange is worth taking."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "PostgreSQL authority simplifies recovery and history, but every durable edit must pass through the backend.",
+                        "Transient previews keep dragging fluid, but they must be discarded on rejected writes or revision refreshes.",
+                        "JSON canvas state is easy to patch and broadcast, but validation must enforce shape-specific rules.",
+                        "Whole-object text editing keeps collaboration simple, but it does not support rich text ranges."
+                    ]
+                }
+            ]
+        },
+        {
+            id: "access-control",
+            eyebrow: "IX",
             title: "Access Control, Sessions, and Removal",
             blocks: [
                 {
@@ -679,7 +715,7 @@ pointer up
                 },
                 {
                     kind: "paragraph",
-                    text: "Session tokens are stored server-side, expire automatically, and are rechecked while WebSockets are open. This matters because deleting a stolen token should eventually stop an attacker even if they already established a socket. Membership removal also closes active sockets for the removed user and displays an access message on their screen."
+                    text: "Session tokens are stored server-side, expire automatically, and are rechecked while WebSockets are open. Deleting a stolen token eventually stops an attacker even if they already established a socket. Membership removal also closes active sockets for the removed user and displays an access message on their screen."
                 },
                 {
                     kind: "diagram",
@@ -719,7 +755,7 @@ pointer up
         },
         {
             id: "database",
-            eyebrow: "IX",
+            eyebrow: "X",
             title: "Durable Data Layout",
             blocks: [
                 {
@@ -796,12 +832,12 @@ Browser
         },
         {
             id: "feature-flow-catalog",
-            eyebrow: "X",
+            eyebrow: "XI",
             title: "Feature Flow Catalog",
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The useful test of LiveBoard's architecture is whether each product feature has a clear route through the system. A feature should have one obvious frontend owner, one obvious backend contract, one durable state owner when persistence is needed, and one realtime story when collaborators are affected. The following catalog summarizes those routes."
+                    text: "A LiveBoard feature belongs in the architecture when it has a clear route through the system: one obvious frontend owner, one obvious backend contract, one durable state owner when persistence is needed, and one realtime story when collaborators are affected. The following catalog summarizes those routes."
                 },
                 {
                     kind: "example",
@@ -888,7 +924,7 @@ server scale-out
         },
         {
             id: "design-lessons",
-            eyebrow: "XI",
+            eyebrow: "XII",
             title: "Design Choices and Tradeoffs",
             blocks: [
                 {

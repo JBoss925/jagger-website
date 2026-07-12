@@ -48,6 +48,10 @@ export const renginePaper: PaperDocument = {
                     text: "The visual vocabulary is deliberately small. Boxes, folders, paths, rotations, and debug markers are enough to stress the runtime boundaries without burying the engine model under art assets."
                 },
                 {
+                    kind: "paragraph",
+                    text: "Rengine is best read as a transform debugger that happens to render animated scenes. The question is not whether it can ship a game. The question is whether the runtime makes a child box's final position explainable after its own position, its anchor, a parent folder, a component update, and the renderer's coordinate conventions all interact."
+                },
+                {
                     kind: "bullets",
                     items: [
                         "Primary goal: make scene graph and transform behavior visible.",
@@ -75,6 +79,10 @@ export const renginePaper: PaperDocument = {
                 {
                     kind: "paragraph",
                     text: "The folder model is the key idea. It lets a parent pivot, move, scale, or rotate a child group, while individual children still keep their own local transforms and update components."
+                },
+                {
+                    kind: "paragraph",
+                    text: "In the implementation, a folder is deliberately practical: it owns child entities, applies a parent transformation before rendering them, and can optionally recenter its origin around the geometric bounds of its children. It is less general than a full scene-graph math library, but the inspector can explain the hierarchy and grouping stays close to ordinary entity behavior."
                 },
                 {
                     kind: "equation",
@@ -153,7 +161,11 @@ type Scene = { name: string; entities: Entity[] };`,
                 },
                 {
                     kind: "paragraph",
-                    text: "The update model is component-oriented. Components receive delta time, the current entity, the scene, and previous engine state, then return an updated entity and state. That keeps movement and animation logic attached to entities without putting it inside the renderer."
+                    text: "The update model is component-oriented. Components receive delta time, the current entity, the scene, and previous engine state, then return an updated entity and state. Movement and animation logic stay attached to entities instead of leaking into the renderer."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Rengine does not implement a full entity-component-system with indexed component stores and query planning. Components are ordered functions on an entity. The smaller model is easier to read and sufficient for the project's goal: show how motion changes entity transforms before those transforms are projected into canvas or React output."
                 },
                 {
                     kind: "bullets",
@@ -277,7 +289,7 @@ store state for next frame`,
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "Renderers consume engine state and entities; they do not own simulation state. This creates a useful separation: the same scene graph can be stepped once and projected into different output targets. The canvas renderer uses imperative drawing commands, while the React renderer converts transforms into DOM/CSS output."
+                    text: "Renderers consume engine state and entities; they do not own simulation state. The same scene graph can be stepped once and projected into different output targets. The canvas renderer uses imperative drawing commands, while the React renderer converts transforms into DOM/CSS output."
                 },
                 {
                     kind: "equation",
@@ -354,7 +366,7 @@ star path component:
                 },
                 {
                     kind: "paragraph",
-                    text: "That tree is the important bridge between visual output and engine state. A reader can watch the scene move, then inspect the corresponding hierarchy, component labels, local/world transforms, anchors, rotations, scales, and node IDs."
+                    text: "That tree is the important bridge between visual output and engine state. The moving scene can be inspected through the corresponding hierarchy, component labels, local/world transforms, anchors, rotations, scales, and node IDs."
                 },
                 {
                     kind: "bullets",
@@ -374,7 +386,7 @@ star path component:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The runtime tree is a snapshot of the current engine graph, not the graph itself. Each node stores identity, kind, component labels, local transform, world transform, color, and child snapshots. This keeps React inspection state separate from the mutable engine state used by the canvas loop."
+                    text: "The runtime tree is a snapshot of the current engine graph, not the graph itself. Each node stores identity, kind, component labels, local transform, world transform, color, and child snapshots. React inspection state stays separate from the mutable engine state used by the canvas loop."
                 },
                 {
                     kind: "example",
@@ -437,8 +449,32 @@ square/star paths   -> scripted component trajectories`,
             ],
         },
         {
-            id: "results",
+            id: "tradeoffs",
             eyebrow: "XIII",
+            title: "Tradeoffs and Scope",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Rengine chooses a small, inspectable engine model over a feature-complete game framework. There is no asset pipeline, physics system, input abstraction, collision model, audio layer, or retained editor format. The reward for that narrowness is that every moving part in the demo can be traced to one of four ideas: entity state, folder composition, component updates, or renderer projection."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The canvas and React renderers are also intentionally asymmetric. Canvas is the better fit for wireframe markers and imperative drawing; React is useful for proving that the same entity state can become DOM. Keeping both paths exposes the renderer boundary, even though a production engine would likely commit harder to one primary target."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Folder entities make hierarchy simple, but they are not a full transform-node system.",
+                        "Ordered component functions are easy to inspect, but they do not scale like a data-oriented ECS.",
+                        "Debug overlays add visual noise, but they make anchor and position mistakes obvious.",
+                        "The demo scenes act as regression examples for transform behavior rather than as finished game content."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "results",
+            eyebrow: "XIV",
             title: "Results and Design Properties",
             blocks: [
                 {
@@ -447,7 +483,7 @@ square/star paths   -> scripted component trajectories`,
                 },
                 {
                     kind: "paragraph",
-                    text: "The strongest result is observability. The same running scene can be inspected as pixels, as a runtime tree, as local transforms, as world transforms, and as component labels. That makes the engine suitable for demonstrating transform and update semantics without relying on a large game layer."
+                    text: "The strongest result is observability. The same running scene can be inspected as pixels, as a runtime tree, as local transforms, as world transforms, and as component labels. The engine demonstrates transform and update semantics without relying on a large game layer."
                 },
                 {
                     kind: "bullets",

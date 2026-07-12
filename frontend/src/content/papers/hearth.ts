@@ -58,6 +58,10 @@ export const hearthPaper: PaperDocument = {
                     text: "Hearth takes that lesson but narrows the product goal. It is not meant to be an all-purpose sound-destruction palette. The first release is a live-safe Max for Live device whose default operating region favors body, nostalgia, and low-risk musical coloration. The core question is how much harmonic interest can be added while keeping brightness, roughness, transient damage, and stereo drift under control."
                 },
                 {
+                    kind: "paragraph",
+                    text: "In audio DSP, saturation means a nonlinear process that bends waveform peaks and creates harmonics. That can make a sound feel louder, thicker, or more present, but it can also create harsh high-frequency energy, aliasing, DC offset, and stereo image shifts. Hearth is built around the idea that pleasant saturation is as much about restraint and compensation as it is about distortion."
+                },
+                {
                     kind: "bullets",
                     items: [
                         "Target use cases: vocals, clean guitar, bright synths, drum buses, and full-mix glue.",
@@ -86,7 +90,11 @@ export const hearthPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "This architecture is intentionally white-box. Each lane has a narrow purpose, and the adaptation layer modifies only a small number of musically meaningful parameters. That makes the device easier to reason about than a broad multiband distortion environment while still being richer than a static waveshaper."
+                    text: "This architecture is intentionally white-box. Each lane has a narrow purpose, and the adaptation layer modifies only a small number of musically meaningful parameters. The device stays easier to reason about than a broad multiband distortion environment while still being richer than a static waveshaper."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The three-lane split is a design choice about responsibility. The tube lane supplies the main curve, the flux lane supplies path-dependent density, and the bloom lane reacts mostly to attacks. Separating those behaviors lets the device reduce one risk, such as bright upper harmonics, without removing every kind of warmth at once."
                 }
             ],
         },
@@ -180,6 +188,10 @@ export const hearthPaper: PaperDocument = {
                     text: "The servo is intentionally slow and bounded. It should feel like good gain staging and tone placement, not like an obvious modulation effect."
                 },
                 {
+                    kind: "paragraph",
+                    text: "This is a guard-rail system rather than an automatic mastering processor. It does not try to decide what the user should like. It lowers the probability that turning up warmth also turns up glare, brittle roughness, or uncontrolled high-band drive."
+                },
+                {
                     kind: "equation",
                     label: "Servo gain",
                     tex: "G_{\\mathrm{upper}}[n] = 1 - A \\cdot \\sigma(B[n] - B_0) - R \\cdot \\sigma(\\rho[n] - \\rho_0)",
@@ -270,8 +282,32 @@ export const hearthPaper: PaperDocument = {
             ],
         },
         {
-            id: "audio-samples",
+            id: "tradeoffs",
             eyebrow: "IX",
+            title: "Tradeoffs and Listening Context",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "Hearth keeps the whole signal path low-latency by avoiding global oversampling. Instead, the tube lane uses local ADAA-style evaluations, and the rest of the design leans on smooth nonlinearities, bounded drive, de-emphasis, and final safety saturation. That is a practical Max for Live tradeoff: it favors live playability and CPU stability over the cleanest possible offline saturation engine."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The device is also intentionally macro-first. A more surgical plugin might expose every filter coefficient, detector time, and lane gain. Hearth hides many of those interactions behind musical controls so the user can work quickly, then leaves enough secondary controls to adapt to vocals, guitars, synths, drums, or bus material."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Local anti-aliasing reduces tube-lane artifacts without adding full-path latency.",
+                        "The Warmth Servo protects common failure modes but does not replace listening and gain matching.",
+                        "Whole-device macros improve playability but reduce laboratory-level parameter exposure.",
+                        "The included wet/dry clips are examples of intended operating regions, not a claim that every source should use the same settings."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "audio-samples",
+            eyebrow: "X",
             title: "Audio Samples",
             blocks: [
                 {

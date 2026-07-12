@@ -46,7 +46,11 @@ export const jaggerscriptPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The separation is useful because each layer has a different failure mode. Grammar bugs produce malformed parse trees, compiler bugs produce incorrect normalized tokens, runtime bugs corrupt state, and interface bugs make the language hard to explore. The browser playground exposes those boundaries directly."
+                    text: "The separation pays for itself at failure boundaries. Grammar bugs produce malformed parse trees, compiler bugs produce incorrect normalized tokens, runtime bugs corrupt state, and interface bugs make the language hard to explore. The browser playground exposes those boundaries directly."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The right mental model is a small object-oriented language laboratory. The project is not competing with JavaScript, TypeScript, or Java. It is a controlled environment for showing how source text becomes executable behavior: how a grammar recognizes a program, how a compiler gives the parse tree a cleaner runtime shape, and how an interpreter manages variables, references, calls, and errors."
                 },
                 {
                     kind: "bullets",
@@ -69,7 +73,11 @@ export const jaggerscriptPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "The type vocabulary is intentionally small: numbers, strings, booleans, and object instances. That keeps the interpreter focused on scope, references, object allocation, and expression evaluation rather than a large standard library."
+                    text: "The type vocabulary is intentionally small: numbers, strings, booleans, and object instances. The interpreter stays focused on scope, references, object allocation, and expression evaluation rather than a large standard library."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The language therefore sits between a calculator language and a production scripting language. It has enough structure to demonstrate object identity, method calls, mutation, loops, and nested references, but it avoids modules, inheritance, generics, arrays, closures, and asynchronous behavior. Those omissions keep the runtime state small enough to inspect directly."
                 },
                 {
                     kind: "bullets",
@@ -89,7 +97,7 @@ export const jaggerscriptPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The parser grammar is written in PEG form and emits plain parser nodes with token-type labels. A separate compiler pass converts those raw nodes into a typed program representation. This second pass is important because it turns a syntax-shaped tree into runtime-shaped data."
+                    text: "The parser grammar is written in PEG form and emits plain parser nodes with token-type labels. A separate compiler pass converts those raw nodes into a typed program representation, turning a syntax-shaped tree into runtime-shaped data."
                 },
                 {
                     kind: "equation",
@@ -100,6 +108,10 @@ export const jaggerscriptPaper: PaperDocument = {
                 {
                     kind: "paragraph",
                     text: "That division keeps the grammar from becoming the whole language implementation. Parsing answers whether the input has the right shape; compilation decides what each shape means to the interpreter."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The first major tradeoff is a normalization pass. A one-pass interpreter could walk the parser output directly, but parser helper nodes and incidental grammar structure would leak into runtime code. JaggerScript pays that extra pass so the interpreter can consume a smaller vocabulary whose nodes are named for behavior rather than syntax."
                 },
                 {
                     kind: "bullets",
@@ -164,7 +176,7 @@ export const jaggerscriptPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The compiler output is a discriminated token graph. It is not a direct parser tree: every node receives a runtime token kind and only the fields needed by evaluation. That makes reconstruction straightforward because parser details such as whitespace and grammar helper productions are removed before interpretation."
+                    text: "The compiler output is a discriminated token graph. It is not a direct parser tree: every node receives a runtime token kind and only the fields needed by evaluation. Parser details such as whitespace and grammar helper productions are removed before interpretation, so reconstruction follows the runtime model instead of the grammar."
                 },
                 {
                     kind: "example",
@@ -450,7 +462,7 @@ pop frame and restore running instance`,
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The interpreter rejects invalid runtime states immediately. Missing variables, non-instance scoped access, unknown fields, and type-incompatible field assignments raise errors instead of returning undefined values. That behavior is important because the language has explicit type annotations but does not implement a full static checker."
+                    text: "The interpreter rejects invalid runtime states immediately. Missing variables, non-instance scoped access, unknown fields, and type-incompatible field assignments raise errors instead of returning undefined values. The language has explicit type annotations but no full static checker, so invalid states must fail at the point of use."
                 },
                 {
                     kind: "bullets",
@@ -471,8 +483,32 @@ pop frame and restore running instance`,
             ],
         },
         {
-            id: "results",
+            id: "tradeoffs",
             eyebrow: "XIII",
+            title: "Tradeoffs and Missing Pieces",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "JaggerScript performs only lightweight static checking in the browser. It can catch parse errors and unknown declared type names before execution, but it does not prove every expression type statically. Instead, many safety checks occur at runtime: scoped member access must traverse instances, field assignment must preserve the existing type string, and missing variables throw immediately."
+                },
+                {
+                    kind: "paragraph",
+                    text: "That choice keeps the project centered on interpreter mechanics. A full static type checker would be a valuable next layer, but it would also change the paper's main teaching object from parser/runtime design to type-system design. The current version makes the runtime consequences of each statement visible and keeps examples small enough to follow by hand."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "The compiler normalizes parser output, but it is not a full optimizer.",
+                        "Heap-backed instances model reference identity, but memory management is intentionally simple.",
+                        "Runtime errors are explicit, but many could become static errors in a richer checker.",
+                        "The Monaco playground is a learning and debugging surface, not a production IDE."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "results",
+            eyebrow: "XIV",
             title: "Results and Design Properties",
             blocks: [
                 {

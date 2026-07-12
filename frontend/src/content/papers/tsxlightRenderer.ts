@@ -43,6 +43,10 @@ export const tsxlightRendererPaper: PaperDocument = {
                     text: "The system defines a distinct rendering boundary from browser-owned React: state can live server-side, callbacks can be represented in generated markup, and separate users can interact with the same application code without sharing renderer state."
                 },
                 {
+                    kind: "paragraph",
+                    text: "The motivation is easiest to understand by contrast. In React, the browser owns component instances and event handlers are client-side closures. In TSXLight, the browser is closer to a terminal: it displays generated markup and reports events, while the server decides which component object receives the event and what the next view should be. That inversion is unusual, but it makes identity, callback serialization, and per-user state isolation the central design problems."
+                },
+                {
                     kind: "bullets",
                     items: [
                         "Primary goal: render TSX-style component trees outside the React runtime.",
@@ -70,6 +74,10 @@ export const tsxlightRendererPaper: PaperDocument = {
                 {
                     kind: "paragraph",
                     text: "The per-user instance model is the central isolation boundary. Each user can have separate component state, callback registrations, page state, and communication, which prevents one user's rerender path from mutating another user's active page."
+                },
+                {
+                    kind: "paragraph",
+                    text: "Server-owned components create an immediate isolation problem: a single global component tree would make every connected user share clicks and state. TSXLight routes user identity to a renderer ID, renderer ID to active page, and active page to component instance and callback table."
                 },
                 {
                     kind: "bullets",
@@ -191,7 +199,11 @@ rerender shell for that user`,
                 },
                 {
                     kind: "paragraph",
-                    text: "This is the main distinction from browser-owned React. React event handlers are closures already resident in the client runtime. TSXLight handlers are serialized as identities and resolved through server state."
+                    text: "Browser-owned React keeps event handlers as closures already resident in the client runtime. TSXLight handlers are serialized as identities and resolved through server state, so callback routing becomes part of the framework's correctness model."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The implementation regenerates callback IDs during render and clears the active page's callback table during rerender. Old DOM events cannot call handlers for elements that no longer exist. It is a blunt consistency strategy, but the invariant is clear: after a render, only callbacks emitted by that render should be callable."
                 }
             ],
         },
@@ -388,7 +400,7 @@ invoke callback with payload
                 },
                 {
                     kind: "paragraph",
-                    text: "The architecture therefore treats duplicate connections, stale callback IDs, page transitions, and viewport-specific state as renderer-management problems rather than client-rendering problems. That tradeoff is coherent for controlled shells and internal tools because the server remains the source of truth."
+                    text: "The architecture therefore treats duplicate connections, stale callback IDs, page transitions, and viewport-specific state as renderer-management problems rather than client-rendering problems. The tradeoff fits controlled shells and internal tools where the server is meant to remain the source of truth."
                 },
                 {
                     kind: "bullets",
@@ -402,8 +414,32 @@ invoke callback with payload
             ],
         },
         {
-            id: "rerender-consistency",
+            id: "fit",
             eyebrow: "XII",
+            title: "Where This Model Fits",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "TSXLight is not presented as a replacement for modern client React. It is an experiment in a different ownership model. The design fits best when the server is already the trusted authority, when the UI is controlled, and when a full browser-side state machine would be more liability than benefit: internal tools, desktop shells, demos, admin consoles, or teaching environments."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The same ownership model is a poor fit for latency-sensitive drawing tools, offline-first applications, public high-scale frontends, or interfaces that need rich browser-local interaction between server turns. Every meaningful event has to cross the socket boundary, so network latency and connection lifecycle become part of the rendering contract."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Server ownership simplifies authority and persistence for controlled shells.",
+                        "Callback serialization makes event identity explicit but adds protocol and lifecycle complexity.",
+                        "Per-user renderers prevent accidental shared state but require careful cleanup for duplicate connections.",
+                        "Full-shell rerendering is understandable, but it lacks the efficiency of browser-side reconciliation."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "rerender-consistency",
+            eyebrow: "XIII",
             title: "Rerender Consistency",
             blocks: [
                 {
@@ -434,7 +470,7 @@ invoke callback with payload
         },
         {
             id: "results",
-            eyebrow: "XIII",
+            eyebrow: "XIV",
             title: "Results and Design Properties",
             blocks: [
                 {
@@ -451,7 +487,7 @@ invoke callback with payload
                         "A JSX-like authoring model can be separated from React's browser runtime assumptions.",
                         "Server-owned component trees require renderer-local callback tables and page-local state.",
                         "Callback serialization is the core design problem once the client becomes an event bridge.",
-                        "The architecture is coherent for controlled web/Electron shells where server-owned state is an intentional property."
+                        "The architecture fits controlled web/Electron shells where server-owned state is an intentional property."
                     ]
                 }
             ],

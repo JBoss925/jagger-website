@@ -46,28 +46,12 @@ export const ojamlPaper: PaperDocument = {
                     text: "OJaml is built around one constraint: the browser demo must be the real language implementation. There is no server compiler and no interpreter shortcut hidden behind the editor. The same source pipeline supports the reusable editor, the route embedded in the website, the command-line interface, the tests, and the generated WebAssembly output."
                 },
                 {
-                    kind: "diagram",
-                    label: "Whole-system pipeline",
-                    body: `source.oj
-  |
-  v
-lexer -> tokens -> recursive-descent parser -> AST
-  |                                      |
-  |                                      v
-  +---------------------------> polymorphic checker
-                                         |
-                                         v
-                              typed program metadata
-                                         |
-                                         v
-                         WAT emitter + runtime helpers
-                                         |
-                                         v
-                              WABT -> WebAssembly
-                                         |
-                                         v
-                         browser instantiate -> main()`,
-                    caption: "Every user-visible result comes from the same staged pipeline: parse, type check, emit WAT, convert to WASM, instantiate, and execute."
+                    kind: "graph",
+                    graph: {
+                        kind: "ojaml-pipeline",
+                        title: "Whole-system pipeline",
+                        description: "The checker consumes the parser's AST as its semantic input. Token and span metadata from lexing travels on the dashed path for diagnostics, hovers, and source ranges."
+                    }
                 },
                 {
                     kind: "equation",
@@ -77,11 +61,15 @@ lexer -> tokens -> recursive-descent parser -> AST
                 },
                 {
                     kind: "paragraph",
-                    text: "The language is intentionally small, but the implementation is complete across the boundary it chooses. Syntax is OCaml-like, values use a uniform i32 representation in WebAssembly, static checks run before emission, and all standard-library functions have explicit types. The result is a project small enough to audit but rich enough to demonstrate parsing, type inference, polymorphism, closures, heap allocation, indirect calls, and browser-native tooling."
+                    text: "The language is intentionally small, but the implementation is complete across the boundary it chooses. Syntax is OCaml-like, values use a uniform i32 representation in WebAssembly, static checks run before emission, and all standard-library functions have explicit types. The result is an auditable compiler that still exercises parsing, type inference, polymorphism, closures, heap allocation, indirect calls, and browser-native tooling."
                 },
                 {
                     kind: "paragraph",
-                    text: "The implementation favors explicit stages over clever collapse. Lexing decides what tokens exist. Parsing decides the tree shape. Checking decides whether names, calls, branches, patterns, and standard-library uses are coherent. Code generation decides memory layout and call shape. Runtime execution only runs programs that survived those prior stages."
+                    text: "The implementation favors explicit stages over clever collapse. Lexing decides what tokens exist. Parsing decides the tree shape. Checking decides whether names, calls, branches, patterns, and standard-library uses are valid. Code generation decides memory layout and call shape. Runtime execution only runs programs that survived those prior stages."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The important boundary is between the language surface and the representation the machine runs. The source language has functions, maps, lists, strings, and pattern matching. The emitted WebAssembly mostly sees integers and pointers. The type checker is the bridge that lets the backend stay small without making the source language feel untyped."
                 },
                 {
                     kind: "bullets",
@@ -223,6 +211,10 @@ Expr
                     text: "OJaml uses a compact Hindley-Milner-style constraint system. Types are primitives, type variables, applications for arrays/lists/maps, and function types. Checking walks the AST, creates fresh type variables where information is not known yet, and unifies constraints as each expression demands a relationship between values."
                 },
                 {
+                    kind: "paragraph",
+                    text: "In plain terms, inference means type annotations are not required everywhere. The checker invents placeholders, then replaces or links those placeholders as it learns facts from literals, operators, branches, function calls, and standard-library signatures. If two facts disagree, such as a branch being both int and string, the program is rejected before code generation."
+                },
+                {
                     kind: "diagram",
                     label: "Type constructors",
                     body: `Type
@@ -307,7 +299,7 @@ Expr
                 },
                 {
                     kind: "paragraph",
-                    text: "This is most important for polymorphic collections. Array.make must connect its element argument to the returned array element type. List.cons must connect the head value and tail list. Map.set must connect map key, provided key, map value, provided value, and returned map. Map.get must return exactly the value type stored by the map and must accept exactly the map key type."
+                    text: "Polymorphic collections force the signature table to connect every repeated type variable at the call site. Array.make must connect its element argument to the returned array element type. List.cons must connect the head value and tail list. Map.set must connect map key, provided key, map value, provided value, and returned map. Map.get must return exactly the value type stored by the map and must accept exactly the map key type."
                 },
                 {
                     kind: "example",
@@ -372,7 +364,7 @@ Expr
                 },
                 {
                     kind: "paragraph",
-                    text: "The most useful theorem for reconstructing the implementation is preservation under unification: once two types are unified, all later pruned references see the same representative. That property is what makes local hover information accurate after later expressions force a type variable to become concrete."
+                    text: "The reconstruction hinge is preservation under unification: once two types are unified, all later pruned references see the same representative. That property is what makes local hover information accurate after later expressions force a type variable to become concrete."
                 },
                 {
                     kind: "equation",
@@ -476,7 +468,11 @@ let main =
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The WebAssembly backend uses i32 as the universal value representation. Integers and booleans are immediate i32 values. Unit is zero. Strings, arrays, lists, maps, and closures are heap pointers. This greatly simplifies WebAssembly function signatures and makes the language backend small enough to inspect."
+                    text: "The WebAssembly backend uses i32 as the universal value representation. Integers and booleans are immediate i32 values. Unit is zero. Strings, arrays, lists, maps, and closures are heap pointers. WebAssembly function signatures stay uniform, and the language backend remains small enough to inspect."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The central backend tradeoff is representation opacity. Uniform i32 values make emitted functions easy to compose, especially for indirect calls and polymorphic collection helpers. The cost is that WebAssembly itself no longer knows whether an i32 is an integer, a string pointer, a list pointer, or a closure pointer. OJaml relies on the checker to preserve that meaning before emission."
                 },
                 {
                     kind: "diagram",
@@ -649,8 +645,32 @@ closure pointer c
             ],
         },
         {
-            id: "tooling",
+            id: "tradeoffs",
             eyebrow: "XI",
+            title: "Tradeoffs and Current Boundaries",
+            blocks: [
+                {
+                    kind: "paragraph",
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. It has enough language surface to demonstrate inference, recursion, closures, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, tuples, exceptions, a garbage collector, or structural list/map patterns."
+                },
+                {
+                    kind: "paragraph",
+                    text: "The runtime makes a similar bargain. Bump allocation and linked heap layouts are easy to explain and generate, but allocated data lives for the lifetime of the module instance. Bounds checks and null checks are intentionally limited. Browser-sized examples tolerate that memory discipline; a production ML runtime would need collection, stronger bounds checks, and better failure recovery."
+                },
+                {
+                    kind: "bullets",
+                    items: [
+                        "Static typing protects source-level meaning, while the backend keeps a uniform i32 representation.",
+                        "Direct calls stay simple, while closure values use function-table indirection only when needed.",
+                        "Polymorphic builtins are typed precisely, but their runtime helpers operate on uniform pointers and integers.",
+                        "The editor tooling benefits from source spans carried through the parser and checker."
+                    ]
+                }
+            ],
+        },
+        {
+            id: "tooling",
+            eyebrow: "XII",
             title: "Monaco Tooling and Language Service",
             blocks: [
                 {
@@ -704,7 +724,7 @@ hover Map.get:
         },
         {
             id: "validation",
-            eyebrow: "XII",
+            eyebrow: "XIII",
             title: "Validation Strategy",
             blocks: [
                 {
@@ -754,7 +774,7 @@ hover Map.get:
         },
         {
             id: "implementation-correspondence",
-            eyebrow: "XIII",
+            eyebrow: "XIV",
             title: "Implementation Correspondence",
             blocks: [
                 {

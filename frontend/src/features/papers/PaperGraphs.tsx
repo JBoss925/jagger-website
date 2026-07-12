@@ -241,6 +241,55 @@ function LiveBoardRecoveryGraph() {
   );
 }
 
+function OJamlPipelineGraph() {
+  const nodes = [
+    ["Source", 34, 92, 96],
+    ["Lexer", 174, 92, 96],
+    ["Tokens", 314, 92, 104],
+    ["Parser", 466, 92, 104],
+    ["AST", 622, 92, 86],
+    ["Checker", 220, 206, 132],
+    ["Typed metadata", 438, 206, 154],
+    ["WAT emitter", 220, 320, 132],
+    ["WebAssembly", 438, 320, 154],
+    ["main()", 438, 434, 154]
+  ] as const;
+
+  return (
+    <svg viewBox="0 70 750 460" role="img" aria-label="OJaml compiler pipeline graph">
+      <defs>
+        <marker id="paper-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" />
+        </marker>
+      </defs>
+      <g className="paper-graph__links">
+        <path d="M130 116 H174" />
+        <path d="M270 116 H314" />
+        <path d="M418 116 H466" />
+        <path d="M570 116 H622" />
+        <path d="M665 140 C665 178 352 178 330 206" />
+        <path d="M352 230 H438" />
+        <path d="M286 254 V320" />
+        <path d="M352 344 H438" />
+        <path d="M515 368 V434" />
+      </g>
+      <g className="paper-graph__control-links">
+        <path d="M366 140 C366 162 300 184 300 206" />
+      </g>
+      {nodes.map(([label, x, y, width]) => (
+        <g key={label} className="paper-graph__node" transform={`translate(${x} ${y})`}>
+          <rect width={width} height="48" />
+          <text x={width / 2} y="30">{label}</text>
+        </g>
+      ))}
+      <text className="paper-graph__label" x="258" y="172">token/span metadata</text>
+      <text className="paper-graph__label" x="385" y="278">checked symbols, tokens, main type</text>
+      <text className="paper-graph__label" x="225" y="392">WABT conversion</text>
+      <text className="paper-graph__label" x="395" y="505">browser instantiate and execute</text>
+    </svg>
+  );
+}
+
 function PaperGraphFigure({ graph }: PaperGraphProps) {
   return (
     <figure className="paper-figure">
@@ -251,6 +300,7 @@ function PaperGraphFigure({ graph }: PaperGraphProps) {
         {graph.kind === "liveboard-runtime" ? <LiveBoardRuntimeGraph /> : null}
         {graph.kind === "liveboard-fanout" ? <LiveBoardFanoutGraph /> : null}
         {graph.kind === "liveboard-recovery" ? <LiveBoardRecoveryGraph /> : null}
+        {graph.kind === "ojaml-pipeline" ? <OJamlPipelineGraph /> : null}
       </div>
       <figcaption>
         <strong>{graph.title}.</strong> {graph.description}

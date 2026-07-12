@@ -23,6 +23,10 @@ export type PaperGraph = {
     kind: "liveboard-recovery";
     title: string;
     description: string;
+} | {
+    kind: "ojaml-pipeline";
+    title: string;
+    description: string;
 };
 export type PaperAudioSample = {
     label: string;
