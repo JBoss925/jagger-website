@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, record and algebraic data type declarations with type parameters, value and function parameter annotations, pattern matching with tuple, record, list, fixed-length array, set, map, and constructor destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, record and algebraic data type declarations with type parameters, value and function parameter annotations, top-level opens for built-in standard-library namespaces, pattern matching with tuple, record, list, fixed-length array, set, map, and constructor destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, zero-based tuple projection, structural records, field access, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, exceptions, or garbage collection yet."
+                        "The current scope is finite: built-in stdlib opens are supported, but user-defined modules, file imports, exceptions, and garbage collection are not."
                     ]
                 }
             ],
@@ -89,7 +89,7 @@ export const ojamlPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "An OJaml program is a sequence of top-level let declarations, record type declarations, and algebraic data type declarations with optional type parameters. A let declaration may be recursive, may bind parameters, may annotate those parameters, may carry a value annotation, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, constructor application, and match expressions."
+                    text: "An OJaml program is a sequence of top-level let declarations, top-level open declarations for built-in standard-library namespaces, record type declarations, and algebraic data type declarations with optional type parameters. A let declaration may be recursive, may bind parameters, may annotate those parameters, may carry a value annotation, and may be separated by optional double semicolons. Expressions include primitives, tuples, tuple projection, records, field access, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, constructor application, and match expressions."
                 },
                 {
                     kind: "example",
@@ -102,12 +102,24 @@ export const ojamlPaper: PaperDocument = {
                 {
                     kind: "equation",
                     label: "Program grammar",
-                    tex: "P ::= D^{*}\\quad\\quad D ::= \\texttt{let}\\;\\texttt{rec?}\\;x\\;q^{*}(\\texttt{:}\\tau)?=e\\quad\\quad q ::= x\\mid(x:\\tau)",
-                    caption: "A program is a list of declarations; parameters may be plain names or parenthesized annotations."
+                    tex: "P ::= D^{*}\\quad\\quad D ::= \\texttt{let}\\;\\texttt{rec?}\\;x\\;q^{*}(\\texttt{:}\\tau)?=e\\mid\\texttt{type}\\;...\\mid\\texttt{open}\\;M\\quad\\quad q ::= x\\mid(x:\\tau)",
+                    caption: "A program is a list of declarations; parameters may be plain names or parenthesized annotations, and open declarations name built-in stdlib namespaces."
                 },
                 {
                     kind: "paragraph",
-                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, record type declarations use type person = { name: string; year: int }, algebraic data type declarations use type status = Pending | Done of int and type 'a option = None | Some of 'a, value annotations use let ada : person = ... or let value : int option = ..., parameter annotations use let describe (person : person) = ..., and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, which avoids module parsing while still allowing namespaced builtins."
+                    text: "The surface syntax borrows the OCaml forms that support this compiler's goals without committing to the whole language. Function application is whitespace-based. Parentheses group expressions and represent unit when empty. Structural records use { field = value; other = value } syntax, record type declarations use type person = { name: string; year: int }, algebraic data type declarations use type status = Pending | Done of int and type 'a option = None | Some of 'a, value annotations use let ada : person = ... or let value : int option = ..., parameter annotations use let describe (person : person) = ..., and field access uses value.field. Comments are block comments with nesting support. Module-style standard-library names such as Map.get are lexed as identifiers, and open List exposes List.head as head when no local, top-level, or competing opened binding owns that short name."
+                },
+                {
+                    kind: "example",
+                    label: "Opening stdlib namespaces",
+                    language: "ocaml",
+                    code: `open List
+open String
+
+let main =
+  let words = split (concat "hello" " OJaml") " " in
+  String.length (head words) + List.length words`,
+                    caption: "Opened stdlib namespaces provide short names, while exact local or top-level names win and ambiguous names still require a qualified form."
                 },
                 {
                     kind: "example",
@@ -772,7 +784,7 @@ let label result =
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, structural records, field access, tuple/record/list/array/set/map/constructor destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, exceptions, or a garbage collector."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, tuple projection, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, top-level opens for built-in stdlib namespaces, structural records, field access, tuple/record/list/array/set/map/constructor destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include user-defined modules, file imports, exceptions, or a garbage collector."
                 },
                 {
                     kind: "paragraph",
@@ -826,7 +838,7 @@ hover Map.get:
                 },
                 {
                     kind: "paragraph",
-                    text: "Diagnostics call parse and check on the current source. On OJamlError, the provider translates byte offsets to Monaco line/column ranges. Completion items include keywords, snippets, top-level symbols, and standard-library functions. Module-qualified autocomplete is context-aware: after Array., List., Set., or Map. it offers only members from that family rather than inserting a second module prefix."
+                    text: "Diagnostics call parse and check on the current source. On OJamlError, the provider translates byte offsets to Monaco line/column ranges. Completion items include keywords, snippets, top-level symbols, and standard-library functions. Module-qualified autocomplete is context-aware: after Array., Float., List., Map., Set., or String. it offers only members from that family rather than inserting a second module prefix."
                 },
                 {
                     kind: "paragraph",
@@ -850,7 +862,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, stdlib open declarations and ambiguous-name rejection, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -942,7 +954,7 @@ tests/*.test.ts     positive runtime tests and negative checker tests`,
                 {
                     kind: "bullets",
                     items: [
-                        "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
+                        "Adding user-defined modules requires module declarations, import resolution, and namespace environments beyond the current built-in stdlib opens.",
                         "Adding richer collection exhaustiveness requires rules that describe exact-length arrays, stored-order sets, and stored-order maps without pretending those forms cover every possible value.",
                         "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
                     ]
