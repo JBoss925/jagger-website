@@ -89,7 +89,7 @@ export const ojamlPaper: PaperDocument = {
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, tuples, variables, unary and binary operations, conditionals, local lets, function application, anonymous functions, and match expressions."
+                    text: "An OJaml program is a sequence of top-level let declarations. A declaration may be recursive, may bind parameters, and may be separated by optional double semicolons. Expressions include primitives, tuples, variables, unary and binary operations, conditionals, local lets, local function bindings, local recursive function bindings, function application, anonymous functions, and match expressions."
                 },
                 {
                     kind: "example",
@@ -127,8 +127,8 @@ let main =
                 {
                     kind: "equation",
                     label: "Expression grammar",
-                    tex: "e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid (e, e^{+})\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;x=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
-                    caption: "The expression set covers the constructs needed for recursion, higher-order functions, tuple grouping, and collection programs."
+                    tex: "e ::= n\\mid f\\mid s\\mid b\\mid ()\\mid (e, e^{+})\\mid x\\mid e\\;e^{+}\\mid \\texttt{fun}\\;x^{+}\\rightarrow e\\mid \\texttt{let}\\;\\texttt{rec?}\\;x\\;x^{*}=e\\;\\texttt{in}\\;e\\mid \\texttt{if}\\;e\\;\\texttt{then}\\;e\\;\\texttt{else}\\;e\\mid \\texttt{match}\\;e\\;\\texttt{with}\\;(p\\rightarrow e)^{+}",
+                    caption: "Local function parameters are parsed into anonymous functions; local rec is restricted to function bindings so the compiler can build a self-referential closure."
                 },
                 {
                     kind: "paragraph",
@@ -174,6 +174,12 @@ Expr
   Int | Float | String | Bool | Unit | Tuple | Var
   Unary | Binary | If | LetIn
   Call | Fun | Match
+
+LetIn
+  recursive: boolean
+  name: string
+  value: Expr
+  body: Expr
 
 Pattern
   PInt | PFloat | PString | PBool | PUnit
@@ -248,7 +254,7 @@ Pattern
                 },
                 {
                     kind: "paragraph",
-                    text: "Top-level declarations are installed into the global environment before their bodies are checked. A zero-parameter declaration receives a fresh type variable. A parameterized declaration receives a function stub whose parameter and result types are fresh variables. This permits recursive references because the name is available before the body is checked."
+                    text: "Top-level declarations are installed into the global environment before their bodies are checked. A zero-parameter declaration receives a fresh type variable. A parameterized declaration receives a function stub whose parameter and result types are fresh variables. This permits recursive references because the name is available before the body is checked. Local let rec follows the same idea on a smaller scope: the checker inserts the local function name before checking its body, unifies that placeholder with the function type, and rejects recursive local bindings that are not functions."
                 },
                 {
                     kind: "equation",
@@ -417,7 +423,7 @@ Pattern
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml supports first-class functions through heap-allocated closures and WebAssembly function tables. A top-level function can be called directly when statically known, or wrapped as a closure when passed as a value. Anonymous functions become pending lambdas with captured variables recorded from free-variable analysis."
+                    text: "OJaml supports first-class functions through heap-allocated closures and WebAssembly function tables. A top-level function can be called directly when statically known, or wrapped as a closure when passed as a value. Anonymous and local functions become pending lambdas with captured variables recorded from free-variable analysis. A local recursive function stores its own closure pointer in the captured environment when the function body refers to its name."
                 },
                 {
                     kind: "diagram",
@@ -631,7 +637,7 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "Expression emission follows the AST. Literals become constants, boxed floats, or string offsets. Tuple expressions allocate a fixed-size block, store the arity, then store each element in order. Binary operators become i32 or f64 operations depending on checked expression shape. Power is right-associative; int ** int lowers through an integer result helper, while any float operand routes through pow_f64 and returns a boxed float. Local lets become blocks that set locals then evaluate the body. Conditionals and matches become structured WebAssembly if expressions. Function values become closure pointers."
+                    text: "Expression emission follows the AST. Literals become constants, boxed floats, or string offsets. Tuple expressions allocate a fixed-size block, store the arity, then store each element in order. Binary operators become i32 or f64 operations depending on checked expression shape. Power is right-associative; int ** int lowers through an integer result helper, while any float operand routes through pow_f64 and returns a boxed float. Local lets become blocks that set locals then evaluate the body; local recursive functions allocate a closure that can capture its own pointer. Conditionals and matches become structured WebAssembly if expressions. Function values become closure pointers."
                 },
                 {
                     kind: "bullets",
@@ -718,7 +724,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, pair projection, tuple/list destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, closures, tuples, pair projection, tuple/list destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -796,7 +802,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple and list pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple and list pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -836,6 +842,7 @@ hover Map.get:
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
+                        "Local recursion tests cover local function syntax, self-capture, captured outer locals, non-function rejection, editor examples, and hover strings.",
                         "Tuple tests cover parsing, fst/snd projection, nested formatting, tuple pattern destructuring, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
                         "List pattern tests cover [], right-associative cons patterns, recursive destructuring, closure captures, conservative exhaustiveness, diagnostics, editor examples, and hover strings.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
