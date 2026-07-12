@@ -5858,6 +5858,13 @@ button:hover {
   font-size: 0.74rem;
 }
 
+.paper-image-viewer__controls button:disabled {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 250, 244, 0.38);
+  cursor: not-allowed;
+}
+
 .paper-image-viewer__controls button:focus-visible {
   outline: 3px solid #fffaf4;
   outline-offset: 2px;

@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 3;
+const ZOOM_STEP = 0.25;
+const DEFAULT_ZOOM = 1;
+
 type ImageViewerProps = {
   alt: string;
   caption?: string;
@@ -7,8 +12,32 @@ type ImageViewerProps = {
   onClose: () => void;
 };
 
+function clampZoom(zoom: number) {
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(zoom.toFixed(2))));
+}
+
+function zoomIn(currentZoom: number) {
+  if (currentZoom < ZOOM_STEP) {
+    return ZOOM_STEP;
+  }
+
+  return clampZoom(currentZoom + ZOOM_STEP);
+}
+
+function zoomOut(currentZoom: number) {
+  const nextZoom = clampZoom(currentZoom - ZOOM_STEP);
+
+  if (nextZoom < ZOOM_STEP) {
+    return MIN_ZOOM;
+  }
+
+  return nextZoom;
+}
+
 function ImageViewer({ alt, caption, image, onClose }: ImageViewerProps) {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const isMinZoom = zoom <= MIN_ZOOM;
+  const isMaxZoom = zoom >= MAX_ZOOM;
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -16,13 +45,13 @@ function ImageViewer({ alt, caption, image, onClose }: ImageViewerProps) {
         onClose();
       }
       if ((event.key === "+" || event.key === "=") && !event.metaKey && !event.ctrlKey) {
-        setZoom((currentZoom) => Math.min(3, Number((currentZoom + 0.25).toFixed(2))));
+        setZoom(zoomIn);
       }
       if (event.key === "-" && !event.metaKey && !event.ctrlKey) {
-        setZoom((currentZoom) => Math.max(1, Number((currentZoom - 0.25).toFixed(2))));
+        setZoom(zoomOut);
       }
       if (event.key === "0" && !event.metaKey && !event.ctrlKey) {
-        setZoom(1);
+        setZoom(DEFAULT_ZOOM);
       }
     }
 
@@ -53,13 +82,13 @@ function ImageViewer({ alt, caption, image, onClose }: ImageViewerProps) {
           {caption ? <span>{caption}</span> : null}
         </div>
         <div className="paper-image-viewer__controls" aria-label="Image zoom controls">
-          <button type="button" onClick={() => setZoom((currentZoom) => Math.max(1, Number((currentZoom - 0.25).toFixed(2))))}>
+          <button type="button" onClick={() => setZoom(zoomOut)} disabled={isMinZoom}>
             -
           </button>
-          <button type="button" onClick={() => setZoom(1)}>
+          <button type="button" onClick={() => setZoom(DEFAULT_ZOOM)}>
             {Math.round(zoom * 100)}%
           </button>
-          <button type="button" onClick={() => setZoom((currentZoom) => Math.min(3, Number((currentZoom + 0.25).toFixed(2))))}>
+          <button type="button" onClick={() => setZoom(zoomIn)} disabled={isMaxZoom}>
             +
           </button>
           <button type="button" onClick={onClose}>
