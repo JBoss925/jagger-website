@@ -668,9 +668,9 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, pattern matching, polymorphic collections, and WebAssembly emission**.",
+        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, numeric-polymorphic functions, typed standard-library schemes, pattern matching, polymorphic collections, and WebAssembly emission**.",
       impact:
-        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, arrays, lists, maps, higher-order functions, and runtime tests. Example programs cover recursion, collection transforms, closures, typed expression flows, and compiler edge cases.",
+        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, floats, strings, arrays, lists, maps, higher-order functions, exact example transcript tests, and compiler-specialization regression coverage.",
       stack: [
         "OJaml",
         "TypeScript",
@@ -678,7 +678,6 @@ export const profileContent: ProfileContent = {
         "Vite",
         "WebAssembly",
         "WAT emission",
-        "Runtime systems",
         "WABT",
         "Monaco Editor",
         "Hover metadata",
@@ -687,6 +686,7 @@ export const profileContent: ProfileContent = {
         "Static analysis",
         "Hindley-Milner typing",
         "Type inference",
+        "Numeric polymorphism",
         "Polymorphic stdlib",
         "Closure conversion",
         "Pattern matching",
