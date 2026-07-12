@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching with tuple and list destructuring, first-class functions, closures, ints, floats, strings, unit, tuples, pair projection, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching with tuple and list destructuring, first-class high-arity functions, closures, ints, floats, strings, unit, tuples, pair projection, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -61,7 +61,7 @@ export const ojamlPaper: PaperDocument = {
                 },
                 {
                     kind: "paragraph",
-                    text: "OJaml keeps the source language narrow enough for the whole compiler to fit in a TypeScript codebase, while covering the mechanisms that distinguish an ML-family compiler from a syntax demo: inference, recursion, closures, heap allocation, indirect calls, polymorphic containers, and browser-native tooling. Syntax is OCaml-like, values cross WebAssembly function boundaries through a uniform i32 slot, static checks run before emission, and every standard-library function has an explicit type scheme."
+                    text: "OJaml keeps the source language narrow enough for the whole compiler to fit in a TypeScript codebase, while covering the mechanisms that distinguish an ML-family compiler from a syntax demo: inference, recursion, closures, high-arity function values, heap allocation, indirect calls, polymorphic containers, and browser-native tooling. Syntax is OCaml-like, values cross WebAssembly function boundaries through a uniform i32 slot, static checks run before emission, and every standard-library function has an explicit type scheme."
                 },
                 {
                     kind: "paragraph",
@@ -423,7 +423,7 @@ Pattern
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml supports first-class functions through heap-allocated closures and WebAssembly function tables. A top-level function can be called directly when statically known, or wrapped as a closure when passed as a value. Anonymous and local functions become pending lambdas with captured variables recorded from free-variable analysis. A local recursive function stores its own closure pointer in the captured environment when the function body refers to its name."
+                    text: "OJaml supports first-class functions through heap-allocated closures and WebAssembly function tables. A top-level function can be called directly when statically known, or wrapped as a closure when passed as a value. Anonymous and local functions become pending lambdas with captured variables recorded from free-variable analysis. A local recursive function stores its own closure pointer in the captured environment when the function body refers to its name. The function-table ABI is generated from the program, so closure calls are not capped at a small fixed arity."
                 },
                 {
                     kind: "diagram",
@@ -481,7 +481,7 @@ let main =
                 },
                 {
                     kind: "paragraph",
-                    text: "This representation keeps direct calls efficient while supporting higher-order collection functions such as List.map, Array.iter, and fold_left. The standard library calls callbacks through call_indirect with the correct arity-specific WebAssembly function type."
+                    text: "This representation keeps direct calls efficient while supporting higher-order collection functions such as List.map, Array.iter, and fold_left. The compiler emits the arity-specific WebAssembly function types required by the current program, and the standard library calls callbacks through call_indirect with the matching type."
                 },
                 {
                     kind: "bullets",
@@ -581,14 +581,15 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "The compiler emits a complete WebAssembly text module. The module declares arity-specific function types for indirect calls, imports print_i32, print_f64, print_string, string host helpers, pow_f64, and to_string support, exports memory and main, defines a function table, owns a mutable heap global, emits standard-library helpers, emits closure wrappers, emits top-level declarations and int/float specializations, emits pending lambdas, and appends string data segments."
+                    text: "The compiler emits a complete WebAssembly text module. The module declares the arity-specific function types needed for indirect calls in that program, imports print_i32, print_f64, print_string, string host helpers, pow_f64, and to_string support, exports memory and main, defines a function table, owns a mutable heap global, emits standard-library helpers, emits closure wrappers, emits top-level declarations and int/float specializations, emits pending lambdas, and appends string data segments."
                 },
                 {
                     kind: "diagram",
                     label: "Generated module skeleton",
                     body: `(module
   (type $fn_1 ...)
-  (type $fn_2 ...)
+  ...
+  (type $fn_n ...)
   (import "env" "print_i32" ...)
   (import "env" "print_f64" ...)
   (import "env" "print_string" ...)
@@ -627,7 +628,7 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "Direct calls are emitted when the callee is a known global function. Polymorphic top-level functions may emit concrete int and float variants so a function such as square can be used at both square 9 and square 2.5 without confusing immediate ints with boxed-float pointers. Local function values, captured function values, anonymous functions, and top-level functions used as values are emitted through closure allocation and call_indirect. This keeps a direct call path for known functions while still supporting higher-order values."
+                    text: "Direct calls are emitted when the callee is a known global function. Polymorphic top-level functions may emit concrete int and float variants so a function such as square can be used at both square 9 and square 2.5 without confusing immediate ints with boxed-float pointers. Local function values, captured function values, anonymous functions, and top-level functions used as values are emitted through closure allocation and call_indirect. The backend generates call_indirect types up to the maximum arity used by those function values, keeping a direct call path for known functions without imposing a practical source-level argument limit on closures."
                 },
                 {
                     kind: "equation",
@@ -645,6 +646,7 @@ closure pointer c
                         "safe(name) maps source names like Map.get to valid WebAssembly identifiers such as Map_get.",
                         "StringPool interns string literals and emits one null-terminated data segment per distinct value.",
                         "The table contains top-level closure wrappers followed by anonymous lambda functions.",
+                        "Indirect-call function types are generated up to the highest closure arity used by the program.",
                         "The backend emits all user-level values as i32, relying on prior static checks and int/float specialization for meaning."
                     ]
                 }
@@ -724,7 +726,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, closures, tuples, pair projection, tuple/list destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, top-level and local function recursion, high-arity closures, tuples, pair projection, tuple/list destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -734,7 +736,7 @@ closure pointer c
                     kind: "bullets",
                     items: [
                         "Static typing protects source-level meaning, while the backend keeps a uniform i32 representation.",
-                        "Direct calls stay simple, while closure values use function-table indirection only when needed.",
+                        "Direct calls stay simple, while closure values use generated arity-specific function-table indirection only when needed.",
                         "Polymorphic builtins are typed precisely, but their runtime helpers operate on uniform pointers and integers.",
                         "The editor tooling benefits from source spans carried through the parser and checker."
                     ]
@@ -802,7 +804,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple and list pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple and list pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, top-level and local recursion, first-class high-arity functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -842,6 +844,7 @@ hover Map.get:
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
+                        "High-arity tests cover first-class function values, returned closures, local recursive closures, generated indirect-call types, and editor-example output.",
                         "Local recursion tests cover local function syntax, self-capture, captured outer locals, non-function rejection, editor examples, and hover strings.",
                         "Tuple tests cover parsing, fst/snd projection, nested formatting, tuple pattern destructuring, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
                         "List pattern tests cover [], right-associative cons patterns, recursive destructuring, closure captures, conservative exhaustiveness, diagnostics, editor examples, and hover strings.",
