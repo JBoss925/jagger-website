@@ -668,7 +668,7 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, tuples, pattern matching, polymorphic collections, and WebAssembly emission**.",
+        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, tuples, structural pattern matching, polymorphic collections, and WebAssembly emission**.",
       impact:
         "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, floats, strings, tuples, arrays, lists, sets, maps, higher-order functions, runtime access checks, and compiler-specialization regression coverage.",
       stack: [
@@ -689,7 +689,7 @@ export const profileContent: ProfileContent = {
         "Polymorphic functions",
         "Polymorphic stdlib",
         "Closure conversion",
-        "Pattern matching",
+        "Structural patterns",
         "First-class functions",
         "Polymorphic collections",
         "Tuples",

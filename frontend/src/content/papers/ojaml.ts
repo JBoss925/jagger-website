@@ -6,7 +6,7 @@ export const ojamlPaper: PaperDocument = {
     subtitle: "A complete browser-native language pipeline: lexical analysis, recursive-descent parsing, Hindley-Milner-style inference, typed standard-library schemes, closure conversion, WebAssembly emission, runtime execution, and Monaco tooling.",
     authors: ["Jagger Brulato"],
     date: "2026",
-    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching with tuple destructuring, first-class functions, closures, ints, floats, strings, unit, tuples, pair projection, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
+    abstract: "OJaml is an OCaml-inspired language implemented end to end in TypeScript. The project owns the full compiler pipeline: source text is lexed into tokens, parsed into an expression AST, checked by a Hindley-Milner-style unifier with explicit polymorphic standard-library schemes, lowered to WebAssembly text, compiled to a binary module through WABT, and instantiated directly in the browser. The language supports top-level and local bindings, recursion, pattern matching with tuple and list destructuring, first-class functions, closures, ints, floats, strings, unit, tuples, pair projection, power expressions, polymorphic functions, polymorphic arrays, lists, sets, maps, higher-order collection functions, runtime access checks, print/println output, to_string formatting, diagnostics, completions, token-level hovers, and a reusable Monaco editor package. This paper specifies the syntax, static semantics, runtime representation, compilation strategy, proof obligations, and implementation boundaries needed to reconstruct the current OJaml system.",
     description: "A detailed technical paper for reconstructing OJaml: grammar, AST, type inference, polymorphic stdlib typing, closure lowering, WebAssembly layout, runtime execution, and editor tooling.",
     categories: ["Language Tooling", "Systems", "Research Notes"],
     tags: [
@@ -77,7 +77,7 @@ export const ojamlPaper: PaperDocument = {
                         "The editor, examples, tests, and CLI exercise the same language stages.",
                         "The checker owns static validity; the runtime assumes checked programs.",
                         "The backend targets portable WebAssembly text instead of JavaScript evaluation.",
-                        "The current scope is finite: no modules, records, algebraic data type declarations, exceptions, general tuple projection beyond pairs, garbage collection, or structural array/list/set/map patterns yet."
+                        "The current scope is finite: no modules, records, algebraic data type declarations, exceptions, general tuple projection beyond pairs, garbage collection, or structural array/set/map patterns yet."
                     ]
                 }
             ],
@@ -140,7 +140,7 @@ let main =
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, pipes, arrows, equals, separators, and EOF.",
                         "Supported primitive values are int, float, bool, string, and unit; tuple expressions group two or more values, and fst/snd project pairs.",
                         "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, and int-only mod.",
-                        "Patterns cover int, float, string, bool, unit, tuple structure, wildcard, and variable catch-all patterns."
+                        "Patterns cover int, float, string, bool, unit, tuple structure, list structure, wildcard, and variable catch-all patterns."
                     ]
                 }
             ],
@@ -177,7 +177,7 @@ Expr
 
 Pattern
   PInt | PFloat | PString | PBool | PUnit
-  PTuple | PWildcard | PVar`,
+  PTuple | PListNil | PListCons | PWildcard | PVar`,
                     caption: "The AST mirrors the implemented language constructs, and binder spans are first-class data."
                 },
                 {
@@ -258,7 +258,7 @@ Pattern
                 },
                 {
                     kind: "paragraph",
-                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, tuple arity or element mismatches in expressions and patterns, non-exhaustive matches without wildcard, variable, or fully binding tuple arms, invalid pair projection, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
+                    text: "The checker rejects duplicate top-level bindings, undefined names, arity errors, branch disagreement, tuple/list arity or element mismatches in expressions and patterns, non-exhaustive matches without wildcard, variable, structurally exhaustive tuple arms, or complete list empty/cons coverage, invalid pair projection, invalid print/println arguments, and main values that cannot be returned directly from the runtime. main may return int, float, bool, or unit; strings and heap values should be printed, converted with to_string, or reduced to one of those result types."
                 },
                 {
                     kind: "equation",
@@ -651,7 +651,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "Pattern matching is implemented for primitive, tuple, and catch-all patterns. A match expression checks the scrutinee once, then checks every arm under an environment extended by variables bound by the pattern. Arm result types must unify, and the match must contain a wildcard, variable catch-all, or tuple pattern whose subpatterns are all exhaustive."
+                    text: "Pattern matching is implemented for primitive, tuple, list, and catch-all patterns. A match expression checks the scrutinee once, then checks every arm under an environment extended by variables bound by the pattern. Arm result types must unify, and the match must contain a wildcard, variable catch-all, a tuple pattern whose subpatterns are all exhaustive, or complete list coverage with both [] and a catch-all cons arm."
                 },
                 {
                     kind: "example",
@@ -675,6 +675,16 @@ closure pointer c
                     caption: "Tuple patterns match by arity and element type, then bind element values for the arm body."
                 },
                 {
+                    kind: "example",
+                    label: "List destructuring",
+                    language: "ocaml",
+                    code: `let rec sum xs =
+  match xs with
+  | [] -> 0
+  | head :: tail -> head + sum tail`,
+                    caption: "List patterns expose the runtime list shape directly: null for empty, or head/tail slots for cons cells."
+                },
+                {
                     kind: "equation",
                     label: "Pattern typing",
                     tex: "\\frac{\\Gamma \\vdash e_s:\\tau_s\\quad p_i \\sim \\tau_s\\Rightarrow\\Gamma_i\\quad \\Gamma_i\\vdash e_i:\\tau}{\\Gamma\\vdash\\texttt{match}\\;e_s\\;\\texttt{with}\\;p_i\\rightarrow e_i : \\tau}",
@@ -682,17 +692,18 @@ closure pointer c
                 },
                 {
                     kind: "paragraph",
-                    text: "The exhaustiveness rule is conservative. The checker does not attempt full finite-domain analysis for bool or literal patterns. Instead, it requires a catch-all pattern or a tuple pattern whose nested patterns are all catch-alls, so diagnostics can point to one mechanical requirement instead of explaining partial coverage for every primitive domain."
+                    text: "The exhaustiveness rule is conservative. The checker does not attempt full finite-domain analysis for bool or literal patterns. Instead, it requires a catch-all pattern, a tuple pattern whose nested patterns are all catch-alls, or the standard list split of [] plus a catch-all cons arm. Diagnostics can point to one mechanical requirement instead of explaining partial coverage for every primitive domain."
                 },
                 {
                     kind: "paragraph",
-                    text: "The backend stores the scrutinee in a scratch local, then emits a chain of WebAssembly conditionals. Wildcard, unit, and variable patterns can immediately produce their body. Literal patterns compare the scrutinee against the literal representation. Tuple patterns test the tuple arity, recursively test nested element patterns, and bind variables from fixed element offsets before evaluating the arm body."
+                    text: "The backend stores the scrutinee in a scratch local, then emits a chain of WebAssembly conditionals. Wildcard, unit, and variable patterns can immediately produce their body. Literal patterns compare the scrutinee against the literal representation. Tuple patterns test the tuple arity, recursively test nested element patterns, and bind variables from fixed element offsets. List patterns test the pointer for null or non-null, then bind head and tail from the cons cell before evaluating the arm body."
                 },
                 {
                     kind: "bullets",
                     items: [
                         "PInt, PFloat, PString, PBool, and PUnit unify the scrutinee with the matching primitive type.",
                         "PTuple unifies the scrutinee with a tuple type of the same arity and checks each element pattern against the corresponding element type.",
+                        "PListNil unifies the scrutinee with a list type and matches only the empty list; PListCons unifies the head with the element type and the tail with the same list type.",
                         "PWildcard accepts any scrutinee type and binds nothing.",
                         "PVar accepts any scrutinee type and binds the variable to that type in the arm body.",
                         "Missing catch-all arms are rejected before code generation."
@@ -707,7 +718,7 @@ closure pointer c
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, pair projection, tuple destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/list/set/map patterns."
+                    text: "OJaml chooses a compact compiler over a complete OCaml clone. The current surface demonstrates inference, recursion, closures, tuples, pair projection, tuple/list destructuring, collections, pattern matching, WebAssembly emission, and editor tooling, but it does not yet include modules, user-defined algebraic data types, records, general tuple projection beyond pairs, exceptions, a garbage collector, or structural array/set/map patterns."
                 },
                 {
                     kind: "paragraph",
@@ -785,7 +796,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple type checking, pair projection, tuple and list pattern matching, tuple formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, pattern matching, first-class functions, closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -826,6 +837,7 @@ hover Map.get:
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
                         "Tuple tests cover parsing, fst/snd projection, nested formatting, tuple pattern destructuring, collection nesting, structural type mismatches, direct-main rejection, editor examples, and hover strings.",
+                        "List pattern tests cover [], right-associative cons patterns, recursive destructuring, closure captures, conservative exhaustiveness, diagnostics, editor examples, and hover strings.",
                         "Set tests cover empty sets, persistence, duplicate suppression, float equality, nested formatting, membership diagnostics, and hover strings.",
                         "Editor tests assert diagnostics and hover strings for inferred local and stdlib types."
                     ]
@@ -874,6 +886,7 @@ tests/*.test.ts     positive runtime tests and negative checker tests`,
                         "Adding general tuple projection requires indexed access syntax, element-offset lowering, hover metadata for projected values, examples, and tests.",
                         "Adding records requires labels in the type representation, deterministic field layout, pattern or access syntax, and hover metadata for fields.",
                         "Adding modules requires real namespace syntax instead of treating dotted builtin names as plain identifiers.",
+                        "Adding array, set, or map patterns requires syntax and exhaustiveness rules that fit their runtime shapes.",
                         "Adding garbage collection requires replacing the monotonic allocator without changing the checker-facing value model."
                     ]
                 }
