@@ -151,7 +151,7 @@ let main =
                     items: [
                         "Lexed token kinds include ints, floats, strings, identifiers, keywords, operators, parentheses, braces, pipes, arrows, equals, separators, and EOF.",
                         "Supported primitive values are int, float, bool, string, and unit; tuple expressions group values by position, zero-based postfix projection reads tuple elements, record type declarations name record shapes, algebraic data type declarations name constructor sets and type parameters, structural records group values by label, and fst/snd remain pair-specific helpers.",
-                        "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, boolean conjunction/disjunction, int-only mod, and forward pipeline |>.",
+                        "Supported binary operators include int and float arithmetic, right-associative power **, mixed numeric comparisons, equality/inequality, short-circuit boolean conjunction/disjunction, int-only mod, and forward pipeline |>.",
                         "Patterns cover int, float, string, bool, unit, tuple structure, record structure, list structure, fixed-length array structure, set structure, map structure, constructor structure, wildcard, and variable catch-all patterns."
                     ]
                 }
