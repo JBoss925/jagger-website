@@ -339,12 +339,12 @@ Pattern
                 {
                     kind: "equation",
                     label: "Array API",
-                    tex: "\\begin{aligned}\\operatorname{Array.make}&: int \\rightarrow 'a \\rightarrow 'a\\;array\\\\\\operatorname{Array.length}&: 'a\\;array \\rightarrow int\\\\\\operatorname{Array.get}&: 'a\\;array \\rightarrow int \\rightarrow 'a\\\\\\operatorname{Array.set}&: 'a\\;array \\rightarrow int \\rightarrow 'a \\rightarrow unit\\\\\\operatorname{Array.append}&: 'a\\;array \\rightarrow 'a\\;array \\rightarrow 'a\\;array\\\\\\operatorname{Array.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;array \\rightarrow 'b\\;array\\\\\\operatorname{Array.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;array \\rightarrow 'a\\;array\\end{aligned}",
-                    caption: "Array creation, length, reads, writes, and append preserve a single element type."
+                    tex: "\\begin{aligned}\\operatorname{Array.make}&: int \\rightarrow 'a \\rightarrow 'a\\;array\\\\\\operatorname{Array.length}&: 'a\\;array \\rightarrow int\\\\\\operatorname{Array.get}&: 'a\\;array \\rightarrow int \\rightarrow 'a\\\\\\operatorname{Array.set}&: 'a\\;array \\rightarrow int \\rightarrow 'a \\rightarrow unit\\\\\\operatorname{Array.append}&: 'a\\;array \\rightarrow 'a\\;array \\rightarrow 'a\\;array\\\\\\operatorname{Array.reverse}&: 'a\\;array \\rightarrow 'a\\;array\\\\\\operatorname{Array.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;array \\rightarrow 'b\\;array\\\\\\operatorname{Array.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;array \\rightarrow 'a\\;array\\end{aligned}",
+                    caption: "Array creation, length, reads, writes, append, and reverse preserve a single element type."
                 },
                 {
                     kind: "paragraph",
-                    text: "Polymorphic collections force the signature table to connect every repeated type variable at the call site. Array.make connects its element argument to the returned array element type. Array.append and List.append require both operands and the result to share one element type. Array.filter and List.filter require predicates over the existing element type and return the same collection element type. List.cons connects the head value and tail list. Set.add connects the old set element type, inserted value, and returned set. Map.set connects map key, provided key, map value, provided value, and returned map. Map.get returns exactly the value type stored by the map and accepts exactly the map key type."
+                    text: "Polymorphic collections force the signature table to connect every repeated type variable at the call site. Array.make connects its element argument to the returned array element type. Array.append and List.append require both operands and the result to share one element type. Array.reverse and List.reverse return a collection with the same element type as the input. Array.filter and List.filter require predicates over the existing element type and return the same collection element type. List.cons connects the head value and tail list. Set.add connects the old set element type, inserted value, and returned set. Map.set connects map key, provided key, map value, provided value, and returned map. Map.get returns exactly the value type stored by the map and accepts exactly the map key type."
                 },
                 {
                     kind: "example",
@@ -358,7 +358,7 @@ Pattern
                 {
                     kind: "equation",
                     label: "List API",
-                    tex: "\\begin{aligned}\\operatorname{List.empty}&: unit \\rightarrow 'a\\;list\\\\\\operatorname{List.cons}&: 'a \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.head}&: 'a\\;list \\rightarrow 'a\\\\\\operatorname{List.tail}&: 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.is\\_empty}&: 'a\\;list \\rightarrow bool\\\\\\operatorname{List.length}&: 'a\\;list \\rightarrow int\\\\\\operatorname{List.append}&: 'a\\;list \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list\\\\\\operatorname{List.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\end{aligned}",
+                    tex: "\\begin{aligned}\\operatorname{List.empty}&: unit \\rightarrow 'a\\;list\\\\\\operatorname{List.cons}&: 'a \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.head}&: 'a\\;list \\rightarrow 'a\\\\\\operatorname{List.tail}&: 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.is\\_empty}&: 'a\\;list \\rightarrow bool\\\\\\operatorname{List.length}&: 'a\\;list \\rightarrow int\\\\\\operatorname{List.append}&: 'a\\;list \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.reverse}&: 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list\\\\\\operatorname{List.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\end{aligned}",
                     caption: "List operations preserve or transform element types according to their function arguments."
                 },
                 {
@@ -390,6 +390,7 @@ Pattern
                         "to_string accepts any value and formats primitives, tuples, records, arrays, lists, sets, maps, and functions for output.",
                         "Tuple postfix projection reads any statically known element by zero-based index; fst and snd remain pair-specific helpers that reject non-pairs.",
                         "Array.append and List.append require matching element types and preserve operand order.",
+                        "Array.reverse and List.reverse allocate reversed collections without changing element types.",
                         "Array.filter and List.filter require predicates returning bool and preserve the original element type.",
                         "Array.iter and List.iter require callbacks returning unit.",
                         "Array.fold_left and List.fold_left keep accumulator type independent from element type.",
@@ -608,10 +609,10 @@ closure pointer c
                     kind: "bullets",
                     items: [
                         "Array.make traps negative lengths, and Array.get/Array.set trap null arrays, negative indexes, and indexes greater than or equal to the stored length.",
-                        "Array.append allocates a new array and copies left values followed by right values.",
+                        "Array.append allocates a new array and copies left values followed by right values; Array.reverse allocates a new array and copies elements from the end of the source to the front of the result.",
                         "Tuple values allocate fixed-size blocks and rely on the checker for arity and element-position consistency; tuple projection and fst/snd lower to fixed slot loads.",
                         "Record values allocate fixed-size blocks with fields sorted by label; field access and record patterns lower to fixed slot loads selected by the checked record type.",
-                        "List.empty, Set.empty, and Map.empty are represented by null pointer 0; List.head and List.tail trap on empty lists, and List.append copies the left spine while sharing the right list.",
+                        "List.empty, Set.empty, and Map.empty are represented by null pointer 0; List.head and List.tail trap on empty lists, List.append copies the left spine while sharing the right list, and List.reverse builds a new reversed spine.",
                         "Set.add prepends a value only when Set.has cannot find an equal existing value; float sets compare unboxed f64 payloads.",
                         "Map.set prepends a key/value entry, making newer bindings shadow older equal keys.",
                         "Map.get traps if no matching key exists; Map.has remains the non-trapping presence check."
@@ -884,7 +885,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, built-in and user-defined module opens, module type declarations, abstract signature type entries, concrete record and variant signature manifests, val signature ascription, opened module-local types and constructors, nested modules, module-local record and algebraic data types, ambiguous-name rejection, expression sequencing and unit-left diagnostics, forward pipelines through direct functions, stdlib functions, returned closures, and specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, higher-order function annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, staged closures, collection append/filter/map/iter/fold behavior, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, built-in and user-defined module opens, module type declarations, abstract signature type entries, concrete record and variant signature manifests, val signature ascription, opened module-local types and constructors, nested modules, module-local record and algebraic data types, ambiguous-name rejection, expression sequencing and unit-left diagnostics, forward pipelines through direct functions, stdlib functions, returned closures, and specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, higher-order function annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, staged closures, collection append/reverse/filter/map/iter/fold behavior, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
@@ -923,7 +924,7 @@ hover Map.get:
                         "Compiler tests inspect generated WAT for scalar programs.",
                         "Runtime tests execute WASM and compare main result plus captured output transcripts.",
                         "Runtime safety tests assert traps for negative array lengths, out-of-bounds array access, empty-list head/tail, and missing map keys.",
-                        "Collection tests cover append order, empty operands, polymorphic element values, and mismatch diagnostics for arrays and lists.",
+                        "Collection tests cover append and reverse order, empty operands, singleton values, source preservation, polymorphic element values, and mismatch diagnostics for arrays and lists.",
                         "Specialization tests cover direct and higher-order polymorphic function calls across int and float call sites, including power-based helpers.",
                         "Module tests cover parsing, qualified member calls, user-defined opens, module type declarations, abstract type signatures, concrete record and variant signature manifests, polymorphic val signature ascription, opened module-local types and constructors, local shadowing, sibling references, closures that capture module sibling values, duplicate diagnostics, unknown opens, missing signature members, mismatched signature types, and nested-module behavior.",
                         "High-arity tests cover first-class function values, returned and staged closures, local recursive closures, mixed heap/immediate arguments, scratch-local growth past the old fixed pool, generated indirect-call types, and editor-example output.",
