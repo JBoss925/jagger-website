@@ -668,9 +668,9 @@ export const profileContent: ProfileContent = {
       slug: "ojaml",
       title: "OJaml",
       description:
-        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, nested modules with local types, tuples, records, polymorphic ADTs, structural pattern matching, polymorphic collections, and WebAssembly emission**.",
+        "An OCaml-inspired language and compiler built end to end in TypeScript with **lexing, recursive-descent parsing, Hindley-Milner-style inference, polymorphic functions, typed standard-library schemes, nested modules with opened local types/constructors, tuples, records, polymorphic ADTs, structural pattern matching, polymorphic collections, and WebAssembly emission**.",
       impact:
-        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, high-arity and staged function values, floats, strings, nested modules with local types, sequencing/pipelines, tuples, polymorphic ADTs, records, collection patterns, sets, maps, runtime access checks, and compiler-specialization coverage.",
+        "The browser-native Monaco playground and Node CLI run the same pipeline through WABT, with diagnostics, hovers, completions, closure conversion, high-arity and staged function values, floats, strings, opened modules with local types/constructors, sequencing/pipelines, tuples, polymorphic ADTs, records, collection patterns, sets, maps, runtime access checks, and compiler-specialization coverage.",
       stack: [
         "OJaml",
         "TypeScript",
@@ -687,7 +687,7 @@ export const profileContent: ProfileContent = {
         "Hindley-Milner typing",
         "Type inference",
         "Polymorphic functions",
-        "Module-local types",
+        "Opened local types",
         "Tuple projection",
         "Closure conversion",
         "Structural patterns",
