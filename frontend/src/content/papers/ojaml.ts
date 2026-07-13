@@ -339,12 +339,12 @@ Pattern
                 {
                     kind: "equation",
                     label: "Array API",
-                    tex: "\\begin{aligned}\\operatorname{Array.make}&: int \\rightarrow 'a \\rightarrow 'a\\;array\\\\\\operatorname{Array.length}&: 'a\\;array \\rightarrow int\\\\\\operatorname{Array.get}&: 'a\\;array \\rightarrow int \\rightarrow 'a\\\\\\operatorname{Array.set}&: 'a\\;array \\rightarrow int \\rightarrow 'a \\rightarrow unit\\end{aligned}",
+                    tex: "\\begin{aligned}\\operatorname{Array.make}&: int \\rightarrow 'a \\rightarrow 'a\\;array\\\\\\operatorname{Array.length}&: 'a\\;array \\rightarrow int\\\\\\operatorname{Array.get}&: 'a\\;array \\rightarrow int \\rightarrow 'a\\\\\\operatorname{Array.set}&: 'a\\;array \\rightarrow int \\rightarrow 'a \\rightarrow unit\\\\\\operatorname{Array.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;array \\rightarrow 'b\\;array\\\\\\operatorname{Array.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;array \\rightarrow 'a\\;array\\end{aligned}",
                     caption: "Array creation, length, reads, and writes preserve a single element type."
                 },
                 {
                     kind: "paragraph",
-                    text: "Polymorphic collections force the signature table to connect every repeated type variable at the call site. Array.make must connect its element argument to the returned array element type. List.cons must connect the head value and tail list. Set.add must connect the old set element type, inserted value, and returned set. Map.set must connect map key, provided key, map value, provided value, and returned map. Map.get must return exactly the value type stored by the map and must accept exactly the map key type."
+                    text: "Polymorphic collections force the signature table to connect every repeated type variable at the call site. Array.make connects its element argument to the returned array element type. Array.filter and List.filter require predicates over the existing element type and return the same collection element type. List.cons connects the head value and tail list. Set.add connects the old set element type, inserted value, and returned set. Map.set connects map key, provided key, map value, provided value, and returned map. Map.get returns exactly the value type stored by the map and accepts exactly the map key type."
                 },
                 {
                     kind: "example",
@@ -358,7 +358,7 @@ Pattern
                 {
                     kind: "equation",
                     label: "List API",
-                    tex: "\\begin{aligned}\\operatorname{List.empty}&: unit \\rightarrow 'a\\;list\\\\\\operatorname{List.cons}&: 'a \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.head}&: 'a\\;list \\rightarrow 'a\\\\\\operatorname{List.tail}&: 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.is\\_empty}&: 'a\\;list \\rightarrow bool\\\\\\operatorname{List.length}&: 'a\\;list \\rightarrow int\\\\\\operatorname{List.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list\\end{aligned}",
+                    tex: "\\begin{aligned}\\operatorname{List.empty}&: unit \\rightarrow 'a\\;list\\\\\\operatorname{List.cons}&: 'a \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.head}&: 'a\\;list \\rightarrow 'a\\\\\\operatorname{List.tail}&: 'a\\;list \\rightarrow 'a\\;list\\\\\\operatorname{List.is\\_empty}&: 'a\\;list \\rightarrow bool\\\\\\operatorname{List.length}&: 'a\\;list \\rightarrow int\\\\\\operatorname{List.map}&: ('a \\rightarrow 'b) \\rightarrow 'a\\;list \\rightarrow 'b\\;list\\\\\\operatorname{List.filter}&: ('a \\rightarrow bool) \\rightarrow 'a\\;list \\rightarrow 'a\\;list\\end{aligned}",
                     caption: "List operations preserve or transform element types according to their function arguments."
                 },
                 {
@@ -389,6 +389,7 @@ Pattern
                         "print and println are checked through custom call logic: they accept int, float, or string and return unit.",
                         "to_string accepts any value and formats primitives, tuples, records, arrays, lists, sets, maps, and functions for output.",
                         "Tuple postfix projection reads any statically known element by zero-based index; fst and snd remain pair-specific helpers that reject non-pairs.",
+                        "Array.filter and List.filter require predicates returning bool and preserve the original element type.",
                         "Array.iter and List.iter require callbacks returning unit.",
                         "Array.fold_left and List.fold_left keep accumulator type independent from element type.",
                         "Polymorphic builtins compile to uniform i32 functions at runtime; the checker preserves their static element, key, value, and callback relationships."
@@ -435,7 +436,7 @@ Pattern
                     kind: "equation",
                     label: "No cross-call pollution",
                     tex: "\\operatorname{fresh}(\\forall \\alpha.\\tau) = \\tau[\\alpha \\mapsto \\beta_{new}]",
-                    caption: "Fresh variables ensure one call to List.map, Set.add, or Map.set does not constrain another independent call."
+                    caption: "Fresh variables ensure one call to List.map, List.filter, Set.add, or Map.set does not constrain another independent call."
                 },
                 {
                     kind: "bullets",
@@ -513,7 +514,7 @@ let main =
                 },
                 {
                     kind: "paragraph",
-                    text: "This representation keeps direct calls efficient while supporting higher-order collection functions such as List.map, Array.iter, and fold_left. The compiler emits the arity-specific WebAssembly function types required by the current program, and the standard library calls callbacks through call_indirect with the matching type."
+                    text: "This representation keeps direct calls efficient while supporting higher-order collection functions such as List.map, List.filter, Array.iter, Array.filter, and fold_left. The compiler emits the arity-specific WebAssembly function types required by the current program, and the standard library calls callbacks through call_indirect with the matching type."
                 },
                 {
                     kind: "bullets",
@@ -881,7 +882,7 @@ hover Map.get:
             blocks: [
                 {
                     kind: "paragraph",
-                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, built-in and user-defined module opens, module type declarations, abstract signature type entries, concrete record and variant signature manifests, val signature ascription, opened module-local types and constructors, nested modules, module-local record and algebraic data types, ambiguous-name rejection, expression sequencing and unit-left diagnostics, forward pipelines through direct functions, stdlib functions, returned closures, and specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, higher-order function annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, staged closures, higher-order standard-library functions, to_string formatting, print/println behavior, and editor hover metadata."
+                    text: "OJaml is validated with a Node test suite that exercises parsing, emitted WebAssembly text, runtime execution, diagnostics, polymorphic functions with int/float specialization, built-in and user-defined module opens, module type declarations, abstract signature type entries, concrete record and variant signature manifests, val signature ascription, opened module-local types and constructors, nested modules, module-local record and algebraic data types, ambiguous-name rejection, expression sequencing and unit-left diagnostics, forward pipelines through direct functions, stdlib functions, returned closures, and specialization, exact editor-example output transcripts, power precedence and associativity, runtime access traps, tuple and record type checking, record and algebraic data type declarations with type parameters, value annotations, function parameter annotations, higher-order function annotations, tuple projection, pair helpers, tuple, record, list, array, set, map, and constructor pattern matching, tuple and record formatting, polymorphic arrays, polymorphic lists, polymorphic sets, polymorphic maps, polymorphic ADT constructor instantiation, pattern matching, top-level and local recursion, first-class high-arity functions, staged closures, higher-order standard-library functions including map/filter/iter/fold_left, to_string formatting, print/println behavior, and editor hover metadata."
                 },
                 {
                     kind: "example",
