@@ -25,6 +25,7 @@ frontend/
     styles/           Global stylesheet
     tests/            Playwright tests
 frontend-v2/          Alternate portfolio for v2.jaggerbrulato.com
+frontend-v3/          Development-environment portfolio based on the vNext design
 shared/               Profile, experience, project, and skills data shared by both frontends
 genetic_ts/           GeneticTS submodule
 jaggerscript/         JaggerScript submodule
@@ -115,6 +116,8 @@ frontend/dist
 ```
 
 The v2 site builds independently with `npm run build:v2` from the repository root. Its publish directory is `frontend-v2/dist`.
+
+The v3 site builds independently with `npm run build:v3` from the repository root. Its publish directory is `frontend-v3/dist`.
 
 ## Known Limitations
 
