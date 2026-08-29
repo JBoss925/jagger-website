@@ -49,15 +49,6 @@ const projectCodes: Record<string, string> = {
   "tsxlight-renderer": "TSXL"
 };
 
-const tickerConfig = {
-  symbols: marketSymbols.map((item) => ({ proName: item.symbol, title: item.short })),
-  showSymbolLogo: true,
-  isTransparent: true,
-  displayMode: "regular",
-  colorTheme: "dark",
-  locale: "en"
-};
-
 function mainSiteHref(path = "") {
   if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
@@ -135,6 +126,47 @@ function TradingViewTickerList() {
   return <div ref={containerRef} className="market-tickers" style={{ "--market-monitor-count": marketSymbols.length } as React.CSSProperties} />;
 }
 
+function TradingViewTickerTape() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const widget = document.createElement("tv-ticker-tape");
+    widget.setAttribute("symbols", marketSymbols.map((item) => item.symbol).join(","));
+    widget.setAttribute("direction", "horizontal");
+    widget.setAttribute("item-size", "compact");
+    widget.setAttribute("hide-chart", "");
+    widget.setAttribute("theme", "dark");
+    widget.setAttribute("aria-label", "Live market ticker supplied by TradingView");
+    container.replaceChildren(widget);
+
+    if (!document.querySelector('script[data-tradingview-ticker-tape]')) {
+      const scriptElement = document.createElement("script");
+      scriptElement.type = "module";
+      scriptElement.src = "https://widgets.tradingview-widget.com/w/en/tv-ticker-tape.js";
+      scriptElement.dataset.tradingviewTickerTape = "true";
+      document.head.append(scriptElement);
+    }
+
+    let disposed = false;
+
+    void customElements.whenDefined("tv-ticker-tape").then(() => {
+      if (disposed) return;
+      const tape = widget as HTMLElement & { _speed?: number };
+      tape._speed = 90;
+    });
+
+    return () => {
+      disposed = true;
+      container.replaceChildren();
+    };
+  }, []);
+
+  return <div ref={containerRef} className="ticker-tape-widget" />;
+}
+
 function MarketClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -190,7 +222,7 @@ function App() {
       </header>
 
       <section className="ticker-tape" aria-label="Live market ticker">
-        <TradingViewWidget script="embed-widget-ticker-tape.js" config={tickerConfig} label="Live market ticker supplied by TradingView" />
+        <TradingViewTickerTape />
       </section>
 
       <div className="market-status"><span><i /> MARKET DATA CONNECTED</span><span>TECH + BLUE CHIP UNIVERSE</span><span><MarketClock /></span><span>DATA BY TRADINGVIEW</span></div>
