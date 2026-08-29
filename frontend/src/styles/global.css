@@ -2382,11 +2382,6 @@ a {
   border-color: var(--line);
 }
 
-.site-nav__button--editor {
-  border-color: rgba(143, 201, 163, 0.5);
-  color: #dff7e7;
-}
-
 .site-nav__button:hover,
 .cta-button:hover,
 .project-card__links a:hover,
@@ -2635,6 +2630,26 @@ button:hover {
   width: 17px;
   height: 17px;
   flex: 0 0 17px;
+}
+
+.hero-panel__view-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.hero-panel__view-link--editor {
+  border-color: rgba(107, 220, 255, 0.5);
+  background: rgba(107, 220, 255, 0.12);
+  color: #9de8ff;
+}
+
+.hero-panel__view-link--editor:hover,
+.hero-panel__view-link--editor:focus-visible {
+  border-color: rgba(107, 220, 255, 0.8);
+  background: rgba(107, 220, 255, 0.2);
+  color: #d7f7ff;
 }
 
 .hero-panel__title strong,
@@ -3761,8 +3776,8 @@ button:hover {
   overflow-y: auto;
 }
 
-@media (max-width: 1480px) {
-  .site-nav:not(.site-nav--links-only) {
+@media (max-width: 1320px) {
+  .site-nav {
     grid-template-areas:
       "topbar actions"
       "links links";
@@ -3786,22 +3801,6 @@ button:hover {
     width: auto;
     padding: 12px 18px;
     white-space: nowrap;
-  }
-}
-
-@media (max-width: 900px) and (min-width: 769px) {
-  .site-nav:not(.site-nav--links-only) {
-    grid-template-areas:
-      "topbar"
-      "actions"
-      "links";
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .site-nav__actions {
-    width: 100%;
-    justify-self: stretch;
-    justify-content: flex-start;
   }
 }
 
@@ -3874,6 +3873,10 @@ button:hover {
   }
 
   .hero-panel__quick-links {
+    margin-bottom: 0;
+  }
+
+  .hero-panel__view-links {
     margin-bottom: 18px;
   }
 

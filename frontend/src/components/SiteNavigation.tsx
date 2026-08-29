@@ -19,14 +19,6 @@ function sectionHref(pathname: string, sectionId: string) {
   return pathname === "/" ? `#${sectionId}` : `/#${sectionId}`;
 }
 
-function editorSiteHref() {
-  if (import.meta.env.DEV) {
-    return `${window.location.protocol}//${window.location.hostname}:5174`;
-  }
-
-  return "https://editor.jaggerbrulato.com";
-}
-
 function SiteNavigation({
   sections = [],
   navLinks,
@@ -176,13 +168,6 @@ function SiteNavigation({
 
           {showActions ? (
             <div className="site-nav__actions">
-              <a
-                className="site-nav__button site-nav__button--editor"
-                href={editorSiteHref()}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Swap to Editor
-              </a>
               <a
                 className="site-nav__button site-nav__button--ghost"
                 href="/files/resume.pdf"

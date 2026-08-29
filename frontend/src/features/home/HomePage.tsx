@@ -30,6 +30,14 @@ const heroQuickLinks = heroQuickLinkLabels
   .map((label) => profileContent.links.find((link) => link.label === label))
   .filter((link): link is (typeof profileContent.links)[number] => Boolean(link));
 
+function editorSiteHref() {
+  if (import.meta.env.DEV) {
+    return `${window.location.protocol}//${window.location.hostname}:5174`;
+  }
+
+  return "https://editor.jaggerbrulato.com";
+}
+
 function HomePage() {
   const location = useLocation();
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -220,6 +228,24 @@ function HomePage() {
                     <span>{link.label}</span>
                   </a>
                 ))}
+              </div>
+              <div className="hero-panel__view-links" aria-label="Alternate portfolio views">
+                <a
+                  className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--editor"
+                  href={editorSiteHref()}
+                >
+                  <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path
+                      d="m7 4-4 5 4 5m4-10 4 5-4 5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span>Editor view</span>
+                </a>
               </div>
             </div>
           </div>
