@@ -1,4 +1,7 @@
 linkedin_snapshots/
 .playwright-libs/
+**/node_modules/
+**/dist/
+*.tsbuildinfo
 *:Zone.Identifier
 *Zone.Identifier
