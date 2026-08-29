@@ -38,6 +38,14 @@ function editorSiteHref() {
   return "https://editor.jaggerbrulato.com";
 }
 
+function designerSiteHref() {
+  if (import.meta.env.DEV) {
+    return `${window.location.protocol}//${window.location.hostname}:5175`;
+  }
+
+  return "https://v3.jaggerbrulato.com";
+}
+
 function HomePage() {
   const location = useLocation();
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -245,6 +253,24 @@ function HomePage() {
                     />
                   </svg>
                   <span>Editor view</span>
+                </a>
+                <a
+                  className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--designer"
+                  href={designerSiteHref()}
+                >
+                  <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path
+                      d="M9 2.5a6.5 6.5 0 1 0 0 13h1.2a1.45 1.45 0 0 0 0-2.9h-.65a1.2 1.2 0 0 1 0-2.4H12A3.5 3.5 0 0 0 15.5 6.7C15.5 4.1 12.6 2.5 9 2.5Z"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="5.8" cy="7.1" r=".8" fill="currentColor" />
+                    <circle cx="8.2" cy="5.2" r=".8" fill="currentColor" />
+                    <circle cx="11.2" cy="5.4" r=".8" fill="currentColor" />
+                  </svg>
+                  <span>Designer view</span>
                 </a>
               </div>
             </div>

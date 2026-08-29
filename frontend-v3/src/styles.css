@@ -69,6 +69,16 @@ img { display: block; max-width: 100%; }
 .orbit-label { position: absolute; font-family: "DM Mono"; font-size: 10px; letter-spacing: .16em; background: var(--paper); padding: 5px; }
 .orbit-label-a { left: 5%; top: 37%; }.orbit-label-b { right: 5%; top: 22%; }.orbit-label-c { right: 2%; bottom: 20%; }
 
+.signal-strip { padding-top: 58px; padding-bottom: 68px; border-top: 1px solid var(--ink); background: var(--acid); }
+.signal-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+.signal-metric { min-height: 125px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.signal-metric-link { transition: color .2s, background .2s; }.signal-metric-link:hover { color: var(--paper); background: var(--ink); }
+.signal-metrics span, .detail-label { font-family: "DM Mono"; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+.signal-metrics strong { font-size: clamp(22px, 3vw, 38px); letter-spacing: -.05em; }
+.signal-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-top: 42px; }
+.signal-points p { display: grid; grid-template-columns: 28px 1fr; gap: 12px; margin: 0; font-size: 13px; line-height: 1.65; }
+.signal-points p span { font-family: "DM Mono"; font-size: 9px; }
+
 .principles { padding-top: 100px; padding-bottom: 110px; background: var(--ink); color: var(--paper); display: grid; grid-template-columns: .6fr 1.4fr; gap: 80px; }
 .principles .section-index { color: var(--acid); }
 .principles-copy h2, .section-heading h2, .experience h2, .about h2, .contact h2 { font-size: clamp(44px, 5.5vw, 82px); line-height: .96; letter-spacing: -.055em; margin: 0; }
@@ -84,6 +94,7 @@ img { display: block; max-width: 100%; }
 .work { padding-top: 120px; padding-bottom: 130px; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 60px; }
 .section-heading .section-index { margin: 0 0 20px; }
+.section-note { max-width: 600px; margin: 24px 0 0; color: rgba(20,21,19,.6); font-size: 13px; line-height: 1.6; }
 .filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
 .filters button { border: 1px solid var(--rule); background: transparent; border-radius: 100px; padding: 9px 15px; font-size: 11px; cursor: pointer; transition: .2s; }
 .filters button:hover, .filters button.active { color: var(--paper); background: var(--ink); }
@@ -101,6 +112,20 @@ img { display: block; max-width: 100%; }
 .project-meta h3 { margin: 0 0 10px; font-size: 24px; letter-spacing: -.03em; }
 .project-meta p { margin: 0; color: rgba(20,21,19,.62); line-height: 1.55; max-width: 600px; font-size: 13px; }
 .project-meta ul { list-style: none; margin: 2px 0 0; padding: 0; text-align: right; font-family: "DM Mono"; font-size: 9px; line-height: 1.7; text-transform: uppercase; letter-spacing: .08em; }
+.project-notes { margin-top: 18px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.project-notes summary, .role-details summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-family: "DM Mono"; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; list-style: none; }
+.project-notes summary::-webkit-details-marker, .role-details summary::-webkit-details-marker { display: none; }
+.project-notes summary > span:last-child, .role-details summary > span:last-child { font-size: 20px; font-weight: 400; transition: transform .2s; }
+.project-notes[open] summary > span:last-child, .role-details[open] summary > span:last-child { transform: rotate(45deg); }
+.project-notes-body { display: grid; gap: 25px; padding: 2px 0 25px; }
+.project-notes-body p { margin: 8px 0 0; color: rgba(20,21,19,.68); font-size: 13px; line-height: 1.65; }
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.tag-cloud > span { padding: 6px 8px; border: 1px solid currentColor; font-family: "DM Mono"; font-size: 8px; line-height: 1.2; letter-spacing: .05em; text-transform: uppercase; }
+.project-links { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
+.project-links a, .about-links a { padding: 9px 11px; border: 1px solid var(--ink); font-size: 11px; font-weight: 700; }
+.related-links { display: grid; gap: 8px; margin-top: 10px; }
+.related-links a { display: grid; grid-template-columns: minmax(110px, .4fr) 1fr auto; gap: 15px; align-items: center; padding: 12px; border: 1px solid var(--rule); font-size: 11px; }
+.related-links a span { color: rgba(20,21,19,.58); line-height: 1.45; }
 .empty-state { padding: 80px 0; text-align: center; }
 
 .experience { padding-top: 120px; padding-bottom: 130px; background: #e5e1d7; display: grid; grid-template-columns: .8fr 1.3fr; gap: clamp(50px, 9vw, 150px); }
@@ -115,20 +140,36 @@ img { display: block; max-width: 100%; }
 .job-summary { grid-column: 2; line-height: 1.55; color: rgba(20,21,19,.65); font-size: 13px; margin: 4px 0; }
 .job-date { grid-column: 2; display: flex; gap: 12px; font-family: "DM Mono"; font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
 .job-date span { color: rgba(20,21,19,.5); }
+.role-details { grid-column: 2; margin-top: 4px; border-top: 1px solid var(--rule); }
+.role-details > div { padding: 0 0 8px; }
+.role-details ol { display: grid; gap: 10px; margin: 8px 0 22px; padding-left: 20px; color: rgba(20,21,19,.68); font-size: 12px; line-height: 1.6; }
+.tag-language { color: #294eab; }.tag-framework { color: #7a3e12; }.tag-infrastructure { color: #286142; }.tag-practice { color: #6f3e86; }
+
+.expertise { padding-top: 120px; padding-bottom: 130px; color: var(--paper); background: var(--blue); }
+.expertise .section-index, .cluster-number { color: var(--acid); }
+.expertise-heading { align-items: end; }
+.expertise-heading > p { width: min(440px, 100%); margin: 0; color: rgba(242,240,233,.72); line-height: 1.7; }
+.skill-cluster-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid rgba(242,240,233,.4); border-left: 1px solid rgba(242,240,233,.4); }
+.skill-cluster-grid article { min-height: 310px; padding: 28px; border-right: 1px solid rgba(242,240,233,.4); border-bottom: 1px solid rgba(242,240,233,.4); }
+.cluster-number { font: 10px "DM Mono"; }
+.skill-cluster-grid h3 { margin: 45px 0 14px; font-size: 25px; letter-spacing: -.04em; }
+.skill-cluster-grid p { min-height: 64px; margin: 0; color: rgba(242,240,233,.7); font-size: 13px; line-height: 1.6; }
+.skill-cluster-grid .tag-cloud { margin-top: 24px; color: rgba(242,240,233,.86); }
 
 .about { padding-top: 130px; padding-bottom: 130px; display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(50px, 9vw, 150px); align-items: center; }
 .portrait-frame { min-height: 620px; background: var(--blue); padding: clamp(30px, 4vw, 65px) 0 0 clamp(30px, 4vw, 65px); }
 .portrait-frame img { width: 100%; height: 100%; min-height: 555px; object-fit: cover; object-position: center top; filter: grayscale(1) contrast(1.04); }
 .about-copy h2 { margin: 28px 0 36px; }
 .about-copy > p:not(.section-index) { max-width: 650px; font-size: 15px; line-height: 1.75; color: rgba(20,21,19,.68); }
-.skill-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 35px; }
-.skill-row span { font-family: "DM Mono"; text-transform: uppercase; font-size: 9px; letter-spacing: .06em; border: 1px solid var(--rule); padding: 8px 11px; }
+.about-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 35px; }
 
 .contact { color: var(--paper); background: var(--orange); padding-top: 110px; padding-bottom: 120px; }
 .contact h2 { font-size: clamp(58px, 9vw, 145px); margin: 55px 0; max-width: 1250px; }
 .contact a { display: inline-flex; gap: 25px; align-items: center; font-size: clamp(18px, 2vw, 28px); border-bottom: 2px solid; padding-bottom: 8px; }
-.site-footer { min-height: 110px; padding: 32px clamp(24px, 6vw, 104px); background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: space-between; font-family: "DM Mono"; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
-.site-footer div { display: flex; gap: 24px; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: 28px 50px; }
+.site-footer { min-height: 150px; padding: 32px clamp(24px, 6vw, 104px); background: var(--ink); color: var(--paper); display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 30px; font-family: "DM Mono"; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
+.site-footer div { display: flex; flex-wrap: wrap; gap: 16px 24px; }
+.footer-links { justify-content: center; }.footer-views { justify-content: flex-end; color: var(--acid); }
 
 @media (max-width: 900px) {
   .site-header { grid-template-columns: 1fr auto; }.site-header nav { display: none; }
@@ -136,7 +177,11 @@ img { display: block; max-width: 100%; }
   .hero-orbit { width: 440px; opacity: .5; right: -160px; bottom: -10px; }
   .principles, .experience, .about { grid-template-columns: 1fr; }
   .principle-grid { grid-column: 1; }.experience-intro { position: static; }
+  .signal-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .signal-points { grid-template-columns: 1fr; }
+  .skill-cluster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .portrait-frame { max-width: 600px; }
+  .site-footer { grid-template-columns: 1fr; }.footer-links, .footer-views { justify-content: flex-start; }
 }
 
 @media (max-width: 640px) {
@@ -154,7 +199,9 @@ img { display: block; max-width: 100%; }
   .section-heading { display: block; }.filters { justify-content: flex-start; margin-top: 28px; }
   .work { padding-top: 85px; padding-bottom: 90px; }.project-grid { grid-template-columns: 1fr; gap: 55px; }
   .project-meta { grid-template-columns: 1fr; gap: 15px; }.project-meta ul { text-align: left; display: flex; flex-wrap: wrap; gap: 6px 12px; }
-  .experience, .about { padding-top: 85px; padding-bottom: 90px; gap: 55px; }
+  .signal-strip { padding-top: 45px; padding-bottom: 50px; }.signal-metrics, .skill-cluster-grid { grid-template-columns: 1fr; }
+  .related-links a { grid-template-columns: 1fr auto; }.related-links a span { grid-column: 1 / -1; grid-row: 2; }
+  .experience, .expertise, .about { padding-top: 85px; padding-bottom: 90px; gap: 55px; }
   .portrait-frame { min-height: 440px; }.portrait-frame img { min-height: 410px; }
   .contact { padding-top: 80px; padding-bottom: 90px; }.contact h2 { margin: 45px 0; }
   .site-footer { align-items: flex-start; flex-direction: column; gap: 24px; }
