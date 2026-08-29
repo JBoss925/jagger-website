@@ -6,5 +6,9 @@ const workspaceRoot = fileURLToPath(new URL("..", import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  server: { fs: { allow: [workspaceRoot] } }
+  server: {
+    port: 5175,
+    strictPort: true,
+    fs: { allow: [workspaceRoot] }
+  }
 });

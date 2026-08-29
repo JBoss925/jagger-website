@@ -44,6 +44,8 @@ export default defineConfig({
     "process.env": {}
   },
   server: {
+    port: 5173,
+    strictPort: true,
     fs: {
       allow: [workspaceRoot]
     }

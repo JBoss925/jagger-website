@@ -24,9 +24,9 @@ frontend/
     hooks/            Shared React hooks
     styles/           Global stylesheet
     tests/            Playwright tests
-frontend-v2/          Alternate portfolio for v2.jaggerbrulato.com
-frontend-v3/          Development-environment portfolio based on the vNext design
-shared/               Profile, experience, project, and skills data shared by both frontends
+frontend-v2/          Editor-style portfolio for editor.jaggerbrulato.com
+frontend-v3/          Earlier alternate editorial portfolio
+shared/               Profile, experience, project, and skills data shared by all frontends
 genetic_ts/           GeneticTS submodule
 jaggerscript/         JaggerScript submodule
 ojaml/                OJaml submodule
@@ -61,6 +61,10 @@ Start the local development server:
 cd frontend
 npm run dev
 ```
+
+The main site runs at `http://localhost:5173`. The editor runs at
+`http://localhost:5174` from `frontend-v2`, and the earlier editorial variant
+runs at `http://localhost:5175` from `frontend-v3`.
 
 Build the production bundle:
 
