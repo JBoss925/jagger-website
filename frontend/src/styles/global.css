@@ -3761,8 +3761,8 @@ button:hover {
   overflow-y: auto;
 }
 
-@media (max-width: 1320px) {
-  .site-nav {
+@media (max-width: 1480px) {
+  .site-nav:not(.site-nav--links-only) {
     grid-template-areas:
       "topbar actions"
       "links links";
@@ -3786,6 +3786,22 @@ button:hover {
     width: auto;
     padding: 12px 18px;
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 900px) and (min-width: 769px) {
+  .site-nav:not(.site-nav--links-only) {
+    grid-template-areas:
+      "topbar"
+      "actions"
+      "links";
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-nav__actions {
+    width: 100%;
+    justify-self: stretch;
+    justify-content: flex-start;
   }
 }
 
