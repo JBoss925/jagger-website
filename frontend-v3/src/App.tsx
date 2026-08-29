@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { headshotAsset, profileContent } from "../../shared/content/profile";
 import type { ProjectEntry } from "../../shared/types/content";
 
@@ -11,16 +11,18 @@ const filterTerms: Record<Exclude<ProjectFilter, "Selected" | "All">, string[]> 
   Tools: ["library", "api", "tool", "package", "compression", "simulation", "developer"]
 };
 
+const orbitDomains = [
+  { id: "product", code: "01", label: "Product", detail: "Interfaces, behavior, and resilient user flows." },
+  { id: "systems", code: "02", label: "Systems", detail: "Runtime boundaries, data, events, and failure modes." },
+  { id: "platform", code: "03", label: "Platform", detail: "Infrastructure and tooling that help teams ship." },
+  { id: "craft", code: "04", label: "Craft", detail: "Pragmatic architecture, mentorship, and clear code." }
+] as const;
+
 const plainText = (value: string) => value.replace(/\*\*(.*?)\*\*/g, "$1");
 
 function mainSiteHref(path = "") {
   if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
-}
-
-function editorSiteHref() {
-  if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5174`;
-  return "https://editor.jaggerbrulato.com";
 }
 
 const projectHref = (href: string) => href.startsWith("/") ? mainSiteHref(href) : href;
@@ -38,10 +40,24 @@ function Arrow() {
 
 function App() {
   const [filter, setFilter] = useState<ProjectFilter>("Selected");
+  const [activeOrbitId, setActiveOrbitId] = useState<(typeof orbitDomains)[number]["id"]>("product");
+  const [orbitTilt, setOrbitTilt] = useState({ x: 0, y: 0 });
   const projects = useMemo(
     () => profileContent.projects.filter((project, index) => matchesFilter(project, filter, index)),
     [filter]
   );
+  const activeOrbit = orbitDomains.find((domain) => domain.id === activeOrbitId) ?? orbitDomains[0];
+  const orbitStyle = {
+    "--orbit-tilt-x": `${orbitTilt.x}deg`,
+    "--orbit-tilt-y": `${orbitTilt.y}deg`
+  } as CSSProperties;
+
+  function handleOrbitPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 10;
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * -10;
+    setOrbitTilt({ x: y, y: x });
+  }
 
   return (
     <div className="site-shell">
@@ -66,9 +82,30 @@ function App() {
               <a className="text-link" href={mainSiteHref("/files/resume.pdf")}>View résumé <Arrow /></a>
             </div>
           </div>
-          <div className="hero-orbit" aria-hidden="true">
-            <div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit-core">JB</div>
-            <span className="orbit-label orbit-label-a">PRODUCT</span><span className="orbit-label orbit-label-b">SYSTEMS</span><span className="orbit-label orbit-label-c">PLATFORM</span>
+          <div className="hero-system" style={orbitStyle} onPointerMove={handleOrbitPointerMove} onPointerLeave={() => setOrbitTilt({ x: 0, y: 0 })}>
+            <div className="system-caption"><span>INTERACTIVE SYSTEM MODEL</span><small>MOVE / SELECT A DOMAIN</small></div>
+            <div className="hero-orbit" aria-label="Interactive model of Jagger's engineering domains">
+              <div className="orbit-grid" aria-hidden="true" />
+              <span className="orbit-axis orbit-axis-x" aria-hidden="true" /><span className="orbit-axis orbit-axis-y" aria-hidden="true" />
+              <div className="orbit-plane orbit-plane-one" aria-hidden="true"><div className="orbit-track"><i /></div></div>
+              <div className="orbit-plane orbit-plane-two" aria-hidden="true"><div className="orbit-track"><i /></div></div>
+              <div className="orbit-plane orbit-plane-three" aria-hidden="true"><div className="orbit-track"><i /></div></div>
+              <div className="orbit-core"><span>JB</span><small>FULL STACK</small></div>
+              {orbitDomains.map((domain) => (
+                <button
+                  type="button"
+                  key={domain.id}
+                  className={`orbit-node orbit-node-${domain.id}${activeOrbitId === domain.id ? " active" : ""}`}
+                  onPointerEnter={() => setActiveOrbitId(domain.id)}
+                  onFocus={() => setActiveOrbitId(domain.id)}
+                  onClick={() => setActiveOrbitId(domain.id)}
+                  aria-pressed={activeOrbitId === domain.id}
+                >
+                  <span>{domain.code}</span><strong>{domain.label}</strong>
+                </button>
+              ))}
+            </div>
+            <div className="orbit-readout" aria-live="polite"><span>{activeOrbit.code} / ACTIVE DOMAIN</span><strong>{activeOrbit.label}</strong><p>{activeOrbit.detail}</p></div>
           </div>
         </section>
 
@@ -187,7 +224,7 @@ function App() {
       <footer className="site-footer">
         <span>© {new Date().getFullYear()} Jagger Brulato</span>
         <div className="footer-links">{profileContent.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div>
-        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={editorSiteHref()}>Editor view</a><a href={mainSiteHref("/games")}>Games</a><a href={mainSiteHref("/papers")}>Papers</a><a href="#top">Back to top ↑</a></div>
+        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={mainSiteHref("/games")}>Games</a><a href={mainSiteHref("/papers")}>Papers</a><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );
