@@ -22,15 +22,13 @@ const marketSymbols = [
   { symbol: "NYSE:BRK.B", short: "BRK.B", name: "Berkshire", market: "NYSE" },
   { symbol: "NYSE:JNJ", short: "JNJ", name: "Johnson & Johnson", market: "NYSE" },
   { symbol: "NYSE:XOM", short: "XOM", name: "Exxon Mobil", market: "NYSE" },
-  { symbol: "NYSE:WMT", short: "WMT", name: "Walmart", market: "NYSE" },
+  { symbol: "NASDAQ:WMT", short: "WMT", name: "Walmart", market: "NASDAQ" },
   { symbol: "NYSE:V", short: "V", name: "Visa", market: "NYSE" },
   { symbol: "NYSE:PG", short: "PG", name: "Procter & Gamble", market: "NYSE" },
   { symbol: "NYSE:KO", short: "KO", name: "Coca-Cola", market: "NYSE" },
   { symbol: "NYSE:HD", short: "HD", name: "Home Depot", market: "NYSE" },
   { symbol: "NYSE:CAT", short: "CAT", name: "Caterpillar", market: "NYSE" }
 ];
-
-const marketMonitorSymbols = [marketSymbols[0], marketSymbols[1], marketSymbols[2], marketSymbols[3], marketSymbols[8], marketSymbols[9]];
 
 const intervalOptions = [
   { label: "5m", value: "5" },
@@ -115,7 +113,7 @@ function TradingViewTickerList() {
     if (!container) return;
 
     const widget = document.createElement("tv-tickers");
-    widget.setAttribute("symbols", marketMonitorSymbols.map((item) => item.symbol).join(","));
+    widget.setAttribute("symbols", marketSymbols.map((item) => item.symbol).join(","));
     widget.setAttribute("direction", "vertical");
     widget.setAttribute("item-size", "compact");
     widget.setAttribute("hide-chart", "");
@@ -134,7 +132,7 @@ function TradingViewTickerList() {
     return () => container.replaceChildren();
   }, []);
 
-  return <div ref={containerRef} className="market-tickers" />;
+  return <div ref={containerRef} className="market-tickers" style={{ "--market-monitor-count": marketSymbols.length } as React.CSSProperties} />;
 }
 
 function MarketClock() {
