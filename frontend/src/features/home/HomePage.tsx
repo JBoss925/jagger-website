@@ -38,12 +38,12 @@ function editorSiteHref() {
   return "https://editor.jaggerbrulato.com";
 }
 
-function designerSiteHref() {
+function designSiteHref() {
   if (import.meta.env.DEV) {
     return `${window.location.protocol}//${window.location.hostname}:5175`;
   }
 
-  return "https://v3.jaggerbrulato.com";
+  return "https://design.jaggerbrulato.com";
 }
 
 function financeSiteHref() {
@@ -249,8 +249,8 @@ function HomePage() {
                   <span>Editor view</span>
                 </a>
                 <a
-                  className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--designer"
-                  href={designerSiteHref()}
+                  className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--design"
+                  href={designSiteHref()}
                 >
                   <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
                     <path
@@ -264,7 +264,7 @@ function HomePage() {
                     <circle cx="8.2" cy="5.2" r=".8" fill="currentColor" />
                     <circle cx="11.2" cy="5.4" r=".8" fill="currentColor" />
                   </svg>
-                  <span>Designer view</span>
+                  <span>Design view</span>
                 </a>
                 <a
                   className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--finance"

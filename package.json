@@ -2,9 +2,20 @@
   "name": "jagger-website",
   "private": true,
   "scripts": {
-    "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && (cd frontend && npm install && npm run build)",
+    "build": "npm run buildAll",
+    "build:all": "npm run buildAll",
+    "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && npm run build:v1 && npm run build:v2 && npm run build:v3 && npm run build:v4",
+    "build:v1": "npm --prefix frontend install && npm --prefix frontend run build",
     "build:v2": "npm --prefix frontend-v2 install && npm --prefix frontend-v2 run build",
     "build:v3": "npm --prefix frontend-v3 install && npm --prefix frontend-v3 run build",
-    "build:v4": "npm --prefix frontend-v4 install && npm --prefix frontend-v4 run build"
+    "build:v4": "npm --prefix frontend-v4 install && npm --prefix frontend-v4 run build",
+    "dev:v1": "npm --prefix frontend run dev",
+    "dev:v2": "npm --prefix frontend-v2 run dev",
+    "dev:v3": "npm --prefix frontend-v3 run dev",
+    "dev:v4": "npm --prefix frontend-v4 run dev",
+    "preview:v1": "npm --prefix frontend run preview",
+    "preview:v2": "npm --prefix frontend-v2 run preview",
+    "preview:v3": "npm --prefix frontend-v3 run preview",
+    "preview:v4": "npm --prefix frontend-v4 run preview"
   }
 }

@@ -25,7 +25,7 @@ frontend/
     styles/           Global stylesheet
     tests/            Playwright tests
 frontend-v2/          Editor-style portfolio for editor.jaggerbrulato.com
-frontend-v3/          Earlier alternate editorial portfolio
+frontend-v3/          Design-focused portfolio for design.jaggerbrulato.com
 frontend-v4/          Finance-terminal portfolio for finance.jaggerbrulato.com
 shared/               Profile, experience, project, and skills data shared by all frontends
 genetic_ts/           GeneticTS submodule
@@ -75,6 +75,15 @@ cd frontend
 npm run build
 ```
 
+From the repository root, build every frontend together:
+
+```bash
+npm run buildAll
+```
+
+Each view also has a root-level `build:v1` through `build:v4`, `dev:v1`
+through `dev:v4`, and `preview:v1` through `preview:v4` command.
+
 Preview the production bundle locally:
 
 ```bash
@@ -120,6 +129,8 @@ Publish directory:
 ```text
 frontend/dist
 ```
+
+The main site builds independently with `npm run build:v1` from the repository root. Its publish directory is `frontend/dist`.
 
 The v2 site builds independently with `npm run build:v2` from the repository root. Its publish directory is `frontend-v2/dist`.
 

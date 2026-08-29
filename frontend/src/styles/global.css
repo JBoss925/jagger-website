@@ -2652,14 +2652,14 @@ button:hover {
   color: #d7f7ff;
 }
 
-.hero-panel__view-link--designer {
+.hero-panel__view-link--design {
   border-color: rgba(255, 99, 56, 0.58);
   background: rgba(255, 99, 56, 0.14);
   color: #ff9a7e;
 }
 
-.hero-panel__view-link--designer:hover,
-.hero-panel__view-link--designer:focus-visible {
+.hero-panel__view-link--design:hover,
+.hero-panel__view-link--design:focus-visible {
   border-color: rgba(255, 99, 56, 0.86);
   background: rgba(255, 99, 56, 0.23);
   color: #ffd4c8;
