@@ -30,6 +30,8 @@ const marketSymbols = [
   { symbol: "NYSE:CAT", short: "CAT", name: "Caterpillar", market: "NYSE" }
 ];
 
+const marketMonitorSymbols = [marketSymbols[0], marketSymbols[1], marketSymbols[2], marketSymbols[3], marketSymbols[8], marketSymbols[9]];
+
 const intervalOptions = [
   { label: "5m", value: "5" },
   { label: "15m", value: "15" },
@@ -53,7 +55,7 @@ const tickerConfig = {
   symbols: marketSymbols.map((item) => ({ proName: item.symbol, title: item.short })),
   showSymbolLogo: true,
   isTransparent: true,
-  displayMode: "adaptive",
+  displayMode: "regular",
   colorTheme: "dark",
   locale: "en"
 };
@@ -105,6 +107,36 @@ function TradingViewWidget({ script, config, className = "", label }: TradingVie
   return <div ref={containerRef} className={`tradingview-widget-container ${className}`} aria-label={label} />;
 }
 
+function TradingViewTickerList() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const widget = document.createElement("tv-tickers");
+    widget.setAttribute("symbols", marketMonitorSymbols.map((item) => item.symbol).join(","));
+    widget.setAttribute("direction", "vertical");
+    widget.setAttribute("item-size", "compact");
+    widget.setAttribute("hide-chart", "");
+    widget.setAttribute("theme", "dark");
+    widget.setAttribute("aria-label", "Live prices and daily changes supplied by TradingView");
+    container.replaceChildren(widget);
+
+    if (!document.querySelector('script[data-tradingview-tickers]')) {
+      const scriptElement = document.createElement("script");
+      scriptElement.type = "module";
+      scriptElement.src = "https://widgets.tradingview-widget.com/w/en/tv-tickers.js";
+      scriptElement.dataset.tradingviewTickers = "true";
+      document.head.append(scriptElement);
+    }
+
+    return () => container.replaceChildren();
+  }, []);
+
+  return <div ref={containerRef} className="market-tickers" />;
+}
+
 function MarketClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -138,19 +170,6 @@ function App() {
     calendar: false,
     support_host: "https://www.tradingview.com"
   }), [activeSymbol, interval]);
-
-  const quotesConfig = useMemo(() => ({
-    width: "100%",
-    height: "100%",
-    symbolsGroups: [
-      { name: "Technology", symbols: marketSymbols.slice(0, 8).map((item) => ({ name: item.symbol, displayName: item.name })) },
-      { name: "Blue chips", symbols: marketSymbols.slice(8).map((item) => ({ name: item.symbol, displayName: item.name })) }
-    ],
-    showSymbolLogo: true,
-    isTransparent: true,
-    colorTheme: "dark",
-    locale: "en"
-  }), []);
 
   const technicalConfig = useMemo(() => ({
     interval: "1D",
@@ -196,7 +215,7 @@ function App() {
           </section>
 
           <aside className="market-rail">
-            <section className="panel quotes-panel"><header><span>MARKET MONITOR</span><small>LIVE / DELAYED</small></header><TradingViewWidget script="embed-widget-market-quotes.js" config={quotesConfig} className="market-quotes" label="Live market quote tables supplied by TradingView" /></section>
+            <section className="panel quotes-panel"><header><span>MARKET MONITOR</span><small>LIVE / DELAYED</small></header><TradingViewTickerList /></section>
             <section className="panel coverage-card"><header><span>ANALYST PROFILE</span><small>JB / 2026</small></header><h2>{profileContent.name}</h2><p>{clean(profileContent.title)}</p><div>{profileContent.metrics.map((metric) => <span key={metric.label}><small>{metric.label}</small><strong>{metric.value}</strong></span>)}</div></section>
           </aside>
         </section>
