@@ -2594,7 +2594,7 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .hero-panel__quick-link {
@@ -2636,7 +2636,7 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 30px;
 }
 
 .hero-panel__view-link--editor {
@@ -2663,6 +2663,19 @@ button:hover {
   border-color: rgba(255, 99, 56, 0.86);
   background: rgba(255, 99, 56, 0.23);
   color: #ffd4c8;
+}
+
+.hero-panel__view-link--finance {
+  border-color: rgba(85, 233, 141, 0.58);
+  background: rgba(85, 233, 141, 0.13);
+  color: #7ff0a9;
+}
+
+.hero-panel__view-link--finance:hover,
+.hero-panel__view-link--finance:focus-visible {
+  border-color: rgba(85, 233, 141, 0.9);
+  background: rgba(85, 233, 141, 0.22);
+  color: #cbffdd;
 }
 
 .hero-panel__title strong,
@@ -3886,11 +3899,11 @@ button:hover {
   }
 
   .hero-panel__quick-links {
-    margin-bottom: 0;
+    margin-bottom: 18px;
   }
 
   .hero-panel__view-links {
-    margin-bottom: 18px;
+    margin-bottom: 0;
   }
 
   .hero-panel__aside {

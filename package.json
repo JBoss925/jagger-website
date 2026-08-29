@@ -4,6 +4,7 @@
   "scripts": {
     "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && (cd frontend && npm install && npm run build)",
     "build:v2": "npm --prefix frontend-v2 install && npm --prefix frontend-v2 run build",
-    "build:v3": "npm --prefix frontend-v3 install && npm --prefix frontend-v3 run build"
+    "build:v3": "npm --prefix frontend-v3 install && npm --prefix frontend-v3 run build",
+    "build:v4": "npm --prefix frontend-v4 install && npm --prefix frontend-v4 run build"
   }
 }

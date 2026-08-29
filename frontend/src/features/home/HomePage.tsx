@@ -46,6 +46,14 @@ function designerSiteHref() {
   return "https://v3.jaggerbrulato.com";
 }
 
+function financeSiteHref() {
+  if (import.meta.env.DEV) {
+    return `${window.location.protocol}//${window.location.hostname}:5176`;
+  }
+
+  return "https://finance.jaggerbrulato.com";
+}
+
 function HomePage() {
   const location = useLocation();
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -223,20 +231,6 @@ function HomePage() {
                   <li key={bullet}>{renderInlineEmphasis(bullet)}</li>
                 ))}
               </ul>
-              <div className="hero-panel__quick-links" aria-label="Profile links">
-                {heroQuickLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    className="hero-panel__quick-link"
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                  >
-                    <ProfileLinkIcon label={link.label} />
-                    <span>{link.label}</span>
-                  </a>
-                ))}
-              </div>
               <div className="hero-panel__view-links" aria-label="Alternate portfolio views">
                 <a
                   className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--editor"
@@ -272,6 +266,30 @@ function HomePage() {
                   </svg>
                   <span>Designer view</span>
                 </a>
+                <a
+                  className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--finance"
+                  href={financeSiteHref()}
+                >
+                  <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path d="M2.5 13.5 6.2 9.8l2.4 2.1 5.2-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10.8 5.9h3v3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>Finance view</span>
+                </a>
+              </div>
+              <div className="hero-panel__quick-links" aria-label="Profile links">
+                {heroQuickLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    className="hero-panel__quick-link"
+                    href={link.href}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                  >
+                    <ProfileLinkIcon label={link.label} />
+                    <span>{link.label}</span>
+                  </a>
+                ))}
               </div>
             </div>
           </div>

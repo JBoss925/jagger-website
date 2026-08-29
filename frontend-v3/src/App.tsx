@@ -144,7 +144,7 @@ function App() {
           </div>
           <div className="timeline">
             {profileContent.experience.map((job) => <article id={`role-${job.slug}`} key={job.slug}>
-              <div className="company-logo">{job.logo ? <img src={job.logo} alt={job.logoAlt ?? ""} /> : job.company.slice(0, 1)}</div>
+              <div className={job.slug.startsWith("cornell-dti-") ? "company-logo company-logo--cornell-dti" : "company-logo"}>{job.logo ? <img src={job.logo} alt={job.logoAlt ?? ""} /> : job.company.slice(0, 1)}</div>
               <div className="job-title"><h3>{job.company}</h3><p>{job.role}</p></div>
               <p className="job-summary">{job.summary}</p><div className="job-date"><strong>{job.timeframe}</strong><span>{job.location}</span></div>
               <details className="role-details">

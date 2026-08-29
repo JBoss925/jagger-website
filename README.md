@@ -26,6 +26,7 @@ frontend/
     tests/            Playwright tests
 frontend-v2/          Editor-style portfolio for editor.jaggerbrulato.com
 frontend-v3/          Earlier alternate editorial portfolio
+frontend-v4/          Finance-terminal portfolio for finance.jaggerbrulato.com
 shared/               Profile, experience, project, and skills data shared by all frontends
 genetic_ts/           GeneticTS submodule
 jaggerscript/         JaggerScript submodule
@@ -65,6 +66,7 @@ npm run dev
 The main site runs at `http://localhost:5173`. The editor runs at
 `http://localhost:5174` from `frontend-v2`, and the earlier editorial variant
 runs at `http://localhost:5175` from `frontend-v3`.
+The finance-terminal view runs at `http://localhost:5176` from `frontend-v4`.
 
 Build the production bundle:
 
@@ -122,6 +124,8 @@ frontend/dist
 The v2 site builds independently with `npm run build:v2` from the repository root. Its publish directory is `frontend-v2/dist`.
 
 The v3 site builds independently with `npm run build:v3` from the repository root. Its publish directory is `frontend-v3/dist`.
+
+The v4 site builds independently with `npm run build:v4` from the repository root. Its publish directory is `frontend-v4/dist`.
 
 ## Known Limitations
 
