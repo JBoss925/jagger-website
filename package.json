@@ -2,6 +2,7 @@
   "name": "jagger-website",
   "private": true,
   "scripts": {
-    "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && (cd frontend && npm install && npm run build)"
+    "buildAll": "git submodule update --init --recursive && git submodule foreach --recursive 'if [ -f package.json ]; then npm install; fi' && (cd frontend && npm install && npm run build)",
+    "build:v2": "npm --prefix frontend-v2 install && npm --prefix frontend-v2 run build"
   }
 }

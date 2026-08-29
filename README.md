@@ -24,6 +24,8 @@ frontend/
     hooks/            Shared React hooks
     styles/           Global stylesheet
     tests/            Playwright tests
+frontend-v2/          Alternate portfolio for v2.jaggerbrulato.com
+shared/               Profile, experience, project, and skills data shared by both frontends
 genetic_ts/           GeneticTS submodule
 jaggerscript/         JaggerScript submodule
 ojaml/                OJaml submodule
@@ -91,7 +93,7 @@ The Playwright command expects the local browser/runtime dependencies used by th
 
 ## Content Updates
 
-- Homepage profile/projects: `frontend/src/content/profile.ts`
+- Shared homepage profile/projects: `shared/content/profile.ts` (the original frontend keeps a compatibility re-export)
 - Papers index and paper metadata: `frontend/src/content/papers/`
 - Global visual styling: `frontend/src/styles/global.css`
 - Route implementations: `frontend/src/features/`
@@ -111,6 +113,8 @@ Publish directory:
 ```text
 frontend/dist
 ```
+
+The v2 site builds independently with `npm run build:v2` from the repository root. Its publish directory is `frontend-v2/dist`.
 
 ## Known Limitations
 
