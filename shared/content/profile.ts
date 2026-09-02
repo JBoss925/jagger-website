@@ -1,4 +1,5 @@
 import headshotImage from "../../frontend/src/assets/headshot.jpg";
+import arenaPreview from "../../frontend/src/assets/arena-preview.jpg";
 import cornellDtiLogo from "../../frontend/src/assets/company-logos/cornell-dti.svg";
 import cornellUniversityLogo from "../../frontend/src/assets/company-logos/cornell-university.svg";
 import googleLogo from "../../frontend/src/assets/company-logos/google.png";
@@ -14,7 +15,6 @@ import jaggerGamesPreview from "../../frontend/src/assets/jagger-games-preview.j
 import jetstreamPreview from "../../frontend/src/assets/jetstream-preview.jpg";
 import liveboardPreview from "../../frontend/src/assets/liveboard-canvas-editor.jpg";
 import monadPreview from "../../frontend/src/assets/monad-preview.jpg";
-import newReactTypingEffectDemo from "../../frontend/src/assets/new-react-typing-effect-demo.gif";
 import ojamlPreview from "../../frontend/src/assets/ojaml-preview.jpg";
 import portfolioPreview from "../../frontend/src/assets/portfolio-preview.jpg";
 import renginePreview from "../../frontend/src/assets/rengine-preview.jpg";
@@ -1071,32 +1071,33 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "new-react-typing-effect",
-      title: "new-react-typing-effect",
+      slug: "random-arena",
+      title: "Random Arena",
       description:
-        "A reusable typing animation component published as a TypeScript React package, with customizable cursor rendering, text rendering, and pacing controls.",
+        "A frontend-only daily prediction game built around **deterministic, perfectly elastic 2D ball fights**, seed-driven matchups, distinct fighter kits, rotating weapons, projectiles, particles, and interactive arena hazards.",
       impact:
-        "It is a smaller project, but it still shows a practical skill I value: designing a clean component API, shipping types with the library, and making customization flexible instead of bolted on.",
+        "The same seed reproduces the complete simulation at a fixed 60 Hz timestep, making daily cards and shareable endless or versus matches consistent without a backend. A headless testing harness runs every fighter pairing from both sides and publishes balance statistics for tuning unique abilities within explicit counterplay limits.",
       stack: [
-        "React",
         "TypeScript",
-        "Component API design",
-        "Library design",
-        "Reusable components",
-        "NPM Packaging",
-        "Type declarations",
-        "Package publishing",
-        "Cursor customization",
-        "Text animation",
-        "TSLint",
-        "Prettier",
-        "Animation components"
+        "HTML Canvas",
+        "Vite",
+        "Deterministic simulation",
+        "Fixed-timestep physics",
+        "Elastic collision solver",
+        "Seeded random generation",
+        "Composable behavior system",
+        "Web Audio API",
+        "Particle systems",
+        "Headless simulation",
+        "Balance testing",
+        "Static JSON",
+        "Responsive UI",
+        "Netlify"
       ],
-      image: newReactTypingEffectDemo,
-      icon: "typing-effect",
+      image: arenaPreview,
       links: [
-        { label: "NPM", href: "https://www.npmjs.com/package/new-react-typing-effect" },
-        { label: "Source", href: "https://github.com/JBoss925/new-react-typing-effect" }
+        { label: "Open Arena", href: "https://arena.jaggerbrulato.com/" },
+        { label: "Source", href: "https://github.com/JBoss925/RandomArena" }
       ]
     },
     {
