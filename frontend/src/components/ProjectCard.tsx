@@ -14,6 +14,17 @@ import {
   TypingEffectIcon
 } from "../features/games/GameIcons";
 
+const documentedProjects = new Set([
+  "ojaml",
+  "liveboard",
+  "hearth",
+  "jaggerscript",
+  "aixc-compressor",
+  "genetic-ts",
+  "rengine",
+  "tsxlight-renderer"
+]);
+
 type ProjectCardProps = {
   project: ProjectEntry;
   id?: string;
@@ -25,6 +36,12 @@ function ProjectCard({ project, id }: ProjectCardProps) {
     "project-card",
     project.slug === "jagger-games" ? "project-card--wide" : null
   ].filter(Boolean).join(" ");
+
+  const links = project.links.flatMap((link) =>
+    link.label.toLowerCase() === "source" && documentedProjects.has(project.slug)
+      ? [link, { label: "Docs", href: `/docs/${project.slug}` }]
+      : [link]
+  );
 
   function getRelatedLinkClass(label: string) {
     return [
@@ -111,14 +128,14 @@ function ProjectCard({ project, id }: ProjectCardProps) {
           ))}
         </div>
         <div className="project-card__links">
-          {project.links.map((link) => (
+          {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
               className={`project-card__link ${getLinkToneClass(
-                link.label,
+                link.label === "Docs" ? "Source" : link.label,
                 link.href,
-                isPrimaryLink(link.label, link.href)
+                link.label === "Docs" ? false : isPrimaryLink(link.label, link.href)
               )}`}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel="noreferrer"

@@ -181,6 +181,9 @@ function SiteNavigation({
               <Link className="site-nav__button" to="/papers" onClick={() => setIsMenuOpen(false)}>
                 Go to Papers
               </Link>
+              <Link className="site-nav__button" to="/docs" onClick={() => setIsMenuOpen(false)}>
+                Docs
+              </Link>
             </div>
           ) : null}
         </div>

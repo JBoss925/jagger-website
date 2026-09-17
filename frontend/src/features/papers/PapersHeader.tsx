@@ -2,6 +2,9 @@ import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 
 type PapersHeaderProps = {
+  documentation?: boolean;
+  projectName?: string;
+  projectSlug?: string;
   query?: string;
   onQueryChange?: (query: string) => void;
   onSearchSubmit?: (query: string) => void;
@@ -10,22 +13,47 @@ type PapersHeaderProps = {
 };
 
 function PapersHeader({
+  documentation = false,
+  projectName,
+  projectSlug,
   query,
   onQueryChange,
   onSearchSubmit,
   theme,
-  onThemeToggle
+  onThemeToggle,
 }: PapersHeaderProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const controlsId = useId();
 
   return (
-    <header className={`papers-header${isExpanded ? " papers-header--expanded" : ""}`}>
-      <Link className="papers-header__brand" to="/papers" aria-label="Jagger Papers home">
+    <header
+      className={`papers-header${isExpanded ? " papers-header--expanded" : ""}`}
+    >
+      <Link
+        className="papers-header__brand"
+        to={
+          documentation
+            ? projectSlug
+              ? `/docs/${projectSlug}`
+              : "/docs"
+            : "/papers"
+        }
+        aria-label={documentation ? "Documentation home" : "Jagger Papers home"}
+      >
         <span className="papers-header__mark" aria-hidden="true" />
         <span>
-          <strong>Jagger Papers</strong>
-          <small>Technical notes &amp; papers</small>
+          <strong>
+            {documentation
+              ? projectName
+                ? `${projectName} Docs`
+                : "Jagger Docs"
+              : "Jagger Papers"}
+          </strong>
+          <small>
+            {documentation
+              ? "Tutorials · Guides · Reference · Explanation"
+              : "Technical notes & papers"}
+          </small>
         </span>
       </Link>
 
@@ -34,7 +62,9 @@ function PapersHeader({
         className="papers-header__menu"
         aria-expanded={isExpanded}
         aria-controls={controlsId}
-        aria-label={isExpanded ? "Collapse papers controls" : "Expand papers controls"}
+        aria-label={
+          isExpanded ? "Collapse papers controls" : "Expand papers controls"
+        }
         onClick={() => setIsExpanded((current) => !current)}
       >
         <span aria-hidden="true" />

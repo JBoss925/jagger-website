@@ -20,6 +20,8 @@ const RenginePage = lazy(() => import("../features/rengine/RenginePage"));
 const PapersPage = lazy(() => import("../features/papers/PapersPage"));
 const PaperPage = lazy(() => import("../features/papers/PaperPage"));
 
+const DocsPage = lazy(() => import("../features/docs/DocsPage"));
+
 function RouteLoading() {
   return (
     <div className="route-loading" role="status" aria-live="polite" aria-label="Loading">
@@ -50,6 +52,10 @@ function App() {
         <Route path="/ojaml" element={<OJamlRoute />} />
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />
         <Route path="/rengine" element={<RenginePage />} />
+        <Route path="/docs" element={<DocsPage />} />
+        <Route path="/docs/:slug" element={<DocsPage />} />
+        <Route path="/docs/:slug/:mode" element={<DocsPage />} />
+        <Route path="/docs/:slug/:mode/:pageId" element={<DocsPage />} />
         <Route path="/papers" element={<PapersPage />} />
         <Route path="/papers/:slug" element={<PaperPage />} />
         <Route path="/jagger-papers" element={<Navigate to="/papers" replace />} />

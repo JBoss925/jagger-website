@@ -41,6 +41,15 @@ export type PaperActionLink = {
     description?: string;
 };
 export type PaperSectionBlock = {
+    kind: "flow";
+    label: string;
+    stages: string[];
+    caption: string;
+} | {
+    kind: "doc-link";
+    label: string;
+    href: string;
+} | {
     kind: "paragraph";
     text: string;
 } | {
