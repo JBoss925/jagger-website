@@ -90,7 +90,7 @@ function App() {
               <div className="orbit-plane orbit-plane-one" aria-hidden="true"><div className="orbit-track"><i /></div></div>
               <div className="orbit-plane orbit-plane-two" aria-hidden="true"><div className="orbit-track"><i /></div></div>
               <div className="orbit-plane orbit-plane-three" aria-hidden="true"><div className="orbit-track"><i /></div></div>
-              <div className="orbit-core"><span>JB</span><small>FULL STACK</small></div>
+              <div className="orbit-core"><img src={headshotAsset} alt="Jagger Brulato" /></div>
               {orbitDomains.map((domain) => (
                 <button
                   type="button"

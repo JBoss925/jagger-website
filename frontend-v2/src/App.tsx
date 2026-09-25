@@ -177,10 +177,16 @@ type TerminalEntry = { kind: "system" | "command" | "output" | "success" | "erro
 function Terminal({ close, onResizeStart }: { close: () => void; onResizeStart: (event: ReactPointerEvent<HTMLDivElement>) => void }) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
   const [lines, setLines] = useState<TerminalEntry[]>([{ kind: "system", text: "Jagger Development Environment · type 'help' for commands" }]);
   const [value, setValue] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+
+  useEffect(() => {
+    const output = outputRef.current;
+    if (output) output.scrollTop = output.scrollHeight;
+  }, [lines]);
 
   const run = (e: FormEvent) => {
     e.preventDefault();
@@ -224,7 +230,7 @@ function Terminal({ close, onResizeStart }: { close: () => void; onResizeStart: 
   return <section className="terminal" onPointerDownCapture={focusCommandLine}>
     <div className="terminal-resizer" onPointerDown={onResizeStart} aria-label="Resize terminal" />
     <header><span>TERMINAL <i>jagger</i></span><span className="terminal-shortcut">ctrl + `</span><button onClick={close} aria-label="Close terminal">×</button></header>
-    <div className="terminal-output" aria-live="polite">{lines.map((line, index) => line.kind === "command" ? <div className="terminal-entry terminal-entry--command" key={index}><span>jagger@portfolio ~/ $</span><strong>{line.text}</strong></div> : <pre className={`terminal-entry terminal-entry--${line.kind}`} key={index}>{line.text}</pre>)}</div>
+    <div className="terminal-output" ref={outputRef} aria-live="polite">{lines.map((line, index) => line.kind === "command" ? <div className="terminal-entry terminal-entry--command" key={index}><span>jagger@portfolio ~/ $</span><strong>{line.text}</strong></div> : <pre className={`terminal-entry terminal-entry--${line.kind}`} key={index}>{line.text}</pre>)}</div>
     <form onSubmit={run}><label htmlFor="terminal-input"><span>jagger@portfolio</span> <i>~/</i> $</label><input id="terminal-input" ref={inputRef} autoFocus spellCheck={false} autoComplete="off" value={value} onChange={e => setValue(e.target.value)} onKeyDown={(e) => { if (e.key === "ArrowUp") { e.preventDefault(); recallHistory(-1); } if (e.key === "ArrowDown") { e.preventDefault(); recallHistory(1); } }} /></form>
   </section>;
 }
@@ -234,7 +240,7 @@ function App() {
   const navigate = useNavigate();
   const [drawer, setDrawer] = useState(false);
   const [palette, setPalette] = useState(false);
-  const [terminal, setTerminal] = useState(false);
+  const [terminal, setTerminal] = useState(true);
   const [fileMenu, setFileMenu] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [terminalHeight, setTerminalHeight] = useState(240);
