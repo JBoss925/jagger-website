@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ExperienceCard from "../../components/ExperienceCard";
+import MasonryGrid from "../../components/MasonryGrid";
 import ProjectCard from "../../components/ProjectCard";
 import { renderInlineEmphasis } from "../../components/renderInlineEmphasis";
 import SectionShell from "../../components/SectionShell";
@@ -29,6 +30,9 @@ const heroQuickLinkLabels = ["GitHub", "LinkedIn", "Resume", "Email"];
 const heroQuickLinks = heroQuickLinkLabels
   .map((label) => profileContent.links.find((link) => link.label === label))
   .filter((link): link is (typeof profileContent.links)[number] => Boolean(link));
+const wideProjectIndexes = profileContent.projects.flatMap((project, index) =>
+  project.slug === "jagger-games" ? [index] : []
+);
 
 function editorSiteHref() {
   if (import.meta.env.DEV) {
@@ -370,7 +374,7 @@ function HomePage() {
           title="My experience spans **product, platform, data, mobile, infrastructure, and leadership**."
           summary="That includes senior startup work, Google data systems, AWS platform engineering, internal developer platforms, production apps, and team leadership."
         >
-          <div className="experience-grid">
+          <MasonryGrid className="experience-grid">
             {profileContent.experience.map((entry) => (
               <ExperienceCard
                 key={`${entry.company}-${entry.role}`}
@@ -378,7 +382,7 @@ function HomePage() {
                 entry={entry}
               />
             ))}
-          </div>
+          </MasonryGrid>
         </SectionShell>
 
         <SectionShell
@@ -387,7 +391,7 @@ function HomePage() {
           title="The projects show how I build outside of work."
           summary="They’re practical and technical: languages, parsers, runtimes, WebAssembly, games, simulations, compression, renderers, libraries, and backend utilities."
         >
-          <div className="project-grid">
+          <MasonryGrid className="project-grid" wideItemIndexes={wideProjectIndexes}>
             {profileContent.projects.map((project) => (
               <ProjectCard
                 key={project.slug}
@@ -395,7 +399,7 @@ function HomePage() {
                 project={project}
               />
             ))}
-          </div>
+          </MasonryGrid>
         </SectionShell>
 
         <SectionShell

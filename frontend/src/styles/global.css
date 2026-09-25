@@ -2902,7 +2902,10 @@ button:hover {
 .experience-grid,
 .project-grid {
   display: grid;
-  gap: 14px;
+  grid-auto-flow: dense;
+  grid-auto-rows: 1px;
+  column-gap: 14px;
+  row-gap: 14px;
 }
 
 .experience-grid {
@@ -2911,6 +2914,18 @@ button:hover {
 
 .project-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.masonry-grid__item {
+  min-width: 0;
+}
+
+.masonry-grid__item > * {
+  width: 100%;
+}
+
+.masonry-grid__item--wide {
+  grid-column: 1 / -1;
 }
 
 .experience-card__header,
@@ -3005,6 +3020,101 @@ button:hover {
 .project-card .chip-row {
   margin-top: auto;
   padding-top: 14px;
+}
+
+.card-disclosure {
+  width: 100%;
+  margin-top: auto;
+}
+
+.card-disclosure__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-disclosure__clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card-disclosure__inner {
+  padding-top: 14px;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition:
+    opacity 170ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 240ms;
+}
+
+.card-disclosure.is-open .card-disclosure__content {
+  grid-template-rows: 1fr;
+}
+
+.card-disclosure.is-open .card-disclosure__inner {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    opacity 190ms ease 35ms,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+.card-disclosure__toggle {
+  width: 100%;
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  margin-top: 10px;
+  padding: 5px 12px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background: rgba(255, 255, 255, 0.018);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.card-disclosure__toggle:hover,
+.card-disclosure__toggle:focus-visible {
+  border-top-color: rgba(143, 201, 163, 0.32);
+  outline: 0;
+  background: rgba(143, 201, 163, 0.075);
+  color: #dce8df;
+}
+
+.card-disclosure__toggle svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-disclosure.is-open .card-disclosure__toggle svg {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 1181px) {
+  .experience-card {
+    padding-bottom: 0;
+  }
+}
+
+.experience-card .card-disclosure .chip-row,
+.project-card .card-disclosure .chip-row {
+  margin-top: 0;
+  padding-top: 16px;
 }
 
 .chip {
@@ -3864,15 +3974,39 @@ button:hover {
 
   .hero-panel,
   .contact-layout,
-  .experience-grid,
   .impact-grid,
-  .project-grid,
   .skill-grid,
   .ide-panels,
   .ide-hero,
   .ide-workspace__header,
   .ide-workspace__body {
     grid-template-columns: 1fr;
+  }
+
+  .experience-grid,
+  .project-grid {
+    display: block;
+  }
+
+  .masonry-grid__item + .masonry-grid__item {
+    margin-top: 14px;
+  }
+
+  .card-disclosure {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .card-disclosure__toggle {
+    margin-top: 0;
+    border-top: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+
+  .card-disclosure__toggle:hover,
+  .card-disclosure__toggle:focus-visible {
+    border-bottom-color: rgba(143, 201, 163, 0.32);
   }
 
   .project-card--wide {

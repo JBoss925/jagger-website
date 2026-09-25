@@ -1,4 +1,5 @@
 import type { ProjectEntry } from "../types/content";
+import CardDisclosure from "./CardDisclosure";
 import { getLinkToneClass, inferChipTone, sortChipLabels } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
 import {
@@ -109,7 +110,6 @@ function ProjectCard({ project, id }: ProjectCardProps) {
       <div className="project-card__content">
         <h3>{project.title}</h3>
         <p>{renderInlineEmphasis(project.description)}</p>
-        <p className="project-card__impact">{renderInlineEmphasis(project.impact)}</p>
         {project.relatedLinks ? (
           <div className="project-card__related-links">
             {project.relatedLinks.map((link) => (
@@ -120,13 +120,16 @@ function ProjectCard({ project, id }: ProjectCardProps) {
             ))}
           </div>
         ) : null}
-        <div className="chip-row">
-          {sortChipLabels(project.stack).map((item) => (
-            <span key={item} className={`chip chip--${inferChipTone(item)}`}>
-              {item}
-            </span>
-          ))}
-        </div>
+        <CardDisclosure label={`${project.title} project details`}>
+          <p className="project-card__impact">{renderInlineEmphasis(project.impact)}</p>
+          <div className="chip-row">
+            {sortChipLabels(project.stack).map((item) => (
+              <span key={item} className={`chip chip--${inferChipTone(item)}`}>
+                {item}
+              </span>
+            ))}
+          </div>
+        </CardDisclosure>
         <div className="project-card__links">
           {links.map((link) => (
             <a

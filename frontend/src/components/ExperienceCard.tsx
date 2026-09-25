@@ -1,4 +1,5 @@
 import type { ExperienceEntry } from "../types/content";
+import CardDisclosure from "./CardDisclosure";
 import { sortChipItems } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
 
@@ -42,18 +43,20 @@ function ExperienceCard({ entry, id }: ExperienceCardProps) {
         </p>
       </div>
       <p className="experience-card__summary">{renderInlineEmphasis(entry.summary)}</p>
-      <ul className="detail-list">
-        {entry.highlights.map((highlight) => (
-          <li key={highlight}>{renderInlineEmphasis(highlight)}</li>
-        ))}
-      </ul>
-      <div className="chip-row">
-        {sortChipItems(entry.tags).map((tag) => (
-          <span key={tag.label} className={`chip chip--${tag.tone}`}>
-            {tag.label}
-          </span>
-        ))}
-      </div>
+      <CardDisclosure label={`${entry.company} experience details`}>
+        <ul className="detail-list">
+          {entry.highlights.map((highlight) => (
+            <li key={highlight}>{renderInlineEmphasis(highlight)}</li>
+          ))}
+        </ul>
+        <div className="chip-row">
+          {sortChipItems(entry.tags).map((tag) => (
+            <span key={tag.label} className={`chip chip--${tag.tone}`}>
+              {tag.label}
+            </span>
+          ))}
+        </div>
+      </CardDisclosure>
     </article>
   );
 }
