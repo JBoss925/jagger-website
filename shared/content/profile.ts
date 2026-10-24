@@ -2,6 +2,7 @@ import headshotImage from "../../frontend/src/assets/headshot.jpg";
 import arenaPreview from "../../frontend/src/assets/arena-preview.jpg";
 import cornellDtiLogo from "../../frontend/src/assets/company-logos/cornell-dti.svg";
 import cornellUniversityLogo from "../../frontend/src/assets/company-logos/cornell-university.svg";
+import h2Logo from "../../frontend/src/assets/company-logos/H2.png";
 import googleLogo from "../../frontend/src/assets/company-logos/google.png";
 import lowesLogo from "../../frontend/src/assets/company-logos/lowes.png";
 import palmettoLogo from "../../frontend/src/assets/company-logos/palmetto.svg";
@@ -25,11 +26,11 @@ export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
   name: "Jagger Brulato",
-  title: "Senior full-stack engineer across product, systems, platform, and infrastructure work.",
+  title: "Staff full-stack engineer across product, systems, platform, and infrastructure work.",
   location: "United States",
   email: "jagger@jaggerbrulato.com",
   heroSummary:
-    "I’m a senior engineer who works across **product, backend, platform, data, infrastructure, and developer tooling**. I like roles where those pieces connect.",
+    "I’m a staff engineer at **H2 Corporation**, where I lead frontend architecture for an **AI-native construction platform**. I work across **product, backend, platform, data, infrastructure, and developer tooling**. I like roles where those pieces connect.",
   heroBullets: [
     "I’ve worked at **Google, startups, platform teams, and product teams**.",
     "I can **lead the work, make technical decisions, write the code, mentor engineers, and keep the system understandable as it grows**.",
@@ -52,7 +53,7 @@ export const profileContent: ProfileContent = {
       id: "hero",
       label: "Intro",
       eyebrow: "Intro",
-      title: "I’m a senior full-stack engineer across product, platform, data, and infrastructure.",
+      title: "I’m a staff full-stack engineer across product, platform, data, and infrastructure.",
       summary:
         "I’ve built customer apps, backend services, platform automation, data pipelines, dashboards, mobile software, and developer tooling.",
       position: [-8, 3, -1],
@@ -124,7 +125,7 @@ export const profileContent: ProfileContent = {
       id: "contact",
       label: "Contact",
       eyebrow: "Contact",
-      title: "If you need a senior engineer who can lead and build, reach out.",
+      title: "If you need a staff engineer who can lead and build, reach out.",
       summary:
         "Email is the easiest way to reach me. The resume, GitHub, and LinkedIn are here too if you want the longer version first.",
       position: [-10.4, -1.5, 1],
@@ -135,21 +136,54 @@ export const profileContent: ProfileContent = {
   ],
   experience: [
     {
+      slug: "h2-corporation-staff-forward-deployed-engineer",
+      company: "H2 Corporation",
+      role: "Staff Forward-Deployed Engineer",
+      timeframe: "2026-Present",
+      location: "Remote",
+      logo: h2Logo,
+      logoAlt: "H2 Corporation logo",
+      summary:
+        "Staff engineer leading frontend architecture and development of a purpose-built, AI-native construction platform centered around an infinite-canvas interface.",
+      highlights: [
+        "Architecting and developing a scalable infinite-canvas interface for construction plans, supporting detailed annotations, markup, and human-in-the-loop review and editing.",
+        "Integrating custom computer vision models into core application workflows, including object detection, optical character recognition (OCR), and context-aware object classification.",
+        "Working directly with the client as part of a forward-deployed engineering team, translating domain-specific requirements into product features and driving development from initial design through implementation, QA, and delivery."
+      ],
+      tags: [
+        { label: "React", tone: "framework" },
+        { label: "Frontend architecture", tone: "practice" },
+        { label: "Staff engineering", tone: "practice" },
+        { label: "Forward-deployed engineering", tone: "practice" },
+        { label: "Client collaboration", tone: "practice" },
+        { label: "Product delivery", tone: "practice" },
+        { label: "Human-in-the-loop review", tone: "practice" },
+        { label: "Infinite canvas", tone: "domain" },
+        { label: "Annotations", tone: "practice" },
+        { label: "Markup tools", tone: "practice" },
+        { label: "Construction technology", tone: "domain" },
+        { label: "AI", tone: "domain" },
+        { label: "Computer vision", tone: "domain" },
+        { label: "Object detection", tone: "domain" },
+        { label: "OCR", tone: "domain" }
+      ]
+    },
+    {
       slug: "palmetto-software-development-engineer-iii",
       company: "Palmetto",
       role: "Software Development Engineer III",
-      timeframe: "2026-Present",
+      timeframe: "2026",
       location: "Charlotte, NC",
       logo: palmettoLogo,
       logoAlt: "Palmetto logo",
       summary:
         "Senior software engineering role at a clean-energy startup, focused on the Palmetto app and the backend services behind its home-energy product experience.",
       highlights: [
-        "Building Node/Express services, MongoDB integrations, React product surfaces, and testable flows that help the Palmetto app turn complex home-energy data into a clearer customer experience.",
-        "Delivering customer-facing marketplace, rewards, recommendations, referrals, and onboarding features for homeowners moving through solar and energy workflows.",
-        "Contributing to solar production, electricity usage, grid export, utility connection, and energy-trend analytics for the newer Solar and Electricity usage experience.",
-        "Improving OAuth/JWT/Auth0-backed utility authentication, account state, energy history, and statistics flows across iOS, Android, and web clients.",
-        "Supporting idempotent onboarding, account-state, and third-party provider workflows with queue infrastructure so customer actions move reliably across services and app clients."
+        "Built Node/Express services, MongoDB integrations, React product surfaces, and testable flows that help the Palmetto app turn complex home-energy data into a clearer customer experience.",
+        "Delivered customer-facing marketplace, rewards, recommendations, referrals, and onboarding features for homeowners moving through solar and energy workflows.",
+        "Contributed to solar production, electricity usage, grid export, utility connection, and energy-trend analytics for the newer Solar and Electricity usage experience.",
+        "Improved OAuth/JWT/Auth0-backed utility authentication, account state, energy history, and statistics flows across iOS, Android, and web clients.",
+        "Supported idempotent onboarding, account-state, and third-party provider workflows with queue infrastructure so customer actions move reliably across services and app clients."
       ],
       tags: [
         { label: "TypeScript", tone: "language" },

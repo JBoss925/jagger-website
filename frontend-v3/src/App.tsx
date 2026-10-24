@@ -73,7 +73,7 @@ function App() {
 
       <main id="top">
         <section className="hero section-pad">
-          <div className="hero-kicker"><span className="status-dot" /> Senior full-stack engineer · {profileContent.location}</div>
+          <div className="hero-kicker"><span className="status-dot" /> Staff full-stack engineer · {profileContent.location}</div>
           <h1>I build products that make <em>complex systems</em> feel simple.</h1>
           <div className="hero-footer">
             <p>{plainText(profileContent.heroSummary)}</p>
@@ -123,7 +123,7 @@ function App() {
         <section className="principles section-pad" aria-label="Engineering focus">
           <p className="section-index">01 — What I do</p>
           <div className="principles-copy">
-            <h2>Senior engineering across the whole product.</h2>
+            <h2>Staff engineering across the whole product.</h2>
             <p>I connect user experience to the services, data, infrastructure, and tools behind it—then keep the result understandable as it grows.</p>
           </div>
           <div className="principle-grid">
@@ -209,7 +209,7 @@ function App() {
           <div className="portrait-frame"><img src={headshotAsset} alt="Jagger Brulato" /></div>
           <div className="about-copy">
             <p className="section-index">05 — About</p><h2>Curious by default.<br />Practical on purpose.</h2>
-            <p>I’m a senior full-stack engineer who likes the seams between disciplines: where product meets architecture, where a developer tool becomes a user experience, and where a complicated system can become a clear one.</p>
+            <p>I’m a staff full-stack engineer who likes the seams between disciplines: where product meets architecture, where a developer tool becomes a user experience, and where a complicated system can become a clear one.</p>
             <p>Outside of work I build programming languages, renderers, games, simulations, and small experiments that teach me something new.</p>
             <div className="about-links">{profileContent.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div>
           </div>

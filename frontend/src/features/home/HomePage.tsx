@@ -372,7 +372,7 @@ function HomePage() {
           id="experience"
           eyebrow="Experience"
           title="My experience spans **product, platform, data, mobile, infrastructure, and leadership**."
-          summary="That includes senior startup work, Google data systems, AWS platform engineering, internal developer platforms, production apps, and team leadership."
+          summary="That includes AI-native construction tools, staff and senior startup work, Google data systems, AWS platform engineering, internal developer platforms, production apps, and team leadership."
         >
           <MasonryGrid className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -457,13 +457,13 @@ function HomePage() {
         <SectionShell
           id="contact"
           eyebrow="Contact"
-          title="If you need a senior engineer who can lead and build, reach out."
+          title="If you need a staff engineer who can lead and build, reach out."
         >
           <div className="contact-layout">
             <div className="glass-card contact-card__intro">
               <p>
                 {renderInlineEmphasis(
-                  "Email is the most direct way to reach me. I’m interested in **startups, product engineering, platform work, data-heavy systems, infrastructure-heavy teams, and senior roles where I still write code**."
+                  "Email is the most direct way to reach me. I’m interested in **startups, product engineering, platform work, data-heavy systems, infrastructure-heavy teams, and staff roles where I still write code**."
                 )}
               </p>
               <a className="contact-card__cta" href={`mailto:${profileContent.email}`}>

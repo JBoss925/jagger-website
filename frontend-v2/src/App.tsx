@@ -57,7 +57,7 @@ function Home() {
   const current = profileContent.experience[0];
   return <Document title="README.md">
     <Line n={1}><h1><i>#</i> Jagger Brulato</h1></Line><Line n={2} />
-    <Line n={3}><p className="lead">senior full-stack engineer</p></Line>
+    <Line n={3}><p className="lead">staff full-stack engineer</p></Line>
     <Line n={4}><p className="syntax-list">product <b>·</b> systems <b>·</b> backend <b>·</b> platform <b>·</b> infrastructure</p></Line><Line n={5} />
     <Line n={6}><p>{profileContent.sceneSections[0].summary}</p></Line><Line n={7} />
     <Line n={8}><span className="label">currently:</span></Line>
@@ -147,7 +147,7 @@ const mapGroups = [
 ];
 function SystemMap() {
   const [active, setActive] = useState("systems");
-  return <Document title="SYSTEM MAP"><div className="plain-doc map-doc"><p className="path">VIEW / SYSTEM MAP</p><h1><i>:</i> map</h1><p className="muted">hover to inspect · click any node to open its buffer</p><div className="system-map"><Link className="map-root" to="/">JAGGER</Link>{mapGroups.map((group) => <div className={`map-branch${active === group.name ? " active" : ""}`} key={group.name} onMouseEnter={() => setActive(group.name)}><Link className="map-branch-title" to={group.path}>├─ {group.name}</Link><div>{group.nodes.map((node) => <Link key={node.label} to={node.path}>└─ {node.label}</Link>)}</div></div>)}</div><div className="map-results"><span>REFERENCES / {active.toUpperCase()}</span><p>{active === "projects" ? "OJaml · Hearth · JaggerScript · Genetic Learners" : active === "product" ? "Palmetto · Jagger Games · JetStream" : active === "platform" ? "Red Ventures · Google · Palmetto" : "Google · Red Ventures · Palmetto · OJaml runtime"}</p></div></div></Document>;
+  return <Document title="SYSTEM MAP"><div className="plain-doc map-doc"><p className="path">VIEW / SYSTEM MAP</p><h1><i>:</i> map</h1><p className="muted">hover to inspect · click any node to open its buffer</p><div className="system-map"><Link className="map-root" to="/">JAGGER</Link>{mapGroups.map((group) => <div className={`map-branch${active === group.name ? " active" : ""}`} key={group.name} onMouseEnter={() => setActive(group.name)}><Link className="map-branch-title" to={group.path}>├─ {group.name}</Link><div>{group.nodes.map((node) => <Link key={node.label} to={node.path}>└─ {node.label}</Link>)}</div></div>)}</div><div className="map-results"><span>REFERENCES / {active.toUpperCase()}</span><p>{active === "projects" ? "OJaml · Hearth · JaggerScript · Genetic Learners" : active === "product" ? "H2 Corporation · Palmetto · Jagger Games · JetStream" : active === "platform" ? "Red Ventures · Google · Palmetto" : "Google · Red Ventures · Palmetto · OJaml runtime"}</p></div></div></Document>;
 }
 
 function Contact() { return <Document title="contact"><div className="plain-doc"><p className="path">~/jagger/contact</p><h1><i>#</i> Contact</h1><p className="project-lead">Email is the simplest way to reach me.</p><div className="contact-links"><a href={`mailto:${profileContent.email}`}>{profileContent.email} ↗</a>{profileContent.links.slice(1).map((l) => <a key={l.label} href={externalize(l.href)}>{l.label.toLowerCase()} ↗</a>)}</div></div></Document>; }
@@ -198,7 +198,7 @@ function Terminal({ close, onResizeStart }: { close: () => void; onResizeStart: 
     let output = "command not found — type 'help' to list available commands";
     let kind: TerminalEntry["kind"] = "error";
     if (command === "help") { output = "NAVIGATION\n  about                 open README.md\n  experience [company]  inspect roles\n  projects              list project modules\n  open [project]         inspect a project\n\nREFERENCE\n  skills                 open stack.json\n  map                    open system map\n  resume                 open resume.pdf\n  contact                open contact.md\n\nSYSTEM\n  ls · whoami · uname -a · git log · clear\n\nUse ↑ / ↓ to recall command history."; kind = "help"; }
-    else if (["about", "cat readme.md", "whoami"].includes(command)) { navigate("/"); output = "opened README.md · Jagger Brulato — senior full-stack engineer"; kind = "success"; }
+    else if (["about", "cat readme.md", "whoami"].includes(command)) { navigate("/"); output = "opened README.md · Jagger Brulato — staff full-stack engineer"; kind = "success"; }
     else if (command.startsWith("experience")) { const term = command.split(" ")[1]; const job = term && profileContent.experience.find(j => j.company.toLowerCase().includes(term)); navigate(job ? `/experience/${job.slug}` : "/experience"); output = job ? `opened ${job.company.toLowerCase()}.${roleExt(job)}` : `indexed ${profileContent.experience.length} experience files`; kind = "success"; }
     else if (command === "projects" || command === "ls") { navigate("/projects"); output = `indexed ${profileContent.projects.length} project modules`; kind = "success"; }
     else if (command.startsWith("open ")) { const term = command.slice(5); const project = profileContent.projects.find(x => x.slug.includes(term) || x.title.toLowerCase().includes(term)); if (project) { navigate(`/projects/${project.slug}`); output = `opened ${project.slug}.${metaFor(project).ext}`; kind = "success"; } else output = `project not found: ${term}`; }
