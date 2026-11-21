@@ -43,8 +43,8 @@ body {
   font-family: "Google Sans Flex", "Google Sans", "Manrope", "Segoe UI", system-ui, sans-serif;
 }
 
-body::selection {
-  background: rgba(143, 201, 163, 0.28);
+::selection {
+  background: rgba(132, 97, 219, 0.26);
 }
 
 img {
