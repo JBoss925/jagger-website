@@ -512,7 +512,10 @@ export default function DetailSheet({
 
                 {project.slug === "portfolio-site" && (
                   <section className="sheet-block">
-                    <h3>One portfolio, four frontends</h3>
+                    <h3>Five frontends, one data model</h3>
+                    <p className="sheet-copy">
+                      You’re on the Main Spatial Cube view — preview any of the other four frontends right here or pop them out in a new tab.
+                    </p>
                     <div className="sheet-views-grid">
                       {views.map((v) => (
                         <div key={v.href} className="sheet-view-card">
@@ -545,7 +548,8 @@ export default function DetailSheet({
                   </section>
                 )}
 
-                {!!project.relatedLinks?.length && (
+                {!!project.relatedLinks?.length &&
+                  project.slug !== "portfolio-site" && (
                   <section className="sheet-block">
                     <h3>
                       {project.slug === "jagger-games"

@@ -119,7 +119,9 @@ export function getProjectResources(project: ProjectEntry): ProjectResource[] {
   }
   resources.push(
     ...(project.relatedLinks ?? []).map((link) => ({
-      kind: "game" as const,
+      kind: (project.slug === "portfolio-site" ? "view" : "game") as
+        | "view"
+        | "game",
       label: link.label,
       href: link.href,
     })),

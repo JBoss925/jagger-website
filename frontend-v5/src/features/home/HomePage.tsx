@@ -32,7 +32,7 @@ const heroQuickLinks = heroQuickLinkLabels
   .map((label) => profileContent.links.find((link) => link.label === label))
   .filter((link): link is (typeof profileContent.links)[number] => Boolean(link));
 const wideProjectIndexes = profileContent.projects.flatMap((project, index) =>
-  project.slug === "jagger-games" ? [index] : []
+  project.slug === "jagger-games" || project.slug === "portfolio-site" ? [index] : []
 );
 
 function editorSiteHref() {

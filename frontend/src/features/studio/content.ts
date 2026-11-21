@@ -23,7 +23,7 @@ export const summaries: Record<string, string> = {
     "Deterministic 60 Hz elastic ball fights with seeded daily matchups and unique kits.",
   chains:
     "A TypeScript monadic abstraction for composable type-changing pipelines and undo.",
-  "portfolio-site": "One body of work. Several ways to experience it.",
+  "portfolio-site": "Five different portfolio frontends, all powered by one shared data model.",
 };
 export const views = [
   {

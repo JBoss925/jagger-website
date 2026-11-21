@@ -1096,31 +1096,66 @@ export const profileContent: ProfileContent = {
     },
     {
       slug: "portfolio-site",
-      title: "Portfolio Site",
+      title: "Portfolio Views",
       description:
-        "This site: a React/Vite portfolio built around a **3D section backdrop, project deep links, resume delivery, embedded demos, and daily games**.",
+        "Five different portfolio frontends — including this one — all powered by one shared TypeScript data model, alongside **embedded live demos, technical papers, documentation, and six daily games**.",
       impact:
-        "It is the connective tissue for the rest of the work here, combining **frontend polish, routing, responsive project cards, test coverage, and subproject integrations** into one deployable portfolio.",
+        "One shared profile, experience, and project model drives five completely different interfaces in the same monorepo: a 120-cube spatial showcase, a scroll-driven Interactive 3D constellation, an editorial Design edition, a VS Code-style Editor with a working terminal, and a live Finance terminal.",
       stack: [
         "TypeScript",
         "React",
         "Vite",
+        "Shared data model",
+        "Multi-frontend monorepo",
         "Three.js",
         "@react-three/fiber",
         "@react-three/drei",
+        "InstancedMesh",
+        "Web Audio API",
         "React Router",
         "Matter.js",
         "Monaco Editor",
         "WABT",
         "KaTeX",
-        "Web Audio",
         "Vitest",
         "Playwright",
         "Responsive UI"
       ],
       image: portfolioPreview,
+      relatedLinks: [
+        {
+          label: "Main (Spatial Cubes)",
+          href: "https://jaggerbrulato.com/",
+          description:
+            "120-cube GameCube-inspired 3D showcase with spatial Web Audio, inline theaters, and embedded demos."
+        },
+        {
+          label: "Interactive 3D",
+          href: "https://interactive3d.jaggerbrulato.com",
+          description:
+            "Scroll-driven Three.js constellation backdrop with glass cards and direct section deep links."
+        },
+        {
+          label: "Design",
+          href: "https://design.jaggerbrulato.com",
+          description:
+            "Editorial magazine layout focused on clean typography, grids, and reading flow."
+        },
+        {
+          label: "Editor",
+          href: "https://editor.jaggerbrulato.com",
+          description:
+            "VS Code-inspired workspace with a file tree, command palette, and interactive terminal."
+        },
+        {
+          label: "Finance",
+          href: "https://finance.jaggerbrulato.com",
+          description:
+            "Live market-terminal interpretation presenting projects and experience as research coverage."
+        }
+      ],
       links: [
-        { label: "Open Site", href: "https://jaggerbrulato.com/" },
+        { label: "Open Main Site", href: "https://jaggerbrulato.com/" },
         { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },

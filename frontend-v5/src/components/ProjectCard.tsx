@@ -36,7 +36,9 @@ function ProjectCard({ project, id }: ProjectCardProps) {
   const className = [
     "glass-card",
     "project-card",
-    project.slug === "jagger-games" ? "project-card--wide" : null
+    project.slug === "jagger-games" || project.slug === "portfolio-site"
+      ? "project-card--wide"
+      : null
   ].filter(Boolean).join(" ");
 
   const links = project.links.flatMap((link) =>

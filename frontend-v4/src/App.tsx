@@ -268,6 +268,7 @@ function App() {
             <header><span>RESEARCH NOTE</span><small>{projectCode(selectedProject)} / ACTIVE</small></header>
             <div className="research-code">{projectCode(selectedProject)}</div><h3>{selectedProject.title}</h3><p>{clean(selectedProject.impact)}</p>
             <dl><dt>Technology</dt><dd>{selectedProject.stack.join(" · ")}</dd><dt>Coverage</dt><dd>{selectedProject.icon ?? "software / systems"}</dd></dl>
+            {selectedProject.relatedLinks?.length ? <div className="research-related"><span>{selectedProject.slug === "portfolio-site" ? "FIVE PORTFOLIO VIEWS" : "RELATED INSTRUMENTS"}</span>{selectedProject.relatedLinks.map((link) => <a key={link.href} href={externalHref(link.href)} target="_blank" rel="noreferrer"><strong>{link.label}</strong><small>{link.description}</small><em>↗</em></a>)}</div> : null}
             <div className="research-links">{selectedProject.links.map((link) => <a key={link.label} href={externalHref(link.href)}>{link.label}<span>↗</span></a>)}</div>
           </aside>
         </section>

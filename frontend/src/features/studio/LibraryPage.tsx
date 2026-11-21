@@ -118,11 +118,12 @@ export default function LibraryPage() {
                         </a>
                       ))
                   )}
-                  {p.relatedLinks?.map((l) => (
-                    <a key={l.href} href={l.href}>
-                      {l.label} <span>↗</span>
-                    </a>
-                  ))}
+                  {p.slug !== "portfolio-site" &&
+                    p.relatedLinks?.map((l) => (
+                      <a key={l.href} href={l.href}>
+                        {l.label} <span>↗</span>
+                      </a>
+                    ))}
                 </div>
               </article>
             );

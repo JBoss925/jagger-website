@@ -165,7 +165,7 @@ function App() {
                     <div><span className="detail-label">Why it matters</span><p>{plainText(project.impact)}</p></div>
                     <div><span className="detail-label">Full stack</span><div className="tag-cloud">{project.stack.map((item) => <span key={item}>{item}</span>)}</div></div>
                     <div><span className="detail-label">Links</span><div className="project-links">{project.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div></div>
-                    {project.relatedLinks?.length ? <div><span className="detail-label">Related</span><div className="related-links">{project.relatedLinks.map((link) => <a key={link.href} href={projectHref(link.href)}><strong>{link.label}</strong><span>{link.description}</span><Arrow /></a>)}</div></div> : null}
+                    {project.relatedLinks?.length ? <div><span className="detail-label">{project.slug === "portfolio-site" ? "All five portfolio views" : "Related"}</span><div className="related-links">{project.relatedLinks.map((link) => <a key={link.href} href={projectHref(link.href)}><strong>{link.label}</strong><span>{link.description}</span><Arrow /></a>)}</div></div> : null}
                   </div>
                 </details>
               </article>;

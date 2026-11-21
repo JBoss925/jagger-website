@@ -124,6 +124,7 @@ function ProjectDetail() {
     <p className="project-lead">{clean(project.description)}</p>
     <Section title="interesting bits"><ul className="plus-list">{project.stack.slice(0, 9).map((item) => <li key={item}>+ {item}</li>)}</ul></Section>
     <Section title="why it matters"><p>{clean(project.impact)}</p></Section>
+    {!!project.relatedLinks?.length && <Section title={project.slug === "portfolio-site" ? "all five portfolio views" : "related destinations"}><div className="related-list">{project.relatedLinks.map((rl) => <a href={externalize(rl.href)} key={rl.href} target="_blank" rel="noreferrer"><strong>{rl.label}</strong><span>{rl.description}</span><em>↗</em></a>)}</div></Section>}
     {project.image && <Section title="preview"><div className="preview-buffer"><img src={project.image} alt={`${project.title} preview`} /></div></Section>}
     <div className="number-links">{project.links.map((link, i) => <a href={externalize(link.href)} key={link.label}>[{String(i + 1).padStart(2, "0")}] {link.label.toLowerCase()} ↗</a>)}</div>
   </div></Document>;
@@ -158,7 +159,7 @@ function Explorer({ close }: { close?: () => void }) {
   return <aside className="explorer"><div className="panel-title"><span>EXPLORER</span>{close && <button onClick={close}>×</button>}</div><div className="tree-root">JAGGER</div>
     <TreeGroup label="profile">{file("/", "md", "README.md")}{file("/focus", "md", "focus.md")}</TreeGroup>
     <TreeGroup label="experience">{file("/experience", "md", "README.md")}{profileContent.experience.map(j => file(`/experience/${j.slug}`, roleExt(j), `${j.company.toLowerCase().replaceAll(" ", "-")}.${roleExt(j)}`))}</TreeGroup>
-    <TreeGroup label="projects">{file("/projects", "md", "README.md")}{profileContent.projects.slice(0, 12).map(p => file(`/projects/${p.slug}`, metaFor(p).ext, `${p.slug}.${metaFor(p).ext}`))}</TreeGroup>
+    <TreeGroup label="projects">{file("/projects", "md", "README.md")}{profileContent.projects.map(p => file(`/projects/${p.slug}`, metaFor(p).ext, `${p.slug}.${metaFor(p).ext}`))}</TreeGroup>
     <TreeGroup label="reference">{file("/reference/stack", "json", "stack.json")}{file("/reference/principles", "md", "principles.md")}{file("/map", "map", "system-map.graph")}{file("/contact", "md", "contact.md")}</TreeGroup>
   </aside>;
 }
