@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { profileContent } from "../../content/profile";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import DetailSheet from "./DetailSheet";
@@ -55,41 +54,36 @@ export default function StudioPage() {
   const itemSlug = params.get("item") ?? params.get("project");
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
   const [theaterOpen, setTheaterOpen] = useState(false);
+  const [resumeOpen, setResumeOpen] = useState(false);
+  const anyTheaterOpen = theaterOpen || resumeOpen;
   const [audioState, setAudioState] = useState(() => soundEngine.getState());
 
-  // Sleek 1-click GameCube-style boot veil on fresh desktop `/` entry so clicking "Enter"
-  // synchronously unlocks Web Audio (hover blips + Wii/GameCube music + boot swell) and triggers
-  // the 120-cube drop-in wave together! Skips automatically on deep links or reduced motion.
+  // Floating crystal cube + big purple "Enter" intro on every desktop entry (including deep links!)
+  // so Web Audio (ambient music + hover blips + boot swell) unlocks synchronously by default while
+  // the floating cube splits apart into 120 mini-cubes and flows straight into the main page.
   const [hasEntered, setHasEntered] = useState(() => {
-    const hasDeepLink = Boolean(
-      params.get("section") ||
-        params.get("item") ||
-        params.get("project") ||
-        params.get("category") ||
-        params.get("view") ||
-        location.hash,
-    );
     const reduced =
       typeof window !== "undefined" &&
       Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
     const narrowMobile =
       typeof window !== "undefined" &&
       Boolean(window.matchMedia?.("(max-width: 820px)").matches);
-    return hasDeepLink || reduced || narrowMobile;
+    return reduced || narrowMobile;
   });
   const [bootExiting, setBootExiting] = useState(false);
+  const [bootRevealing, setBootRevealing] = useState(false);
+  const [bootHovering, setBootHovering] = useState(false);
   const showBootOverlay = !hasEntered && !isMobile && !prefersReducedMotion;
 
-  const handleEnterStudio = useCallback((muted: boolean) => {
+  const handleEnterStudio = useCallback(() => {
     if (bootExiting || hasEntered) return;
-    if (muted) {
-      soundEngine.setMuted(true);
-    } else {
-      soundEngine.enterWithSound();
-    }
+    soundEngine.enterWithSound();
+    setBootHovering(false);
     setBootExiting(true);
+    setBootRevealing(true);
     setHasEntered(true);
-    window.setTimeout(() => setBootExiting(false), 520);
+    window.setTimeout(() => setBootExiting(false), 360);
+    window.setTimeout(() => setBootRevealing(false), 1150);
   }, [bootExiting, hasEntered]);
 
   const items = useMemo(
@@ -149,7 +143,7 @@ export default function StudioPage() {
   useLayoutEffect(() => {
     measureNavPill();
     measureDockOverflow();
-  }, [measureNavPill, measureDockOverflow, isMobile, items.length]);
+  }, [measureNavPill, measureDockOverflow, isMobile, items.length, hasEntered]);
 
   useEffect(() => {
     const onResize = () => {
@@ -210,24 +204,24 @@ export default function StudioPage() {
     };
   }, [isMobile, showBootOverlay]);
 
-  // Allow pressing Enter or Space directly on the boot overlay to enter with sound
+  // Allow pressing Enter or Space directly on the floating-cube intro to enter with sound
   useEffect(() => {
     if (!showBootOverlay) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        handleEnterStudio(false);
+        handleEnterStudio();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [showBootOverlay, handleEnterStudio]);
 
-  // Gently duck ambient soundscape while an interactive demo/reader theater is open
+  // Gently duck ambient soundscape while an interactive demo/reader/résumé theater is open
   useEffect(() => {
-    soundEngine.setTheaterActive(theaterOpen);
+    soundEngine.setTheaterActive(anyTheaterOpen);
     return () => soundEngine.setTheaterActive(false);
-  }, [theaterOpen]);
+  }, [anyTheaterOpen]);
 
   const updateParams = useCallback(
     (values: Record<string, string | null>, replace = false) => {
@@ -288,6 +282,36 @@ export default function StudioPage() {
     },
     [section, selected, updateParams],
   );
+
+  const handleOpenContact = useCallback(() => {
+    if (section === "about" && selected?.slug === "contact") return;
+    if (section !== "about") {
+      const aboutIdx = SECTIONS.findIndex((s) => s.id === "about");
+      soundEngine.playSectionTransition(aboutIdx);
+    } else {
+      soundEngine.playSelect(5);
+    }
+    setHoveredSlug(null);
+    setTheaterOpen(false);
+    setResumeOpen(false);
+    updateParams({
+      section: "about",
+      category: null,
+      item: "contact",
+      tab: null,
+    });
+  }, [section, selected?.slug, updateParams]);
+
+  const handleOpenResume = useCallback(() => {
+    soundEngine.playOpenTheater();
+    setHoveredSlug(null);
+    setResumeOpen(true);
+  }, []);
+
+  const handleCloseResume = useCallback(() => {
+    soundEngine.playClose();
+    setResumeOpen(false);
+  }, []);
 
   const handleCategoryChange = useCallback(
     (nextCategory: CategoryId) => {
@@ -358,11 +382,13 @@ export default function StudioPage() {
     [items, selected, handleSelect],
   );
 
-  // Two-stage Escape (exit theater first -> close sheet second) + Arrow stepping
+  // Staged Escape (exit résumé/theater first -> close sheet second) + Arrow stepping
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (theaterOpen) {
+        if (resumeOpen) {
+          handleCloseResume();
+        } else if (theaterOpen) {
           setTheaterOpen(false);
           soundEngine.playClose();
         } else if (selected) {
@@ -379,14 +405,14 @@ export default function StudioPage() {
         active?.isContentEditable ||
         active?.getAttribute("role") === "tab";
 
-      if (selected && !theaterOpen && !isEditable) {
+      if (selected && !anyTheaterOpen && !isEditable) {
         if (e.key === "ArrowRight") handleStep(1);
         else if (e.key === "ArrowLeft") handleStep(-1);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selected, theaterOpen, handleClose, handleStep]);
+  }, [selected, theaterOpen, resumeOpen, anyTheaterOpen, handleClose, handleCloseResume, handleStep]);
 
   if (isMobile) {
     return (
@@ -396,12 +422,16 @@ export default function StudioPage() {
         items={items}
         selected={selected}
         theaterOpen={theaterOpen}
+        resumeOpen={resumeOpen}
         onSectionChange={handleSectionChange}
         onCategoryChange={handleCategoryChange}
         onSelect={handleSelect}
         onClose={handleClose}
         onStep={handleStep}
         onTheaterChange={setTheaterOpen}
+        onOpenContact={handleOpenContact}
+        onOpenResume={handleOpenResume}
+        onCloseResume={handleCloseResume}
       />
     );
   }
@@ -426,7 +456,7 @@ export default function StudioPage() {
 
   return (
     <div
-      className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${theaterOpen ? "is-theater" : ""}`}
+      className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${anyTheaterOpen ? "is-theater" : ""} ${showBootOverlay ? "is-boot-holding" : ""} ${bootRevealing ? "is-boot-revealing" : ""}`}
     >
       <a className="spatial-skip" href="#explorer-content">
         Skip to content
@@ -448,15 +478,18 @@ export default function StudioPage() {
           hoveredSlug={hoveredSlug}
           transitionKey={transitionKey}
           bootHolding={showBootOverlay}
-          suspended={theaterOpen}
+          bootHovering={bootHovering}
+          suspended={anyTheaterOpen}
           labelRefs={labelRefs}
           onSelect={handleSelect}
           onHover={handleHover}
+          onBootEnter={handleEnterStudio}
+          onBootHover={setBootHovering}
         />
       </div>
 
       {/* 2D-projected 3D floating frosted glass pills (100% reliable, zero dropouts!) */}
-      {!selected && !showBootOverlay && (
+      {!selected && !showBootOverlay && !resumeOpen && (
         <div className="spatial-labels-layer" aria-hidden="false">
           {items.map((item) => {
             const isHovered = hoveredSlug === item.slug;
@@ -486,57 +519,33 @@ export default function StudioPage() {
         </div>
       )}
 
-      {/* Sleek 1-click GameCube-inspired Boot Entry Veil (unlocks audio + launches 120-cube drop-in) */}
+      {/* Cardless transparent floating-cube intro: big purple "Enter" text right underneath the 3D cube */}
       {(showBootOverlay || bootExiting) && (
         <div
-          className={`spatial-boot-veil ${bootExiting ? "is-exiting" : ""}`}
+          className={`spatial-boot-overlay ${bootExiting ? "is-exiting" : ""}`}
           role="dialog"
           aria-modal="true"
           aria-label="Enter Jagger Brulato's spatial portfolio"
         >
-          <div className="spatial-boot-card">
-            <div className="spatial-boot-mark" aria-hidden="true">
-              <img src="/favicon.svg" alt="" width={58} height={58} />
-            </div>
-            <p className="spatial-boot-eyebrow">JAGGER BRULATO · STAFF ENGINEER</p>
-            <h2 className="spatial-boot-title">
-              Spatial <em>Portfolio.</em>
-            </h2>
-            <p className="spatial-boot-desc">
-              Interactive 3D work, live demos, and ambient spatial audio.
-            </p>
-            <div className="spatial-boot-actions">
-              <button
-                type="button"
-                className="spatial-boot-enter"
-                autoFocus
-                onClick={() => handleEnterStudio(false)}
-              >
-                <span className="spatial-audio-bars spatial-boot-bars" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span>Enter with sound</span>
-                <span aria-hidden="true">→</span>
-              </button>
-              <button
-                type="button"
-                className="spatial-boot-muted"
-                onClick={() => handleEnterStudio(true)}
-              >
-                Enter muted
-              </button>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="spatial-boot-enter-btn"
+            onMouseEnter={() => setBootHovering(true)}
+            onMouseLeave={() => setBootHovering(false)}
+            onFocus={() => setBootHovering(true)}
+            onBlur={() => setBootHovering(false)}
+            onClick={handleEnterStudio}
+          >
+            Enter
+          </button>
         </div>
       )}
 
       {/* Floating Apple Liquid Glass top bar */}
       <header
         className="spatial-header"
-        aria-hidden={theaterOpen || showBootOverlay || undefined}
-        inert={theaterOpen || showBootOverlay}
+        aria-hidden={anyTheaterOpen || showBootOverlay || undefined}
+        inert={anyTheaterOpen || showBootOverlay}
       >
         <Link
           to="/"
@@ -585,25 +594,35 @@ export default function StudioPage() {
         </nav>
 
         <div className="spatial-header__right">
-          <a className="spatial-header__link" href="/files/resume.pdf">
-            Résumé
-          </a>
-          <a
-            className="spatial-header__cta"
-            href={`mailto:${profileContent.email}`}
+          <button
+            type="button"
+            className="spatial-header__link"
+            onClick={handleOpenResume}
           >
-            Get in touch <span aria-hidden="true">↗</span>
-          </a>
+            Résumé
+          </button>
+          <button
+            type="button"
+            className="spatial-header__cta"
+            onClick={handleOpenContact}
+          >
+            Get in touch
+          </button>
         </div>
       </header>
 
       {/* Foreground HUD */}
-      <main id="explorer-content" className="spatial-hud">
-        {/* Contextual editorial hero — completely clears out when an item is selected */}
+      <main
+        id="explorer-content"
+        className="spatial-hud"
+        aria-hidden={showBootOverlay || undefined}
+        inert={showBootOverlay}
+      >
+        {/* Contextual editorial hero — completely clears out when an item or résumé theater is open */}
         <section
           key={section}
-          className={`spatial-hero ${selected ? "is-retracted" : ""}`}
-          aria-hidden={Boolean(selected)}
+          className={`spatial-hero ${selected || resumeOpen ? "is-retracted" : ""}`}
+          aria-hidden={Boolean(selected || resumeOpen)}
           aria-live="polite"
         >
           <p className="spatial-hero__eyebrow">{dynamicEyebrow}</p>
@@ -638,7 +657,7 @@ export default function StudioPage() {
         </section>
 
         {/* Focused hero breadcrumb — replaces hero cleanly when inspecting a 120-cube monument */}
-        {selected && !theaterOpen && (
+        {!showBootOverlay && selected && !anyTheaterOpen && (
           <div className="spatial-focus-badge">
             <button
               type="button"
@@ -654,8 +673,55 @@ export default function StudioPage() {
           </div>
         )}
 
+        {/* Full-viewport Liquid Glass Résumé Theater (keeps user inside the spatial experience!) */}
+        {!showBootOverlay && resumeOpen && (
+          <div className="spatial-sheet-slot">
+            <aside className="glass-sheet is-theater" aria-label="Résumé viewer">
+              <div className="theater-slim-bar">
+                <div className="theater-slim-bar__left">
+                  <button
+                    type="button"
+                    className="glass-sheet__pill-btn"
+                    onClick={handleCloseResume}
+                  >
+                    {selected
+                      ? "← Return to sculpture"
+                      : `← Return to ${sectionConfig.label.toLowerCase()}`}
+                  </button>
+                  <strong className="theater-slim-bar__title">
+                    Jagger Brulato — Résumé
+                  </strong>
+                </div>
+                <div className="theater-slim-bar__right">
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    download="Jagger_Brulato_Resume.pdf"
+                  >
+                    Download PDF <span aria-hidden="true">↓</span>
+                  </a>
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open full page <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </div>
+              <div className="theater-iframe-stage theater-iframe-stage--pdf">
+                <iframe
+                  src="/files/resume.pdf#view=FitH"
+                  title="Jagger Brulato résumé PDF"
+                />
+              </div>
+            </aside>
+          </div>
+        )}
+
         {/* Sliding Apple Liquid Glass Detail Sheet */}
-        {selected && (
+        {!showBootOverlay && !resumeOpen && selected && (
           <div className="spatial-sheet-slot">
             <DetailSheet
               item={selected}
@@ -665,12 +731,13 @@ export default function StudioPage() {
               onTheaterChange={setTheaterOpen}
               onClose={handleClose}
               onStep={handleStep}
+              onOpenResume={handleOpenResume}
             />
           </div>
         )}
 
         {/* Bottom-left Liquid Glass Music & Sound (SFX) mute controls */}
-        {!theaterOpen && (
+        {!anyTheaterOpen && (
           <div
             className="spatial-audio-controls"
             role="group"
@@ -744,7 +811,7 @@ export default function StudioPage() {
         )}
 
         {/* Floating Liquid Glass Bottom Dock with smooth feather masks & wheel scroll */}
-        {!theaterOpen && (
+        {!anyTheaterOpen && (
           <div className="spatial-dock-wrap">
             <div
               className={`spatial-dock-shell ${dockScroll.left ? "can-left" : ""} ${dockScroll.right ? "can-right" : ""}`}

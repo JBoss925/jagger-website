@@ -1,11 +1,17 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function enterStudio(page: Page) {
+  const enterBtn = page.getByRole("button", { name: "Enter", exact: true });
+  await expect(enterBtn).toBeVisible();
+  await enterBtn.click();
+  await expect(page.locator(".spatial-boot-overlay")).toHaveCount(0);
+}
 
 test("base route starts on Experience and switches cleanly to Projects with category filtering", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Enter with sound/ }).click();
-  await expect(page.locator(".spatial-boot-veil")).toHaveCount(0);
+  await enterStudio(page);
   await expect(
     page.getByRole("heading", { name: /Staff engineering/ }),
   ).toBeVisible();
@@ -33,6 +39,7 @@ test("selecting a project retracts hero, opens Liquid Glass sheet, and syncs bro
   page,
 }) => {
   await page.goto("/?section=projects");
+  await enterStudio(page);
   await page.locator('[data-dock-item="ojaml"]').click();
   await expect(
     page.getByRole("complementary", { name: "OJaml inspector" }),
@@ -43,6 +50,7 @@ test("selecting a project retracts hero, opens Liquid Glass sheet, and syncs bro
   await page.getByRole("tab", { name: "Paper & Docs", exact: true }).click();
   await expect(page).toHaveURL(/tab=writing/);
   await page.reload();
+  await enterStudio(page);
   await expect(
     page.getByRole("tab", { name: "Paper & Docs", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
@@ -63,8 +71,7 @@ test("selecting a project retracts hero, opens Liquid Glass sheet, and syncs bro
 
 test("all five sections unify in the shared spatial stage", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Enter with sound/ }).click();
-  await expect(page.locator(".spatial-boot-veil")).toHaveCount(0);
+  await enterStudio(page);
 
   // Experience is first
   await page
@@ -100,6 +107,7 @@ test("demos and library open in slim full-viewport theater without redundant hea
   page,
 }) => {
   await page.goto("/?section=demos&item=genetic-ts");
+  await enterStudio(page);
   await expect(page.locator("iframe")).toHaveCount(0);
   await page.getByRole("button", { name: /Launch GeneticTS here/ }).click();
   await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
@@ -124,6 +132,7 @@ test("demos and library open in slim full-viewport theater without redundant hea
   await expect(page.locator(".glass-sheet")).toBeVisible();
 
   await page.goto("/?section=library&item=ojaml");
+  await enterStudio(page);
   await page.getByRole("button", { name: "Browse docs" }).click();
   await expect(
     page
@@ -173,6 +182,7 @@ test("legacy deep links, standalone library, and original interactive 3D view re
   page,
 }) => {
   await page.goto("/#projects/jaggerscript");
+  await enterStudio(page);
   await expect(
     page.getByRole("complementary", { name: "JaggerScript inspector" }),
   ).toBeVisible();
@@ -180,6 +190,7 @@ test("legacy deep links, standalone library, and original interactive 3D view re
   await page.goto(
     "/#experience/h2-corporation-staff-forward-deployed-engineer",
   );
+  await enterStudio(page);
   await expect(
     page.getByRole("complementary", { name: "H2 Corporation inspector" }),
   ).toBeVisible();

@@ -20,11 +20,19 @@ async function expectUnobstructed(page: Page, locator: Locator) {
     .toBe(true);
 }
 
+async function enterStudio(page: Page) {
+  const enterBtn = page.getByRole("button", { name: "Enter", exact: true });
+  await expect(enterBtn).toBeVisible();
+  await enterBtn.click();
+  await expect(page.locator(".spatial-boot-overlay")).toHaveCount(0);
+}
+
 test.describe("Comprehensive user flows & overlay hit-testing", () => {
   test("OJaml Live Demo theater: Return to sculpture and Open full page work cleanly without click-through, and no redundant × button", async ({
     page,
   }) => {
     await page.goto("/?section=projects");
+    await enterStudio(page);
     await page.locator('[data-dock-item="ojaml"]').click();
     await expect(
       page.getByRole("complementary", { name: "OJaml inspector" }),
@@ -76,6 +84,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     page,
   }) => {
     await page.goto("/?section=demos&item=jaggerscript");
+    await enterStudio(page);
     await page.getByRole("button", { name: /Launch JaggerScript here/ }).click();
     await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
     await expect(page.locator("iframe")).toHaveCount(1);
@@ -98,6 +107,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     page,
   }) => {
     await page.goto("/?section=library&item=ojaml");
+    await enterStudio(page);
     await page.getByRole("button", { name: "Read paper here" }).click();
     await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
 
@@ -138,6 +148,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
   }) => {
     // 1. From About -> Portfolio Views
     await page.goto("/?section=about&item=portfolio-views");
+    await enterStudio(page);
     await expect(
       page.getByRole("complementary", { name: "Portfolio Views inspector" }),
     ).toBeVisible();
@@ -190,6 +201,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
 
     // 2. Also works identically from Projects -> Portfolio Views
     await page.goto("/?section=projects&item=portfolio-site");
+    await enterStudio(page);
     await page.getByRole("button", { name: /Interactive 3D/ }).click();
     await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
     await expect(
@@ -249,8 +261,9 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
   test("Breadcrumb back pill, stepper arrows, keyboard arrows, brand click, and legacy ?project= close all route properly", async ({
     page,
   }) => {
-    // Legacy ?project=ojaml deep link -> closing must stay in Projects (not jump to Experience)
+    // Legacy ?project=ojaml deep link -> shows intro first, then opens OJaml and stays in Projects on close
     await page.goto("/?project=ojaml");
+    await enterStudio(page);
     await expect(
       page.getByRole("complementary", { name: "OJaml inspector" }),
     ).toBeVisible();
@@ -332,8 +345,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     test.slow();
     // Verify zero public links to /museum on landing page
     await page.goto("/");
-    await page.getByRole("button", { name: /Enter with sound/ }).click();
-    await expect(page.locator(".spatial-boot-veil")).toHaveCount(0);
+    await enterStudio(page);
     await expect(page.locator('a[href*="/museum"]')).toHaveCount(0);
 
     const errors: string[] = [];
@@ -497,30 +509,22 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     );
   });
 
-  test("1-click GameCube boot overlay enters cleanly with sound or muted and skips on deep links", async ({
+  test("Cardless floating-cube Enter intro appears on both `/` and deep links, and Get in touch navigates to About -> Get in Touch with structured icon rows", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
-    const bootVeil = page.locator(".spatial-boot-veil");
-    await expect(bootVeil).toBeVisible();
-    await page.getByRole("button", { name: /Enter muted/ }).click();
-    await expect(bootVeil).toHaveCount(0);
-    await expect(page.locator('[data-audio-control="music"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await expect(page.locator('[data-audio-control="sfx"]')).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    const overlay = page.locator(".spatial-boot-overlay");
+    const enterBtn = page.getByRole("button", { name: "Enter", exact: true });
+    await expect(overlay).toBeVisible();
+    await expect(enterBtn).toBeVisible();
+    // No card & no separate "Enter muted" button — sound is on by default
+    await expect(page.locator(".spatial-boot-card")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Enter muted/ })).toHaveCount(0);
 
-    // Reloading `/` and clicking "Enter with sound" unmutes both and dismisses cleanly
-    await page.reload();
-    await expect(bootVeil).toBeVisible();
-    await page.getByRole("button", { name: /Enter with sound/ }).click();
-    await expect(bootVeil).toHaveCount(0);
+    await enterBtn.click();
+    await expect(overlay).toHaveCount(0);
     await expect(page.locator('[data-audio-control="music"]')).toHaveAttribute(
       "aria-pressed",
       "false",
@@ -530,8 +534,59 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
       "false",
     );
 
-    // Deep links bypass the boot overlay directly
-    await page.goto("/?section=projects");
-    await expect(bootVeil).toHaveCount(0);
+    // Clicking top-right "Résumé" opens the inline PDF theater without leaving the portfolio
+    const headerResumeBtn = page.getByRole("button", { name: "Résumé", exact: true });
+    await headerResumeBtn.click();
+    await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
+    await expect(
+      page.locator('iframe[title="Jagger Brulato résumé PDF"]'),
+    ).toHaveAttribute("src", "/files/resume.pdf#view=FitH");
+    const returnFromHeaderResume = page.getByRole("button", {
+      name: /Return to experience/,
+    });
+    await expectUnobstructed(page, returnFromHeaderResume);
+    await returnFromHeaderResume.click();
+    await expect(page.locator(".spatial-app")).not.toHaveClass(/is-theater/);
+
+    // Clicking top-right "Get in touch" navigates to About -> Get in Touch (not a mailto link)
+    const contactBtn = page.locator(".spatial-header__cta");
+    await expect(contactBtn).toHaveText("Get in touch");
+    await contactBtn.click();
+    await expect(page).toHaveURL(/section=about/);
+    await expect(page).toHaveURL(/item=contact/);
+    await expect(
+      page.getByRole("complementary", { name: "Get in Touch inspector" }),
+    ).toBeVisible();
+
+    // All 4 contact rows (Email, Résumé, GitHub, LinkedIn) sit on their own vertical line with SVG icons
+    const rows = page.locator(".sheet-contact-row");
+    await expect(rows).toHaveCount(4);
+    await expect(rows.locator("svg")).toHaveCount(4);
+    const boxes = await Promise.all([0, 1, 2, 3].map((i) => rows.nth(i).boundingBox()));
+    for (let i = 1; i < boxes.length; i++) {
+      expect(boxes[i]!.y).toBeGreaterThan(boxes[i - 1]!.y + boxes[i - 1]!.height - 1);
+    }
+
+    // Clicking the Résumé row inside Get in Touch opens the inline theater & returns straight back to Get in Touch
+    await rows.nth(1).click();
+    await expect(page.locator(".spatial-app")).toHaveClass(/is-theater/);
+    await expect(
+      page.locator('iframe[title="Jagger Brulato résumé PDF"]'),
+    ).toBeVisible();
+    await page.getByRole("button", { name: /Return to sculpture/ }).click();
+    await expect(page.locator(".spatial-app")).not.toHaveClass(/is-theater/);
+    await expect(
+      page.getByRole("complementary", { name: "Get in Touch inspector" }),
+    ).toBeVisible();
+
+    // Deep links ALSO show the floating-cube Enter intro first, then transition straight into the target item
+    await page.goto("/?section=projects&item=ojaml");
+    await expect(overlay).toBeVisible();
+    await expect(page.locator(".glass-sheet")).toHaveCount(0);
+    await enterBtn.click();
+    await expect(overlay).toHaveCount(0);
+    await expect(
+      page.getByRole("complementary", { name: "OJaml inspector" }),
+    ).toBeVisible();
   });
 });

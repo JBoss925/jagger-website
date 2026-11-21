@@ -27,6 +27,7 @@ type DetailSheetProps = {
   onTheaterChange: (open: boolean) => void;
   onClose: () => void;
   onStep: (direction: -1 | 1) => void;
+  onOpenResume?: () => void;
   titleId?: string;
   onDragHandlePointerDown?: (e: ReactPointerEvent<HTMLDivElement>) => void;
 };
@@ -42,6 +43,7 @@ export default function DetailSheet({
   onTheaterChange,
   onClose,
   onStep,
+  onOpenResume,
   titleId,
   onDragHandlePointerDown,
 }: DetailSheetProps) {
@@ -813,17 +815,28 @@ export default function DetailSheet({
                   ))}
                 </ul>
                 <div className="sheet-actions">
-                  {item.payload.about.links.map((l) => (
-                    <a
-                      key={l.href}
-                      href={l.href}
-                      className={`sheet-btn ${l.label === "Email" ? "sheet-btn--primary" : ""}`}
-                      target={l.href.startsWith("http") ? "_blank" : undefined}
-                      rel={l.href.startsWith("http") ? "noreferrer" : undefined}
-                    >
-                      {l.label} <span aria-hidden="true">↗</span>
-                    </a>
-                  ))}
+                  {item.payload.about.links.map((l) =>
+                    l.href === "/files/resume.pdf" && onOpenResume ? (
+                      <button
+                        key={l.href}
+                        type="button"
+                        className="sheet-btn"
+                        onClick={onOpenResume}
+                      >
+                        {l.label} <span aria-hidden="true">↗</span>
+                      </button>
+                    ) : (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        className={`sheet-btn ${l.label === "Email" ? "sheet-btn--primary" : ""}`}
+                        target={l.href.startsWith("http") ? "_blank" : undefined}
+                        rel={l.href.startsWith("http") ? "noreferrer" : undefined}
+                      >
+                        {l.label} <span aria-hidden="true">↗</span>
+                      </a>
+                    ),
+                  )}
                 </div>
               </>
             )}
@@ -882,31 +895,151 @@ export default function DetailSheet({
             {item.payload.about.kind === "contact" && (
               <>
                 <p className="sheet-lead">{item.payload.about.body}</p>
-                <div className="sheet-actions">
+                <div className="sheet-contact-list" role="list">
                   <a
                     href={`mailto:${item.payload.about.email}`}
-                    className="sheet-btn sheet-btn--primary"
+                    className="sheet-contact-row sheet-contact-row--primary"
+                    role="listitem"
                   >
-                    {item.payload.about.email} <span aria-hidden="true">↗</span>
+                    <span className="sheet-contact-row__icon" aria-hidden="true">
+                      <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.9"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="2" y="4" width="20" height="16" rx="3" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                    </span>
+                    <span className="sheet-contact-row__text">
+                      <strong>Email</strong>
+                      <small>{item.payload.about.email}</small>
+                    </span>
+                    <span className="sheet-contact-row__arrow" aria-hidden="true">
+                      ↗
+                    </span>
                   </a>
-                  <a href="/files/resume.pdf" className="sheet-btn">
-                    Résumé PDF <span aria-hidden="true">↗</span>
-                  </a>
+
+                  {onOpenResume ? (
+                    <button
+                      type="button"
+                      className="sheet-contact-row"
+                      role="listitem"
+                      onClick={onOpenResume}
+                    >
+                      <span className="sheet-contact-row__icon" aria-hidden="true">
+                        <svg
+                          width="19"
+                          height="19"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.9"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                          <line x1="9" y1="13" x2="15" y2="13" />
+                          <line x1="9" y1="17" x2="13" y2="17" />
+                        </svg>
+                      </span>
+                      <span className="sheet-contact-row__text">
+                        <strong>Résumé</strong>
+                        <small>PDF · View here or download</small>
+                      </span>
+                      <span className="sheet-contact-row__arrow" aria-hidden="true">
+                        ↗
+                      </span>
+                    </button>
+                  ) : (
+                    <a
+                      href="/files/resume.pdf"
+                      className="sheet-contact-row"
+                      role="listitem"
+                    >
+                      <span className="sheet-contact-row__icon" aria-hidden="true">
+                        <svg
+                          width="19"
+                          height="19"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.9"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                          <line x1="9" y1="13" x2="15" y2="13" />
+                          <line x1="9" y1="17" x2="13" y2="17" />
+                        </svg>
+                      </span>
+                      <span className="sheet-contact-row__text">
+                        <strong>Résumé</strong>
+                        <small>PDF · View or download</small>
+                      </span>
+                      <span className="sheet-contact-row__arrow" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  )}
+
                   <a
                     href="https://github.com/JBoss925"
                     target="_blank"
                     rel="noreferrer"
-                    className="sheet-btn"
+                    className="sheet-contact-row"
+                    role="listitem"
                   >
-                    GitHub <span aria-hidden="true">↗</span>
+                    <span className="sheet-contact-row__icon" aria-hidden="true">
+                      <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
+                      </svg>
+                    </span>
+                    <span className="sheet-contact-row__text">
+                      <strong>GitHub</strong>
+                      <small>github.com/JBoss925</small>
+                    </span>
+                    <span className="sheet-contact-row__arrow" aria-hidden="true">
+                      ↗
+                    </span>
                   </a>
+
                   <a
                     href="https://www.linkedin.com/in/jaggerbrulato/"
                     target="_blank"
                     rel="noreferrer"
-                    className="sheet-btn"
+                    className="sheet-contact-row"
+                    role="listitem"
                   >
-                    LinkedIn <span aria-hidden="true">↗</span>
+                    <span className="sheet-contact-row__icon" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z" />
+                      </svg>
+                    </span>
+                    <span className="sheet-contact-row__text">
+                      <strong>LinkedIn</strong>
+                      <small>linkedin.com/in/jaggerbrulato</small>
+                    </span>
+                    <span className="sheet-contact-row__arrow" aria-hidden="true">
+                      ↗
+                    </span>
                   </a>
                 </div>
               </>

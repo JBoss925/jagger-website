@@ -24,12 +24,16 @@ type MobilePortfolioProps = {
   items: SpatialItem[];
   selected: SpatialItem | null;
   theaterOpen: boolean;
+  resumeOpen: boolean;
   onSectionChange: (section: SectionId) => void;
   onCategoryChange: (category: CategoryId) => void;
   onSelect: (slug: string) => void;
   onClose: () => void;
   onStep: (direction: -1 | 1) => void;
   onTheaterChange: (open: boolean) => void;
+  onOpenContact: () => void;
+  onOpenResume: () => void;
+  onCloseResume: () => void;
 };
 
 /**
@@ -42,12 +46,16 @@ export default function MobilePortfolio({
   items,
   selected,
   theaterOpen,
+  resumeOpen,
   onSectionChange,
   onCategoryChange,
   onSelect,
   onClose,
   onStep,
   onTheaterChange,
+  onOpenContact,
+  onOpenResume,
+  onCloseResume,
 }: MobilePortfolioProps) {
   const cfg = getSectionConfig(section);
   const selectedIndex = selected
@@ -64,9 +72,9 @@ export default function MobilePortfolio({
 
   useEffect(() => soundEngine.subscribe(setAudioState), []);
 
-  // Lock background scroll while bottom drawer is open
+  // Lock background scroll while bottom drawer or résumé viewer is open
   useEffect(() => {
-    if (!selected) {
+    if (!selected && !resumeOpen) {
       setDragY(0);
       setIsDragging(false);
       setIsClosing(false);
@@ -77,7 +85,7 @@ export default function MobilePortfolio({
     return () => {
       document.body.style.overflow = prevOverflow;
     };
-  }, [selected]);
+  }, [selected, resumeOpen]);
 
   const dismissDrawerAnimated = () => {
     setIsClosing(true);
@@ -157,12 +165,13 @@ export default function MobilePortfolio({
             </span>
             <span>Jagger Brulato</span>
           </Link>
-          <a
+          <button
+            type="button"
             className="mobile-contact"
-            href={`mailto:${profileContent.email}`}
+            onClick={onOpenContact}
           >
-            Contact ↗
-          </a>
+            Get in touch
+          </button>
         </div>
         <nav className="mobile-nav" aria-label="Portfolio sections">
           {SECTIONS.map((s) => (
@@ -274,7 +283,13 @@ export default function MobilePortfolio({
         <footer className="mobile-footer">
           <p>{clean(profileContent.title)}</p>
           <div>
-            <a href="/files/resume.pdf">Résumé</a>
+            <button
+              type="button"
+              className="mobile-footer__btn"
+              onClick={onOpenResume}
+            >
+              Résumé
+            </button>
             <a href="https://github.com/JBoss925">GitHub</a>
             <a href="https://www.linkedin.com/in/jaggerbrulato/">LinkedIn</a>
             <Link to="/library">Full Library</Link>
@@ -282,7 +297,7 @@ export default function MobilePortfolio({
         </footer>
       </main>
 
-      {!selected && (
+      {!selected && !resumeOpen && (
         <div
           className="spatial-audio-controls spatial-audio-controls--mobile"
           role="group"
@@ -341,7 +356,60 @@ export default function MobilePortfolio({
         </div>
       )}
 
-      {selected && (
+      {resumeOpen && (
+        <div
+          className="mobile-sheet-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Résumé viewer"
+          style={{ backgroundColor: "rgba(31, 23, 44, 0.3)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onCloseResume();
+          }}
+        >
+          <div className="mobile-drawer-shell is-theater">
+            <aside className="glass-sheet is-theater is-mobile-drawer">
+              <div className="theater-slim-bar">
+                <div className="theater-slim-bar__left">
+                  <button
+                    type="button"
+                    className="glass-sheet__pill-btn"
+                    onClick={onCloseResume}
+                  >
+                    ← Back
+                  </button>
+                  <strong className="theater-slim-bar__title">Résumé</strong>
+                </div>
+                <div className="theater-slim-bar__right">
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    download="Jagger_Brulato_Resume.pdf"
+                  >
+                    Download ↓
+                  </a>
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Full page ↗
+                  </a>
+                </div>
+              </div>
+              <div className="theater-iframe-stage theater-iframe-stage--pdf">
+                <iframe
+                  src="/files/resume.pdf#view=FitH"
+                  title="Jagger Brulato résumé PDF"
+                />
+              </div>
+            </aside>
+          </div>
+        </div>
+      )}
+
+      {!resumeOpen && selected && (
         <div
           className="mobile-sheet-backdrop"
           role="dialog"
@@ -369,6 +437,7 @@ export default function MobilePortfolio({
               onTheaterChange={onTheaterChange}
               onClose={dismissDrawerAnimated}
               onStep={onStep}
+              onOpenResume={onOpenResume}
               titleId="mobile-drawer-title"
               onDragHandlePointerDown={handleDragStart}
             />

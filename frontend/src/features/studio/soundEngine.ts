@@ -748,8 +748,13 @@ class SpatialSoundEngine {
       }
     }
 
-    // --- Layer 2 (SFX): Synchronized 120-Cube Tumbling Arrival Cascade ---
+    // --- Layer 2 (SFX): Synchronized Cube Split-Apart & Main-Page Arrival Cascade ---
     if (withCubeCascade && !this.sfxMuted && this.sfxBus) {
+      // Crisp crystal fracture pop right as the floating cube splits open (t = 0.01s)
+      this.playGlassTone(523.25, 0.008, 0.24, 0.11, "triangle", -0.18, 0.34);
+      this.playGlassTone(659.25, 0.022, 0.26, 0.095, "sine", 0.18, 0.36);
+
+      // Rising crystalline mini-cube scatter across the burst & flight into the sculptures
       const cascadeNotes = [
         261.63, // C4
         329.63, // E4
@@ -761,20 +766,22 @@ class SpatialSoundEngine {
         783.99, // G5
       ];
       cascadeNotes.forEach((freq, step) => {
-        const offset = 0.02 + step * 0.056;
+        const offset = 0.08 + step * 0.088;
         const pan = -0.48 + (step / (cascadeNotes.length - 1)) * 0.96;
         const isLanding = step === cascadeNotes.length - 1;
         this.playGlassTone(
           freq,
           offset,
-          isLanding ? 0.85 : 0.36,
-          isLanding ? 0.135 : 0.095,
+          isLanding ? 0.92 : 0.38,
+          isLanding ? 0.14 : 0.095,
           step % 2 === 0 ? "triangle" : "sine",
           pan,
-          0.36,
+          0.38,
         );
       });
-      this.playGlassTone(196.0, 0.44, 0.72, 0.115, "triangle", 0, 0.32);
+      // Warm harmonic resolution right as the 120 mini-cubes lock into the main page sculptures
+      this.playGlassTone(196.0, 0.74, 0.85, 0.12, "triangle", 0, 0.34);
+      this.playGlassTone(523.25, 0.78, 0.9, 0.095, "sine", -0.14, 0.4);
     }
 
     this.syncBusGains(true);
