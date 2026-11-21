@@ -19,6 +19,7 @@ import { VARIANTS_SEASON3_A } from "./sculptureVariantsSeason3A";
 import { VARIANTS_SEASON3_B } from "./sculptureVariantsSeason3B";
 import { VARIANTS_SEASON3_C } from "./sculptureVariantsSeason3C";
 import { VARIANTS_ABOUT_UNIQUE } from "./sculptureVariantsAboutUnique";
+import { VARIANTS_RISK } from "./sculptureVariantsRisk";
 import { PAST_VARIANTS } from "./sculpturePastVariants";
 
 export type ExhibitEra =
@@ -75,6 +76,7 @@ const ALL_VARIANT_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_SEASON3_B,
   ...VARIANTS_SEASON3_C,
   ...VARIANTS_ABOUT_UNIQUE,
+  ...VARIANTS_RISK,
   ...PAST_VARIANTS,
 };
 
@@ -821,8 +823,66 @@ const RAW_GROUPS: RawGroupSpec[] = [
   },
 
   // ==========================================================================
-  // PROJECTS (13 projects)
+  // PROJECTS (14 projects)
   // ==========================================================================
+  {
+    id: "proj-risk",
+    title: "Risk",
+    subtitle: "WebAssembly Quant Research & Paper Trading Terminal",
+    sectionLabel: "Projects",
+    formation: "risk-terminal",
+    itemSlug: "risk",
+    itemSection: "projects",
+    variants: [
+      {
+        id: "risk-monitor-candles",
+        name: "Quant Trading Terminal Monitor + Live Candles & Breakout Badge",
+        era: "Bracket Winner",
+        isActive: true,
+        isAiFavorite: true,
+        blindGuess: "Desktop trading terminal monitor displaying green/red candlesticks on a dark screen with a gold breakout arrow",
+        councilScore: "9.3/10 Read · 9.0/10 Craft (3–0 Unanimous)",
+        notes: "Unanimous 3–0 Blind Council winner! Recessed dark-mode widescreen bezel, 4 glowing 3D candlesticks, golden MA ribbon & pop-out breakout arrow.",
+        variantKey: "risk-monitor-candles",
+      },
+      {
+        id: "risk-candlestick-breakout",
+        name: "3D Candlestick Chart + Golden Breakout Trend Arrow",
+        era: "Contender A",
+        blindGuess: "3D financial candlestick chart with L-shaped axes, bottom volume ticks & rising gold trend arrow",
+        councilScore: "9.0/10 Read · 7.7/10 Craft",
+        notes: "Strong #2 runner-up! L-frame indigo chart plinth with 5 thick 3D emerald/ruby candlesticks, volume ticks & golden rising breakout arrow.",
+        variantKey: "risk-candlestick-breakout",
+      },
+      {
+        id: "risk-charging-bull",
+        name: "Sculpted 3D Wall Street Emerald & Gold Charging Bull",
+        era: "Contender B",
+        blindGuess: "Wall Street charging bull in emerald green with sweeping gold/white horns & nose ring on a navy pedestal",
+        councilScore: "7.3/10 Read · 6.8/10 Craft",
+        notes: "Most volumetric in-the-round 3D form: muscular emerald charging bull with lowered brow, sweeping curved golden horns & ticker plinth.",
+        variantKey: "risk-charging-bull",
+      },
+      {
+        id: "risk-bull-bear-scale",
+        name: "Bull vs. Bear Balance Scale of Risk & Reward",
+        era: "Season 3",
+        blindGuess: "Risk vs. reward balance scale weighing emerald green gain stacks against crimson red loss blocks",
+        councilScore: "7.3/10 Read · 6.7/10 Craft",
+        notes: "Clever literal Risk/Reward metaphor: grounded indigo pedestal, golden fulcrum pillar & rocking beam balancing emerald bull vs. ruby bear pans.",
+        variantKey: "risk-bull-bear-scale",
+      },
+      {
+        id: "risk-shield-equity",
+        name: "Quant Risk Shield + Rising Equity Curve & OCO Brackets",
+        era: "Season 3",
+        blindGuess: "Risk-management shield overlaid with a green upward line chart & gold arrow between top green and bottom red bars",
+        councilScore: "6.0/10 Read · 5.0/10 Craft",
+        notes: "Armored 3D heater shield crossed by a rising emerald/gold equity curve framed by Take-Profit ceiling & Stop-Loss floor brackets.",
+        variantKey: "risk-shield-equity",
+      },
+    ],
+  },
   {
     id: "proj-ojaml",
     title: "OJaml",

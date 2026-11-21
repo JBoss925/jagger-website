@@ -4,6 +4,8 @@ export const clean = (text: string) => text.replace(/\*\*/g, "");
 export const summaries: Record<string, string> = {
   ojaml:
     "An ML-family language. From source code to WebAssembly, in your browser.",
+  risk:
+    "A browser-native quant terminal. 62 WebAssembly indicators, 24 strategies, backtesting, and paper trading.",
   jaggerscript:
     "A typed language, a heap-backed runtime, and a playground to explore both.",
   liveboard: "An infinite canvas built for realtime collaboration.",

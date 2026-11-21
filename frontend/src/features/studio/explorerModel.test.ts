@@ -15,7 +15,7 @@ const project = (slug: string) => projects.find((item) => item.slug === slug)!;
 describe("spatial explorer content model", () => {
   it("keeps the complete shared inventory and assigns each project one usable category", () => {
     expect(filterProjects("", "all")).toEqual(projects);
-    expect(projects).toHaveLength(13);
+    expect(projects).toHaveLength(14);
     const categorized = categories
       .filter((item) => item.id !== "all")
       .flatMap((category) => filterProjects("", category.id));
@@ -24,6 +24,7 @@ describe("spatial explorer content model", () => {
     );
     expect(categorized).toHaveLength(projects.length);
     expect(categoryFor(project("hearth"))).toBe("systems");
+    expect(categoryFor(project("risk"))).toBe("systems");
     expect(categoryFor(project("genetic-ts"))).toBe("play");
   });
 
@@ -44,6 +45,7 @@ describe("spatial explorer content model", () => {
   it("offers browser destinations without confusing papers, source, or downloads with demos", () => {
     for (const [slug, href] of Object.entries({
       ojaml: "/ojaml",
+      risk: "https://risk.jaggerbrulato.com/",
       jaggerscript: "/jaggerscript",
       "genetic-ts": "/genetic-ts",
       rengine: "/rengine",

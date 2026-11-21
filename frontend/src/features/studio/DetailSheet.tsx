@@ -12,7 +12,7 @@ import { headshotAsset } from "../../content/profile";
 import type { ProjectEntry, SkillEvidenceLink } from "../../types/content";
 import { clean, summaries, views } from "./content";
 import {
-  INTERNAL_DEMOS,
+  EMBEDDABLE_DEMOS,
   displayProjectTitle,
   getDemoHref,
   type SpatialItem,
@@ -74,7 +74,7 @@ export default function DetailSheet({
     ? papers.find((p) => p.slug === project.slug) ?? null
     : null;
   const demoHref = project ? getDemoHref(project) : undefined;
-  const isInternalDemo = demoHref ? INTERNAL_DEMOS.has(demoHref) : false;
+  const isInternalDemo = demoHref ? EMBEDDABLE_DEMOS.has(demoHref) : false;
 
   const defaultTab: SheetTab =
     item.section === "demos" && demoHref

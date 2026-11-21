@@ -70,6 +70,6 @@ describe("Unified library", () => {
     setup("/library?type=Papers&q=unfindable");
     expect(screen.getByText("No projects found.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Clear filters/ }));
-    expect(document.querySelectorAll(".library-grid article")).toHaveLength(13);
+    expect(document.querySelectorAll(".library-grid article")).toHaveLength(14);
   });
 });

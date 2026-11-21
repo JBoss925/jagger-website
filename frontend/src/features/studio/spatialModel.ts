@@ -23,8 +23,9 @@ export type SectionId =
   | "about";
 
 export type FormationKind =
-  // 13 bespoke content-driven project formations
+  // 14 bespoke content-driven project formations
   | "ojaml-compiler"
+  | "risk-terminal"
   | "liveboard-canvas"
   | "hearth-tube"
   | "jaggerscript-heap"
@@ -185,8 +186,14 @@ export const INTERNAL_DEMOS = new Set([
   "/games",
 ]);
 
+export const EMBEDDABLE_DEMOS = new Set([
+  ...INTERNAL_DEMOS,
+  "https://risk.jaggerbrulato.com/",
+]);
+
 const PROJECT_FORMATION: Record<string, FormationKind> = {
   ojaml: "ojaml-compiler",
+  risk: "risk-terminal",
   liveboard: "liveboard-canvas",
   hearth: "hearth-tube",
   jaggerscript: "jaggerscript-heap",
@@ -222,6 +229,12 @@ const PASTEL_PALETTES: Record<string, PaletteSpec> = {
     deep: "#5b3ab5",
     light: "#dcd0fc",
     glow: "#a887f7",
+  },
+  risk: {
+    primary: "#22b88c",
+    deep: "#137a5e",
+    light: "#c8f2e4",
+    glow: "#4be0b4",
   },
   liveboard: {
     primary: "#7294e3",
@@ -396,7 +409,7 @@ export function getItemsForSection(
       .map((project) => {
         const demoHref = getDemoHref(project);
         if (!demoHref) return null;
-        const isInternal = INTERNAL_DEMOS.has(demoHref);
+        const isInternal = EMBEDDABLE_DEMOS.has(demoHref);
         return {
           uid: `demos:${project.slug}`,
           slug: project.slug,

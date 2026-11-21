@@ -8,6 +8,7 @@ import { VARIANTS_SEASON3_A } from "./sculptureVariantsSeason3A";
 import { VARIANTS_SEASON3_B } from "./sculptureVariantsSeason3B";
 import { VARIANTS_SEASON3_C } from "./sculptureVariantsSeason3C";
 import { VARIANTS_ABOUT_UNIQUE } from "./sculptureVariantsAboutUnique";
+import { VARIANTS_RISK } from "./sculptureVariantsRisk";
 
 const CHAMPION_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_PART_A,
@@ -19,14 +20,16 @@ const CHAMPION_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_SEASON3_B,
   ...VARIANTS_SEASON3_C,
   ...VARIANTS_ABOUT_UNIQUE,
+  ...VARIANTS_RISK,
 };
 
 /**
  * Active Live Sculptures (Season 3 — honoring all user preferences & locked favorites,
- * Lowe's 3D Retail Cash Register, and dedicated unique sculptures for About Working with a Team
- * and About Range with zero reuse from Cornell DTI).
+ * Lowe's 3D Retail Cash Register, Risk Quant Terminal champion, and dedicated unique sculptures
+ * for About Working with a Team and About Range with zero reuse from Cornell DTI).
  */
 export const ACTIVE_CHAMPION_VARIANT: Partial<Record<FormationKind, string>> = {
+  "risk-terminal": "risk-monitor-candles",
   "jetstream-weather": "js-sun-cloud",
   "liveboard-canvas": "lb-whiteboard-cursors",
   "aixc-compress": "aixc-zipper",

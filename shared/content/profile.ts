@@ -19,6 +19,7 @@ import monadPreview from "../../frontend/src/assets/monad-preview.jpg";
 import ojamlPreview from "../../frontend/src/assets/ojaml-preview.jpg";
 import portfolioPreview from "../../frontend/src/assets/portfolio-preview.jpg";
 import renginePreview from "../../frontend/src/assets/rengine-preview.jpg";
+import riskPreview from "../../frontend/src/assets/risk-preview.jpg";
 import tsxlightRendererPreview from "../../frontend/src/assets/tsxlight-renderer-preview.jpg";
 import type { ProfileContent } from "../types/content";
 
@@ -793,6 +794,39 @@ export const profileContent: ProfileContent = {
         { label: "Open Editor", href: "/ojaml" },
         { label: "Open Paper", href: "/papers/ojaml" },
         { label: "Source", href: "https://github.com/JBoss925/OJaml" }
+      ]
+    },
+    {
+      slug: "risk",
+      title: "Risk",
+      description:
+        "A browser-native quantitative research and paper trading terminal built around a **62-indicator WebAssembly engine, 24 composable strategies, strictly causal walk-forward forecasting, an interactive live-chart replay simulator, and real-time OCO bracket execution**.",
+      impact:
+        "All computation runs locally inside a dedicated Web Worker backed by a compiled AssemblyScript kernel—sub-millisecond indicator sweeps, 9,785 precomputed multi-asset benchmarks across 52 blue-chip stocks and indexes, held-out 30% out-of-sample backtests, live chart trade recommendations, and optional Alpaca Paper API mirroring.",
+      stack: [
+        "WebAssembly",
+        "AssemblyScript",
+        "JavaScript",
+        "Web Workers",
+        "HTML Canvas",
+        "Technical indicators",
+        "Quantitative finance",
+        "Causal backtesting",
+        "Out-of-sample validation",
+        "Monte Carlo simulation",
+        "Kalman filter",
+        "Paper trading",
+        "OCO brackets",
+        "Alpaca API",
+        "WebSockets",
+        "IndexedDB",
+        "Netlify Functions",
+        "Zero runtime dependencies"
+      ],
+      image: riskPreview,
+      links: [
+        { label: "Open App", href: "https://risk.jaggerbrulato.com/" },
+        { label: "Source", href: "https://github.com/JBoss925/risk" }
       ]
     },
     {

@@ -40,6 +40,7 @@ const intervalOptions = [
 
 const projectCodes: Record<string, string> = {
   ojaml: "OJML",
+  risk: "RISK",
   hearth: "HRTH",
   jaggerscript: "JSGR",
   "genetic-learners": "GENE",

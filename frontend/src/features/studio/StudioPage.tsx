@@ -13,6 +13,7 @@ import DetailSheet from "./DetailSheet";
 import MobilePortfolio from "./MobilePortfolio";
 import SpatialStage, { type ProjectedLabelMap } from "./SpatialStage";
 import { soundEngine } from "./soundEngine";
+import { projects } from "./content";
 import type { SkillEvidenceLink } from "../../types/content";
 import {
   SECTIONS,
@@ -466,7 +467,7 @@ export default function StudioPage() {
 
   const dynamicEyebrow =
     section === "projects" && category !== "all"
-      ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} OF 13`
+      ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} OF ${projects.length}`
       : section === "projects"
         ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} ARTIFACTS`
         : section === "library"

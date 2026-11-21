@@ -5,6 +5,7 @@ import type { ExperienceEntry, ProjectEntry } from "../../shared/types/content";
 
 const projectMeta: Record<string, { type: string; language: string; status: string; ext: string }> = {
   ojaml: { type: "compiler", language: "TypeScript", status: "active", ext: "ml" },
+  risk: { type: "quant terminal", language: "AssemblyScript / WASM", status: "active", ext: "wasm" },
   hearth: { type: "audio DSP", language: "GenExpr", status: "released", ext: "gen" },
   jaggerscript: { type: "language", language: "TypeScript", status: "stable", ext: "ts" },
   "genetic-learners": { type: "simulation", language: "TypeScript", status: "stable", ext: "ts" },

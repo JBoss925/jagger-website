@@ -140,7 +140,7 @@ export default function MobilePortfolio({
 
   const eyebrowCount =
     section === "projects" && category !== "all"
-      ? `${String(items.length).padStart(2, "0")} OF 13 ARTIFACTS`
+      ? `${String(items.length).padStart(2, "0")} OF ${profileContent.projects.length} ARTIFACTS`
       : section === "projects"
         ? `${String(items.length).padStart(2, "0")} ARTIFACTS`
         : section === "library"

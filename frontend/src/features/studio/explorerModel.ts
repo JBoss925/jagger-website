@@ -30,6 +30,7 @@ const projectCategories: Record<string, ProjectCategory> = {
   jaggerscript: "languages",
   chains: "languages",
   "aixc-compressor": "systems",
+  risk: "systems",
   rengine: "systems",
   "tsxlight-renderer": "systems",
   hearth: "systems",
