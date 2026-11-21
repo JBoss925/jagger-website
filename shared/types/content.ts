@@ -62,10 +62,29 @@ export type ProjectEntry = {
   }[];
 };
 
+export type SkillEvidenceLink = {
+  label: string;
+  context: string;
+  target:
+    | { kind: "experience"; slug: string }
+    | { kind: "project"; slug: string };
+};
+
 export type SkillCluster = {
   title: string;
   summary: string;
+  paragraphs?: string[];
+  evidence?: SkillEvidenceLink[];
   items: string[];
+};
+
+export type PortfolioSectionCopy = {
+  id: "experience" | "projects" | "demos" | "library" | "about";
+  eyebrow: string;
+  headlineTop: string;
+  headlineAccent: string;
+  description: string;
+  mobileDescription: string;
 };
 
 export type ProfileContent = {
@@ -83,6 +102,7 @@ export type ProfileContent = {
     label: string;
     href: string;
   }[];
+  sectionCopy: PortfolioSectionCopy[];
   sceneSections: SceneSection[];
   experience: ExperienceEntry[];
   projects: ProjectEntry[];

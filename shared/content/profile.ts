@@ -48,6 +48,58 @@ export const profileContent: ProfileContent = {
     { label: "GitHub", href: "https://github.com/JBoss925" },
     { label: "Resume", href: "/files/resume.pdf" }
   ],
+  sectionCopy: [
+    {
+      id: "experience",
+      eyebrow: "WHERE I’VE WORKED · 2016 — PRESENT",
+      headlineTop: "Places I’ve built",
+      headlineAccent: "and teams I’ve led.",
+      description:
+        "Startups, Google, platform teams, and campus orgs — everywhere I’ve shipped production software and owned it end to end.",
+      mobileDescription:
+        "Startups, Google, platform teams, and campus orgs — everywhere I’ve shipped production software."
+    },
+    {
+      id: "projects",
+      eyebrow: "THINGS I’VE BUILT",
+      headlineTop: "What I build",
+      headlineAccent: "outside of work.",
+      description:
+        "Compilers, runtimes, audio plugins, physics sims, and daily games I wrote because I wanted to understand how they really work.",
+      mobileDescription:
+        "Compilers, runtimes, audio plugins, physics sims, and daily games — with live demos and writeups."
+    },
+    {
+      id: "demos",
+      eyebrow: "TRY THEM LIVE",
+      headlineTop: "Don’t take my word",
+      headlineAccent: "— run them here.",
+      description:
+        "Playgrounds for my languages, a physics evolution sim, a rendering engine, and six daily games you can try right in the browser.",
+      mobileDescription:
+        "Language playgrounds, a physics sim, a rendering engine, and six games you can try right here."
+    },
+    {
+      id: "library",
+      eyebrow: "PAPERS & DOCS",
+      headlineTop: "How I built them,",
+      headlineAccent: "written out.",
+      description:
+        "Long-form writeups and technical docs covering the design calls, tradeoffs, and internals behind my bigger projects.",
+      mobileDescription:
+        "Long-form writeups and technical docs covering the tradeoffs and internals behind my projects."
+    },
+    {
+      id: "about",
+      eyebrow: "ABOUT ME",
+      headlineTop: "Hi, I’m Jagger.",
+      headlineAccent: "Here’s how I work.",
+      description:
+        "A bit about me, how I work with teams, the other portfolio views I built for fun, and the easiest ways to reach me.",
+      mobileDescription:
+        "A bit about me, how I work with teams, my other portfolio views, and how to reach me."
+    }
+  ],
   sceneSections: [
     {
       id: "hero",
@@ -1167,7 +1219,44 @@ export const profileContent: ProfileContent = {
     {
       title: "Working with a team",
       summary:
-        "I’m useful when a team needs **technical direction, implementation, code review, architecture decisions, and help unblocking other engineers**.",
+        "I’m most useful when a team needs clear technical direction, thoughtful code review, architecture calls, and someone willing to jump into the hard implementation work right alongside everyone else.",
+      paragraphs: [
+        "At H2 Corporation, I work directly with the client as a forward-deployed staff engineer—staying right in the feedback loop, turning messy construction-plan workflows into product specs, and leading frontend architecture from initial design through QA and delivery.",
+        "Earlier, as Developer Lead for Cornell Design & Tech Initiative, I helped guide a 100+ person student product organization across web and mobile subteams—reviewing PRs across React, Vue, Flutter, and native stacks, unblocking releases, and helping semester-based teams ship real tools for campus. At Google, I led L3 engineers and TVCs building a self-service M&A integration platform from scratch, and during my Google internship I ran weekly design sessions with Alvin Ailey Dance Company stakeholders to replace manual scheduling spreadsheets with a shared multi-user app."
+      ],
+      evidence: [
+        {
+          label: "H2 Corporation · Staff FDE",
+          context: "Forward-deployed client collaboration & frontend architecture lead",
+          target: {
+            kind: "experience",
+            slug: "h2-corporation-staff-forward-deployed-engineer"
+          }
+        },
+        {
+          label: "Google · L4 Software Engineer",
+          context: "Led L3 developers & TVCs on Google’s M&A integration platform",
+          target: { kind: "experience", slug: "google-software-engineer" }
+        },
+        {
+          label: "Cornell DTI · Developer Lead",
+          context: "Mentored, reviewed, and supported releases across a 100+ member org",
+          target: { kind: "experience", slug: "cornell-dti-developer-lead" }
+        },
+        {
+          label: "Cornell DTI · Technical PM",
+          context: "Led the Cue mobile and web subteam from Figma to app-store prep",
+          target: {
+            kind: "experience",
+            slug: "cornell-dti-technical-project-manager"
+          }
+        },
+        {
+          label: "Google · SWE Intern",
+          context: "Weekly stakeholder design sessions with Alvin Ailey Dance Company",
+          target: { kind: "experience", slug: "google-swe-intern" }
+        }
+      ],
       items: [
         "Technical leadership",
         "Developer onboarding",
@@ -1179,7 +1268,41 @@ export const profileContent: ProfileContent = {
     {
       title: "Systems and platform work",
       summary:
-        "A lot of my strongest work is around **platforms, reliability, observability, CI/CD, deployment paths, cloud infrastructure, and asynchronous systems**.",
+        "A lot of the work I enjoy most sits underneath the UI: internal developer platforms, distributed data pipelines, queues, Terraform automation, and observability that lets other engineers move faster without guessing.",
+      paragraphs: [
+        "At Red Ventures, I built internal platform tooling backed by Go runtime automation and a custom Terraform provider so product teams could spin up ECS/Fargate services, Kubernetes/Helm workloads, routing, and queues in a few clicks—paired with Grafana dashboards and Databricks pipelines so teams could see cost, availability, and process health.",
+        "At Google, I built a dynamic Apache Beam and Dataflow service from the first line of Java to live production, generating batch and streaming pipelines from protobuf definitions across Spanner, BigQuery, Bigtable, and Pub/Sub. At Palmetto, I worked on idempotent onboarding and utility-integration workflows over Kafka, RabbitMQ, and BullMQ. Outside of work, LiveBoard synchronizes FastAPI replicas over Redis Pub/Sub with durable PostgreSQL revision history, and AIXC Compressor explores predictor-backed binary archives with native C hot paths."
+      ],
+      evidence: [
+        {
+          label: "Red Ventures · Platform Engineer",
+          context: "Custom Terraform provider, Go automation, K8s/ECS & Grafana",
+          target: { kind: "experience", slug: "red-ventures-platform-engineer" }
+        },
+        {
+          label: "Google · L4 Software Engineer",
+          context: "Dynamic Beam/Dataflow integration service & self-service pipelines",
+          target: { kind: "experience", slug: "google-software-engineer" }
+        },
+        {
+          label: "Palmetto · SDE III",
+          context: "Idempotent home-energy workflows backed by Kafka, RabbitMQ & BullMQ",
+          target: {
+            kind: "experience",
+            slug: "palmetto-software-development-engineer-iii"
+          }
+        },
+        {
+          label: "LiveBoard",
+          context: "Distributed realtime whiteboard using WebSockets, Redis Pub/Sub & Postgres",
+          target: { kind: "project", slug: "liveboard" }
+        },
+        {
+          label: "AIXC Compressor",
+          context: "Deterministic predictor-based binary archive format with C hot paths",
+          target: { kind: "project", slug: "aixc-compressor" }
+        }
+      ],
       items: [
         "Distributed systems",
         "Platform engineering",
@@ -1191,7 +1314,54 @@ export const profileContent: ProfileContent = {
     {
       title: "Range",
       summary:
-        "I’ve worked across enough layers to **connect product decisions to frontend state, backend APIs, data models, infrastructure, and developer experience**.",
+        "I’ve worked across enough layers—web, native mobile, backend services, data pipelines, cloud infrastructure, and compilers—that I can follow a problem all the way down instead of stopping at a team boundary.",
+      paragraphs: [
+        "My work has spanned a pretty wide stretch of software: C#/Xamarin, Java Android, and Objective-C iOS fleet and GPS tracking apps at Velocitor; HIPAA-aware cardiovascular mobile and Django systems at Incite Analytics; Java/Spring Boot pricing microservices at Lowe’s; consumer home-energy apps at Palmetto; and an AI-native infinite-canvas construction platform with computer vision and OCR at H2 Corporation.",
+        "That same curiosity drives my side projects. OJaml compiles an ML-family language with Hindley-Milner type inference straight to WebAssembly in the browser; Hearth is an Ableton Max for Live audio saturation plugin built in GenExpr DSP; Rengine is a custom TypeScript scene-graph and rendering engine; and JetStream is an installable React + NestJS weather PWA."
+      ],
+      evidence: [
+        {
+          label: "H2 Corporation · Staff FDE",
+          context: "Infinite-canvas React architecture + computer vision & OCR workflows",
+          target: {
+            kind: "experience",
+            slug: "h2-corporation-staff-forward-deployed-engineer"
+          }
+        },
+        {
+          label: "Velocitor · SWE Intern",
+          context: "Cross-platform C#/Xamarin alongside native Android & iOS code",
+          target: { kind: "experience", slug: "velocitor-software-engineer-intern" }
+        },
+        {
+          label: "Incite Analytics · Full Stack",
+          context: "Patient-facing iOS/Android apps + HIPAA-aware Django backend",
+          target: {
+            kind: "experience",
+            slug: "incite-analytics-full-stack-developer"
+          }
+        },
+        {
+          label: "OJaml",
+          context: "OCaml-inspired compiler emitting WebAssembly + Monaco playground",
+          target: { kind: "project", slug: "ojaml" }
+        },
+        {
+          label: "Hearth",
+          context: "Audio saturation DSP plugin for Ableton Live built in GenExpr",
+          target: { kind: "project", slug: "hearth" }
+        },
+        {
+          label: "Rengine",
+          context: "Custom scene-graph, transform hierarchy & canvas/React renderer",
+          target: { kind: "project", slug: "rengine" }
+        },
+        {
+          label: "JetStream",
+          context: "Full-stack React + NestJS weather dashboard & offline PWA",
+          target: { kind: "project", slug: "jetstream" }
+        }
+      ],
       items: [
         "Frontend engineering",
         "Backend APIs",

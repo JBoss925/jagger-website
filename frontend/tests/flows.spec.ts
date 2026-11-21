@@ -76,7 +76,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     await expect(page).toHaveURL(/section=projects/);
     await expect(page).not.toHaveURL(/item=ojaml/);
     await expect(
-      page.getByRole("heading", { name: /Crafted systems/ }),
+      page.getByRole("heading", { name: /What I build/ }),
     ).toBeVisible();
   });
 
@@ -283,13 +283,13 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     await expect(page.locator(".glass-sheet")).toHaveCount(0);
     await expect(page).toHaveURL(/section=projects/);
     await expect(
-      page.getByRole("heading", { name: /Crafted systems/ }),
+      page.getByRole("heading", { name: /What I build/ }),
     ).toBeVisible();
 
     // Clicking brand returns to Experience landing
     await page.locator(".spatial-brand").click();
     await expect(
-      page.getByRole("heading", { name: /Staff engineering/ }),
+      page.getByRole("heading", { name: /Places I’ve built/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Experience", exact: true }),

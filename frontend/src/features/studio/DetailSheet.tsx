@@ -8,7 +8,8 @@ import {
 } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { papers } from "../../content/papers";
-import type { ProjectEntry } from "../../types/content";
+import { headshotAsset } from "../../content/profile";
+import type { ProjectEntry, SkillEvidenceLink } from "../../types/content";
 import { clean, summaries, views } from "./content";
 import {
   INTERNAL_DEMOS,
@@ -28,6 +29,7 @@ type DetailSheetProps = {
   onClose: () => void;
   onStep: (direction: -1 | 1) => void;
   onOpenResume?: () => void;
+  onNavigateTarget?: (target: SkillEvidenceLink["target"]) => void;
   titleId?: string;
   onDragHandlePointerDown?: (e: ReactPointerEvent<HTMLDivElement>) => void;
 };
@@ -44,6 +46,7 @@ export default function DetailSheet({
   onClose,
   onStep,
   onOpenResume,
+  onNavigateTarget,
   titleId,
   onDragHandlePointerDown,
 }: DetailSheetProps) {
@@ -800,14 +803,43 @@ export default function DetailSheet({
           <div key={item.uid} className="glass-sheet__panel">
             {item.payload.about.kind === "bio" && (
               <>
+                <div className="sheet-bio-hero">
+                  <img
+                    src={headshotAsset}
+                    alt="Jagger Brulato"
+                    className="sheet-bio-avatar"
+                  />
+                  <div>
+                    <strong className="sheet-bio-name">Jagger Brulato</strong>
+                    <span className="sheet-bio-role">
+                      Staff Forward-Deployed Engineer · H2 Corporation
+                    </span>
+                  </div>
+                </div>
                 <p className="sheet-lead">{item.payload.about.body[0]}</p>
                 <div className="sheet-metrics">
-                  {item.payload.about.metrics.map((m) => (
-                    <div key={m.label} className="sheet-metric">
-                      <span>{m.label}</span>
-                      <strong>{m.value}</strong>
-                    </div>
-                  ))}
+                  {item.payload.about.metrics.map((m) =>
+                    m.label === "Start Here" && onNavigateTarget ? (
+                      <button
+                        key={m.label}
+                        type="button"
+                        className="sheet-metric sheet-metric--link"
+                        onClick={() =>
+                          onNavigateTarget({ kind: "project", slug: "ojaml" })
+                        }
+                      >
+                        <span>{m.label}</span>
+                        <strong>
+                          {m.value} <em aria-hidden="true">→</em>
+                        </strong>
+                      </button>
+                    ) : (
+                      <div key={m.label} className="sheet-metric">
+                        <span>{m.label}</span>
+                        <strong>{m.value}</strong>
+                      </div>
+                    ),
+                  )}
                 </div>
                 <ul className="sheet-highlights">
                   {item.payload.about.body.slice(1).map((line) => (
@@ -843,9 +875,59 @@ export default function DetailSheet({
 
             {item.payload.about.kind === "skill" && (
               <>
-                <p className="sheet-lead">
-                  {clean(item.payload.about.cluster.summary)}
-                </p>
+                {clean(item.payload.about.cluster.summary).trim() !==
+                  item.subtitle.trim() && (
+                  <p className="sheet-lead">
+                    {clean(item.payload.about.cluster.summary)}
+                  </p>
+                )}
+
+                {!!item.payload.about.cluster.paragraphs?.length && (
+                  <div className="sheet-skill-story">
+                    {item.payload.about.cluster.paragraphs.map((para, idx) => (
+                      <p
+                        key={para}
+                        className={idx === 0 ? "sheet-lead" : "sheet-copy"}
+                      >
+                        {clean(para)}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {!!item.payload.about.cluster.evidence?.length && (
+                  <section className="sheet-block">
+                    <h3>Where I’ve done this</h3>
+                    <div className="sheet-evidence-list" role="list">
+                      {item.payload.about.cluster.evidence.map((ev) => (
+                        <button
+                          key={`${ev.target.kind}:${ev.target.slug}`}
+                          type="button"
+                          className="sheet-evidence-row"
+                          role="listitem"
+                          onClick={() => onNavigateTarget?.(ev.target)}
+                        >
+                          <span className="sheet-evidence-row__badge">
+                            {ev.target.kind === "experience"
+                              ? "Experience"
+                              : "Project"}
+                          </span>
+                          <span className="sheet-evidence-row__text">
+                            <strong>{ev.label}</strong>
+                            <small>{ev.context}</small>
+                          </span>
+                          <span
+                            className="sheet-evidence-row__arrow"
+                            aria-hidden="true"
+                          >
+                            →
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
                 <section className="sheet-block">
                   <h3>Core strengths</h3>
                   <ul className="sheet-tags">

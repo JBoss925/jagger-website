@@ -13,6 +13,7 @@ import DetailSheet from "./DetailSheet";
 import MobilePortfolio from "./MobilePortfolio";
 import SpatialStage, { type ProjectedLabelMap } from "./SpatialStage";
 import { soundEngine } from "./soundEngine";
+import type { SkillEvidenceLink } from "../../types/content";
 import {
   SECTIONS,
   categories,
@@ -313,6 +314,25 @@ export default function StudioPage() {
     setResumeOpen(false);
   }, []);
 
+  const handleNavigateTarget = useCallback(
+    (target: SkillEvidenceLink["target"]) => {
+      const nextSection: SectionId =
+        target.kind === "experience" ? "experience" : "projects";
+      const idx = SECTIONS.findIndex((s) => s.id === nextSection);
+      soundEngine.playSectionTransition(Math.max(0, idx));
+      setHoveredSlug(null);
+      setTheaterOpen(false);
+      setResumeOpen(false);
+      updateParams({
+        section: nextSection === "experience" ? null : nextSection,
+        category: null,
+        item: target.slug,
+        tab: null,
+      });
+    },
+    [updateParams],
+  );
+
   const handleCategoryChange = useCallback(
     (nextCategory: CategoryId) => {
       if (nextCategory === category && !selected) return;
@@ -432,6 +452,7 @@ export default function StudioPage() {
         onOpenContact={handleOpenContact}
         onOpenResume={handleOpenResume}
         onCloseResume={handleCloseResume}
+        onNavigateTarget={handleNavigateTarget}
       />
     );
   }
@@ -652,7 +673,9 @@ export default function StudioPage() {
           )}
 
           <p className="spatial-hero__desc">
-            {hoveredItem ? hoveredItem.subtitle : sectionConfig.description}
+            {hoveredItem
+              ? (hoveredItem.hoverDescription ?? hoveredItem.subtitle)
+              : sectionConfig.description}
           </p>
         </section>
 
@@ -732,6 +755,7 @@ export default function StudioPage() {
               onClose={handleClose}
               onStep={handleStep}
               onOpenResume={handleOpenResume}
+              onNavigateTarget={handleNavigateTarget}
             />
           </div>
         )}

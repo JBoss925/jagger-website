@@ -13,15 +13,25 @@ test("base route starts on Experience and switches cleanly to Projects with cate
   await page.goto("/");
   await enterStudio(page);
   await expect(
-    page.getByRole("heading", { name: /Staff engineering/ }),
+    page.getByRole("heading", { name: /Places I’ve built/ }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Experience", exact: true }),
   ).toHaveAttribute("aria-current", "page");
 
+  // Hovering an Experience item displays its full summary sentence in the hero blurb
+  await page
+    .locator(
+      '[data-dock-item="h2-corporation-staff-forward-deployed-engineer"]',
+    )
+    .hover();
+  await expect(page.locator(".spatial-hero__desc")).toContainText(
+    /AI-native construction platform/,
+  );
+
   await page.getByRole("button", { name: "Projects", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: /Crafted systems/ }),
+    page.getByRole("heading", { name: /What I build/ }),
   ).toBeVisible();
   await expect(page.locator("[data-dock-item]")).toHaveCount(13);
   await expect(page.locator("[data-spatial-item]")).toHaveCount(13);
@@ -70,6 +80,7 @@ test("selecting a project retracts hero, opens Liquid Glass sheet, and syncs bro
 });
 
 test("all five sections unify in the shared spatial stage", async ({ page }) => {
+  test.slow();
   await page.goto("/");
   await enterStudio(page);
 
@@ -85,17 +96,25 @@ test("all five sections unify in the shared spatial stage", async ({ page }) => 
 
   // Demos
   await page.getByRole("button", { name: "Demos", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /Press play/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Don’t take my word/ })).toBeVisible();
   await expect(page.locator("[data-dock-item]")).toHaveCount(7);
 
   // Library
   await page.getByRole("button", { name: "Library", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: /The architecture/ }),
+    page.getByRole("heading", { name: /How I built them/ }),
   ).toBeVisible();
   await expect(page.locator("[data-dock-item]")).toHaveCount(8);
 
-  // About (includes Portfolio Views)
+  // About (includes Portfolio Views + rich evidence-linked skill cards)
+  await page.getByRole("button", { name: "About", exact: true }).click();
+  await page.locator('[data-dock-item="team"]').click();
+  await expect(page.locator(".sheet-evidence-row")).toHaveCount(5);
+  await page.locator(".sheet-evidence-row").first().click();
+  await expect(
+    page.getByRole("complementary", { name: "H2 Corporation inspector" }),
+  ).toBeVisible();
+
   await page.getByRole("button", { name: "About", exact: true }).click();
   await page.locator('[data-dock-item="portfolio-views"]').click();
   await expect(
@@ -147,18 +166,27 @@ test("demos and library open in slim full-viewport theater without redundant hea
   ).toBeVisible();
 });
 
-test("mobile editorial fallback starts on Experience and opens full-width bottom drawer", async ({
+test("mobile editorial fallback uses compact Work tab without clipping even at 320px and opens full-width bottom drawer", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 320, height: 740 });
   await page.goto("/");
 
+  const navBtns = page
+    .getByRole("navigation", { name: "Portfolio sections" })
+    .locator("button");
+  await expect(navBtns).toHaveCount(5);
+  await expect(navBtns.first()).toHaveText("Work");
+  // Every mobile tab label fits comfortably inside its own bubble even at 320px width!
+  const anyClipped = await navBtns.evaluateAll((els) =>
+    els.some((el) => el.scrollWidth > el.clientWidth + 1),
+  );
+  expect(anyClipped).toBe(false);
+
+  await page.setViewportSize({ width: 390, height: 844 });
   await expect(
-    page.getByRole("navigation", { name: "Portfolio sections" }).locator("button"),
-  ).toHaveCount(5);
-  await expect(
-    page.getByRole("heading", { name: /Staff engineering/ }),
+    page.getByRole("heading", { name: /Places I’ve built/ }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

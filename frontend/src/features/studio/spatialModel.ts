@@ -110,6 +110,7 @@ export type SpatialItem = {
   title: string;
   shortLabel: string;
   subtitle: string;
+  hoverDescription?: string;
   eyebrow: string;
   formation: FormationKind;
   isLibraryVolume?: boolean;
@@ -130,73 +131,51 @@ export type SectionConfig = {
   ringScale: number;
 };
 
-export const SECTIONS: SectionConfig[] = [
-  {
-    id: "experience",
+const SECTION_STAGE_DEFAULTS: Record<
+  SectionId,
+  { label: string; cameraPosition: [number, number, number]; ringScale: number }
+> = {
+  experience: {
     label: "Experience",
-    eyebrowBase: "CAREER ARC · 2016 — PRESENT",
-    headlineTop: "Staff engineering",
-    headlineAccent: "across the stack.",
-    description:
-      "From Google distributed data pipelines to AI-native construction systems at H2 Corporation.",
-    mobileDescription:
-      "From Google distributed data pipelines to AI-native construction systems at H2 Corporation.",
     cameraPosition: [0, 0.35, 13.6],
     ringScale: 0.92,
   },
-  {
-    id: "projects",
+  projects: {
     label: "Projects",
-    eyebrowBase: "SELECTED WORK",
-    headlineTop: "Crafted systems,",
-    headlineAccent: "made tactile.",
-    description:
-      "Languages, engines, audio DSP, and collaborative tools — each assembled from living geometry.",
-    mobileDescription:
-      "Languages, engines, audio DSP, and collaborative tools — with interactive demos and technical writing.",
     cameraPosition: [0, 0.1, 14.0],
     ringScale: 1,
   },
-  {
-    id: "demos",
+  demos: {
     label: "Demos",
-    eyebrowBase: "INTERACTIVE LAB",
-    headlineTop: "Press play on",
-    headlineAccent: "the ideas.",
-    description:
-      "Compilers, physics evolution, rendering engines, and daily games — runnable right here.",
-    mobileDescription:
-      "Compilers, physics evolution, rendering engines, and daily games — ready to launch.",
     cameraPosition: [0, 0.15, 12.8],
     ringScale: 0.86,
   },
-  {
-    id: "library",
+  library: {
     label: "Library",
-    eyebrowBase: "PAPERS & DOCUMENTATION",
-    headlineTop: "The architecture,",
-    headlineAccent: "written down.",
-    description:
-      "Technical papers paired directly with structured guides, references, and specifications.",
-    mobileDescription:
-      "Technical papers paired directly with structured guides, references, and specifications.",
     cameraPosition: [0, 0.25, 13.2],
     ringScale: 0.9,
   },
-  {
-    id: "about",
+  about: {
     label: "About",
-    eyebrowBase: "JAGGER BRULATO · STAFF ENGINEER",
-    headlineTop: "Close to the code.",
-    headlineAccent: "Built to last.",
-    description:
-      "How I work, what I build, four alternate portfolio frontends, and how to reach me.",
-    mobileDescription:
-      "How I work, what I build, four alternate portfolio frontends, and how to reach me.",
     cameraPosition: [0, 0.2, 12.4],
     ringScale: 0.82,
   },
-];
+};
+
+export const SECTIONS: SectionConfig[] = profileContent.sectionCopy.map((copy) => {
+  const stage = SECTION_STAGE_DEFAULTS[copy.id];
+  return {
+    id: copy.id,
+    label: stage.label,
+    eyebrowBase: copy.eyebrow,
+    headlineTop: copy.headlineTop,
+    headlineAccent: copy.headlineAccent,
+    description: copy.description,
+    mobileDescription: copy.mobileDescription,
+    cameraPosition: stage.cameraPosition,
+    ringScale: stage.ringScale,
+  };
+});
 
 export const INTERNAL_DEMOS = new Set([
   "/ojaml",
@@ -402,6 +381,7 @@ export function getItemsForSection(
             ? `${exp.company.replace("Cornell Design & Tech Initiative", "Cornell DTI")} · ${shortRole}`
             : exp.company,
           subtitle: `${exp.role} · ${exp.timeframe}`,
+          hoverDescription: clean(exp.summary),
           eyebrow: `${exp.timeframe} · ${exp.location.toUpperCase()}`,
           formation: EXPERIENCE_FORMATION[exp.slug] ?? "exp-h2-construction",
           palette: EXPERIENCE_PALETTES[index % EXPERIENCE_PALETTES.length],
@@ -487,8 +467,8 @@ export function getItemsForSection(
         kind: "about",
         about: {
           kind: "bio",
-          eyebrow: "ABOUT JAGGER",
-          headline: "Across the stack. Close to the craft.",
+          eyebrow: "ABOUT ME",
+          headline: "A little bit about how I work.",
           body: [
             clean(profileContent.heroSummary),
             ...profileContent.heroBullets.map(clean),
@@ -504,8 +484,8 @@ export function getItemsForSection(
       section: "about",
       title: "Portfolio Views",
       shortLabel: "Portfolio Views",
-      subtitle: "Four distinct frontends built around the same body of work.",
-      eyebrow: "FRONTEND GALLERY · 04 VIEWS",
+      subtitle: "Four other frontends I built on top of the same portfolio data.",
+      eyebrow: "OTHER VIEWS · 04 FRONTENDS",
       formation: "portfolio-viewports",
       palette: {
         primary: "#9a72dd",
@@ -518,9 +498,9 @@ export function getItemsForSection(
         kind: "about",
         about: {
           kind: "views",
-          eyebrow: "ONE PORTFOLIO · FOUR PERSPECTIVES",
-          headline: "Alternate frontends.",
-          body: "Beyond this spatial glass workspace, the same shared portfolio data powers four distinct frontend experiences — including the original Interactive 3D homepage, an editorial Design edition, an IDE-style Editor, and a Finance terminal.",
+          eyebrow: "SAME DATA · FOUR DIFFERENT APPS",
+          headline: "Other ways to browse this site.",
+          body: "I kept wondering what the exact same portfolio data would feel like as completely different apps. Alongside this main site, the shared content also powers my original Interactive 3D backdrop, an editorial Design edition, a code Editor, and a Finance terminal.",
           views,
         },
       },
@@ -613,9 +593,9 @@ export function getItemsForSection(
         kind: "about",
         about: {
           kind: "contact",
-          eyebrow: "LET'S BUILD SOMETHING",
+          eyebrow: "SAY HELLO",
           headline: "Reach out directly.",
-          body: "If you need a staff engineer who can set technical direction, stay close to the code, and ship thoughtful products end to end, email is the fastest way to reach me.",
+          body: "Email is usually the fastest way to reach me. If you’re looking for a staff engineer who still wants to stay in the code—or just want to talk about compilers, platforms, or product work—send a note.",
           email: profileContent.email,
           links: profileContent.links,
         },

@@ -17,6 +17,7 @@ import {
 } from "./spatialModel";
 import { soundEngine } from "./soundEngine";
 import DetailSheet from "./DetailSheet";
+import type { SkillEvidenceLink } from "../../types/content";
 
 type MobilePortfolioProps = {
   section: SectionId;
@@ -34,6 +35,7 @@ type MobilePortfolioProps = {
   onOpenContact: () => void;
   onOpenResume: () => void;
   onCloseResume: () => void;
+  onNavigateTarget: (target: SkillEvidenceLink["target"]) => void;
 };
 
 /**
@@ -56,6 +58,7 @@ export default function MobilePortfolio({
   onOpenContact,
   onOpenResume,
   onCloseResume,
+  onNavigateTarget,
 }: MobilePortfolioProps) {
   const cfg = getSectionConfig(section);
   const selectedIndex = selected
@@ -181,7 +184,7 @@ export default function MobilePortfolio({
               aria-current={section === s.id ? "page" : undefined}
               onClick={() => onSectionChange(s.id)}
             >
-              {s.label}
+              {s.id === "experience" ? "Work" : s.label}
             </button>
           ))}
         </nav>
@@ -438,6 +441,7 @@ export default function MobilePortfolio({
               onClose={dismissDrawerAnimated}
               onStep={onStep}
               onOpenResume={onOpenResume}
+              onNavigateTarget={onNavigateTarget}
               titleId="mobile-drawer-title"
               onDragHandlePointerDown={handleDragStart}
             />
