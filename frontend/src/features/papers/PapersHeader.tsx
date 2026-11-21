@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type PapersHeaderProps = {
   documentation?: boolean;
@@ -24,6 +24,11 @@ function PapersHeader({
 }: PapersHeaderProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const controlsId = useId();
+  const location = useLocation();
+
+  if (new URLSearchParams(location.search).get("embed") === "1") {
+    return null;
+  }
 
   return (
     <header
@@ -73,6 +78,7 @@ function PapersHeader({
       </button>
 
       <div className="papers-header__tools" id={controlsId}>
+        <nav className="library-reader-nav" aria-label="Library navigation"><Link to="/" target={window.self!==window.top?"_top":undefined}>Home</Link><Link to="/library">Library</Link><Link to="/docs">Docs</Link></nav>
         {onQueryChange ? (
           <form
             className="papers-search"

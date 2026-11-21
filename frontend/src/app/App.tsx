@@ -8,6 +8,9 @@ import JinxPage from "../features/games/JinxPage";
 import JudokuPage from "../features/games/JudokuPage";
 import JigsawPage from "../features/games/JigsawPage";
 
+const StudioPage = lazy(() => import("../features/studio/StudioPage"));
+const MuseumPage = lazy(() => import("../features/studio/MuseumPage"));
+const LibraryPage = lazy(() => import("../features/studio/LibraryPage"));
 const HomePage = lazy(() => import("../features/home/HomePage"));
 const JaggerScriptPage = lazy(
   () => import("../features/jaggerscript/JaggerScriptPage")
@@ -47,7 +50,10 @@ function App() {
   return (
     <Suspense fallback={<RouteLoading />}>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<StudioPage />} />
+        <Route path="/museum" element={<MuseumPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/views/interactive-3d" element={<HomePage />} />
         <Route path="/jaggerscript" element={<JaggerScriptPage />} />
         <Route path="/ojaml" element={<OJamlRoute />} />
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />

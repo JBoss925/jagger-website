@@ -5,11 +5,11 @@ const storageKey = "jagger-papers-theme";
 export function usePapersTheme() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     if (typeof window === "undefined") {
-      return "dark";
+      return "light";
     }
 
     const storedTheme = window.localStorage.getItem(storageKey);
-    return storedTheme === "light" ? "light" : "dark";
+    return storedTheme === "dark" ? "dark" : "light";
   });
 
   useEffect(() => {

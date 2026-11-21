@@ -18,8 +18,12 @@ export default function DocsHeader({
 }: DocsHeaderProps) {
   const [expanded, setExpanded] = useState(false);
   const controlsId = useId();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   useEffect(() => setExpanded(false), [pathname]);
+
+  if (new URLSearchParams(search).get("embed") === "1") {
+    return null;
+  }
 
   return (
     <header
@@ -78,9 +82,10 @@ export default function DocsHeader({
       </button>
       <div className="docs-header__controls" id={controlsId}>
         <nav aria-label="Documentation navigation">
+          <NavLink to="/library">Library</NavLink>
           <NavLink to="/docs">All docs</NavLink>
           <NavLink to="/papers">Papers</NavLink>
-          <NavLink to="/" end>
+          <NavLink to="/" end target={window.self!==window.top?"_top":undefined}>
             Home
           </NavLink>
         </nav>

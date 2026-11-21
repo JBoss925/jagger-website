@@ -1,6 +1,10 @@
 # Jagger Website
 
-Personal portfolio site for Jagger Brulato. The site combines a Three.js homepage, project demos, technical papers, and embedded integrations for OJaml, JaggerScript, GeneticTS, Rengine, and Jagger Games.
+Personal portfolio site for Jagger Brulato. The main desktop experience is a unified Apple Liquid Glass spatial portfolio built around a shared GPU-instanced swarm of 120 beveled crystal cubes across **Projects**, **Experience**, **Demos**, **Library**, and **About**. Switching sections or selecting any item triggers a GameCube-inspired staggered 3D wave that re-assembles the cubes into a bespoke animation tailored directly to that project, role, or paper, paired with subtle Web Audio glass chimes and a sliding frosted-glass detail sheet. Opening an interactive demo or reading a paper/documentation expands cleanly into a full theater view; narrow viewports switch automatically to a calm, traditional editorial mobile layout with a full-width swipe-down bottom drawer.
+
+Section, category, item, and tab state live in URL parameters (for example `/?section=library&item=ojaml` or `/?category=languages&item=jaggerscript`). Browser Back and refresh restore the current exploration, and legacy `#projects/...` and `#experience/...` hashes migrate seamlessly.
+
+The original spatial homepage is preserved at `/views/interactive-3d`. The Portfolio Views project includes it alongside the independently deployed Design, Editor, and Finance frontends. `/library` groups every project with its papers, documentation, demos, downloads, and source links. Reduced-motion preferences are honored automatically and the portfolio remains navigable without WebGL.
 
 ## Tech Stack
 
@@ -111,6 +115,7 @@ The Playwright command expects the local browser/runtime dependencies used by th
 
 - Shared homepage profile/projects: `shared/content/profile.ts` (the original frontend keeps a compatibility re-export)
 - Papers index and paper metadata: `frontend/src/content/papers/`
+- Main portfolio and Library: `frontend/src/features/studio/`
 - Global visual styling: `frontend/src/styles/global.css`
 - Route implementations: `frontend/src/features/`
 

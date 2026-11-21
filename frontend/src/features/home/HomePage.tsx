@@ -68,7 +68,7 @@ function HomePage() {
   const isPageReady = usePageReveal();
   const hasSyncedSectionUrl = useRef(false);
   const initialHashPending = useRef(
-    location.pathname === "/" && Boolean(location.hash || window.location.hash)
+    location.pathname === "/views/interactive-3d" && Boolean(location.hash || window.location.hash)
   );
   const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
   const nextSectionId =
@@ -88,7 +88,7 @@ function HomePage() {
 
   function scrollToSection(targetId: string) {
     if (targetId === "hero") {
-      window.history.replaceState(null, "", "/#hero");
+      window.history.replaceState(null, "", "/views/interactive-3d#hero");
       window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
       return;
     }
@@ -98,7 +98,7 @@ function HomePage() {
       return;
     }
 
-    window.history.replaceState(null, "", `/#${targetId}`);
+    window.history.replaceState(null, "", `/views/interactive-3d#${targetId}`);
 
     const top = Math.max(
       0,
@@ -152,13 +152,13 @@ function HomePage() {
   }
 
   useLayoutEffect(() => {
-    if (location.pathname === "/" && !location.hash) {
+    if (location.pathname === "/views/interactive-3d" && !location.hash) {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [location.pathname, location.hash]);
 
   useLayoutEffect(() => {
-    if (location.pathname !== "/") {
+    if (location.pathname !== "/views/interactive-3d") {
       initialHashPending.current = false;
       return;
     }
@@ -179,7 +179,7 @@ function HomePage() {
   }, [isPageReady, location.hash, location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
-    if (location.pathname !== "/") {
+    if (location.pathname !== "/views/interactive-3d") {
       return;
     }
 
@@ -196,7 +196,7 @@ function HomePage() {
   }, [location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
-    if (location.pathname !== "/") {
+    if (location.pathname !== "/views/interactive-3d") {
       hasSyncedSectionUrl.current = false;
       return;
     }
@@ -206,7 +206,7 @@ function HomePage() {
       return;
     }
 
-    window.history.replaceState(null, "", `/#${activeSectionId}`);
+    window.history.replaceState(null, "", `/views/interactive-3d#${activeSectionId}`);
   }, [activeSectionId, location.pathname]);
 
   return (
@@ -216,7 +216,7 @@ function HomePage() {
         activeSectionId={activeSectionId}
         useStaticScene={useStaticScene}
       />
-      <SiteNavigation
+      <SiteNavigation brandHref="/views/interactive-3d"
         sections={profileContent.sceneSections}
         activeSectionId={activeSectionId}
         onSectionNavigate={scrollToSection}
@@ -236,6 +236,7 @@ function HomePage() {
                 ))}
               </ul>
               <div className="hero-panel__view-links" aria-label="Alternate portfolio views">
+                <a className="hero-panel__quick-link hero-panel__view-link" href="/">Main portfolio ↗</a>
                 <a
                   className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--editor"
                   href={editorSiteHref()}

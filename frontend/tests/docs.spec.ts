@@ -32,11 +32,13 @@ test("documentation projects, search, and narrative links", async ({
       );
     expect(links.length).toBeGreaterThanOrEqual(4);
     for (const link of links) {
-      await page.goto(link);
-      await expect(page.locator(".docs-article h1")).toBeVisible();
-      await expect(
-        page.getByText("Documentation page not found", { exact: true }),
-      ).toHaveCount(0);
+      await test.step(`Read ${link}`, async () => {
+        await page.goto(link);
+        await expect(page.locator(".docs-article h1")).toBeVisible();
+        await expect(
+          page.getByText("Documentation page not found", { exact: true }),
+        ).toHaveCount(0);
+      });
     }
   }
   await page.goto("/docs");
@@ -64,7 +66,7 @@ test("mobile docs, themes, images, and visual flow", async ({ page }) => {
   await page.getByRole("button", { name: "Expand docs controls" }).click();
   await expect(page.locator(".docs-header .docs-sidebar")).toBeVisible();
   await page.getByRole("button", { name: /Switch to .* mode/ }).click();
-  await expect(page.locator(".papers-page")).toHaveClass(/papers-page--light/);
+  await expect(page.locator(".papers-page")).toHaveClass(/papers-page--dark/);
   await page.goto("/docs/hearth");
   await page.locator(".paper-device-figure__image-button").click();
   await expect(page.getByRole("dialog")).toBeVisible();

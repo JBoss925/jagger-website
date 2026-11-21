@@ -4,84 +4,81 @@ import { profileContent } from "../../content/profile";
 import HomePage from "./HomePage";
 
 vi.mock("./SceneBackdrop", () => ({
-  default: () => <div data-testid="scene-backdrop" aria-hidden="true" />
+  default: () => <div data-testid="scene-backdrop" aria-hidden="true" />,
 }));
 
 describe("HomePage", () => {
   beforeEach(() => {
-    window.history.replaceState(null, "", "/");
+    window.history.replaceState(null, "", "/views/interactive-3d");
   });
 
   it("renders the hero and key project sections", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={["/views/interactive-3d"]}>
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(
-      screen.getByRole("heading", { name: /Jagger Brulato/i })
+      screen.getByRole("heading", { name: /Jagger Brulato/i }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("scene-backdrop")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /The projects show how I build outside of work/i })
+      screen.getByRole("heading", {
+        name: /The projects show how I build outside of work/i,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen
-        .getByLabelText("Profile links")
-        .querySelectorAll("a")
+      screen.getByLabelText("Profile links").querySelectorAll("a"),
     ).toHaveLength(4);
     expect(
-      Array.from(screen.getByLabelText("Profile links").querySelectorAll("a")).map((link) =>
-        link.textContent
-      )
+      Array.from(
+        screen.getByLabelText("Profile links").querySelectorAll("a"),
+      ).map((link) => link.textContent),
     ).toEqual(["GitHub", "LinkedIn", "Resume", "Email"]);
-    expect(screen.getAllByRole("link", { name: "LinkedIn" })[0]).toHaveAttribute(
-      "href",
-      "https://www.linkedin.com/in/jaggerbrulato/"
-    );
+    expect(
+      screen.getAllByRole("link", { name: "LinkedIn" })[0],
+    ).toHaveAttribute("href", "https://www.linkedin.com/in/jaggerbrulato/");
     expect(screen.getAllByRole("link", { name: "GitHub" })[0]).toHaveAttribute(
       "href",
-      "https://github.com/JBoss925"
+      "https://github.com/JBoss925",
     );
     expect(screen.getAllByRole("link", { name: "Resume" })[0]).toHaveAttribute(
       "href",
-      "/files/resume.pdf"
+      "/files/resume.pdf",
     );
     expect(screen.getAllByRole("link", { name: "Email" })[0]).toHaveAttribute(
       "href",
-      "mailto:jagger@jaggerbrulato.com"
+      "mailto:jagger@jaggerbrulato.com",
     );
     expect(
-      screen.getByRole("heading", { name: /^JaggerScript$/i })
+      screen.getByRole("heading", { name: /^JaggerScript$/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Product")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Start Here\s*OJaml/i })).toHaveAttribute(
-      "href",
-      "/ojaml"
-    );
+    expect(
+      screen.getByRole("link", { name: /Start Here\s*OJaml/i }),
+    ).toHaveAttribute("href", "/ojaml");
     expect(
       screen.getByRole("heading", {
         name: /I lead by making the work clear and staying involved in the implementation/i,
-      })
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Leadership" })).toHaveAttribute(
       "href",
-      "#leadership"
+      "/views/interactive-3d#leadership",
     );
     expect(screen.getAllByRole("link", { name: "Email" })).toHaveLength(2);
-    expect(screen.getByRole("link", { name: /Email me directly/i })).toHaveAttribute(
-      "href",
-      "mailto:jagger@jaggerbrulato.com"
-    );
+    expect(
+      screen.getByRole("link", { name: /Email me directly/i }),
+    ).toHaveAttribute("href", "mailto:jagger@jaggerbrulato.com");
     expect(screen.getByText(profileContent.email)).toBeInTheDocument();
     expect(
       screen
         .getAllByRole("link", { name: /Open Demo/i })
-        .some((link) => link.getAttribute("href") === "/rengine")
+        .some((link) => link.getAttribute("href") === "/rengine"),
     ).toBe(true);
     expect(
-      screen.getByRole("button", { name: /Go to|Return to top/i })
+      screen.getByRole("button", { name: /Go to|Return to top/i }),
     ).toBeInTheDocument();
   });
 
@@ -95,9 +92,9 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#projects"]}>
+      <MemoryRouter initialEntries={["/views/interactive-3d#projects"]}>
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -121,9 +118,13 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#experience/red-ventures-platform-engineer"]}>
+      <MemoryRouter
+        initialEntries={[
+          "/views/interactive-3d#experience/red-ventures-platform-engineer",
+        ]}
+      >
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -147,9 +148,11 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#projects/jaggerscript"]}>
+      <MemoryRouter
+        initialEntries={["/views/interactive-3d#projects/jaggerscript"]}
+      >
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -173,9 +176,9 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/"]}>
+      <MemoryRouter initialEntries={["/views/interactive-3d"]}>
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
@@ -197,9 +200,9 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/"]}>
+      <MemoryRouter initialEntries={["/views/interactive-3d"]}>
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     scrollTo.mockClear();
@@ -224,9 +227,9 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#hero"]}>
+      <MemoryRouter initialEntries={["/views/interactive-3d#hero"]}>
         <HomePage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {

@@ -16,7 +16,7 @@ type SiteNavigationProps = {
 };
 
 function sectionHref(pathname: string, sectionId: string) {
-  return pathname === "/" ? `#${sectionId}` : `/#${sectionId}`;
+  return pathname === "/views/interactive-3d" ? `/views/interactive-3d#${sectionId}` : `/#${sectionId}`;
 }
 
 function SiteNavigation({
@@ -30,6 +30,7 @@ function SiteNavigation({
   showActions = true
 }: SiteNavigationProps) {
   const location = useLocation();
+  const isEmbedded = new URLSearchParams(location.search).get("embed") === "1";
   const isMobileMenuViewport = useMediaQuery("(max-width: 768px)");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuId = useId();
@@ -57,7 +58,7 @@ function SiteNavigation({
     event: MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
-    if (!onSectionNavigate || location.pathname !== "/") {
+    if (!onSectionNavigate || location.pathname !== "/views/interactive-3d") {
       return;
     }
 
@@ -79,14 +80,18 @@ function SiteNavigation({
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setIsMenuOpen(false);
 
-    if (location.pathname !== brandHref || brandHref !== "/") {
+    if (location.pathname !== brandHref || brandHref !== "/views/interactive-3d") {
       return;
     }
 
     event.preventDefault();
-    window.history.replaceState(null, "", "/#hero");
+    window.history.replaceState(null, "", "/views/interactive-3d#hero");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (isEmbedded) {
+    return null;
+  }
 
   return (
     <div
@@ -143,7 +148,7 @@ function SiteNavigation({
             {resolvedNavLinks.map((item) => {
               const isSectionLink = !navLinks;
               const isActive = isSectionLink
-                ? activeSectionId === item.id && location.pathname === "/"
+                ? activeSectionId === item.id && location.pathname === "/views/interactive-3d"
                 : location.pathname === item.href ||
                   (!!item.matchPrefix && location.pathname.startsWith(item.matchPrefix));
 

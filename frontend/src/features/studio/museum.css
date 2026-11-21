@@ -1,0 +1,548 @@
+/* ==========================================================================
+   Hidden Sculpture Museum Route (`/museum`) — Apple Liquid Glass Curator UI
+   ========================================================================== */
+
+.museum-blind-stage {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 46% 38%, #f8f4ff 0%, #f1eafd 55%, #eae1fa 100%);
+}
+
+.museum-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  background: radial-gradient(circle at 60% 35%, #f9f6ff 0%, #f0e8fd 55%, #e8defa 100%);
+  color: #1f1938;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.museum-shell :where(button) {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  transform: none;
+}
+
+.museum-shell :where(button):hover {
+  transform: none;
+}
+
+.museum-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(28px) saturate(185%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%);
+  border-right: 1px solid rgba(145, 118, 198, 0.22);
+  box-shadow: 8px 0 32px -12px rgba(64, 38, 118, 0.1);
+  z-index: 2;
+}
+
+.museum-sidebar__head {
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid rgba(145, 118, 198, 0.16);
+}
+
+.museum-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.museum-back {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6742b8;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(114, 78, 194, 0.1);
+}
+
+.museum-back:hover {
+  background: rgba(114, 78, 194, 0.18);
+}
+
+.museum-count {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b6188;
+}
+
+.museum-sidebar__head h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.museum-sidebar__head p {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #5b5178;
+}
+
+.museum-sidebar__head kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 11px;
+  background: rgba(114, 78, 194, 0.12);
+  color: #5532a6;
+  font-weight: 600;
+}
+
+.museum-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(145, 118, 198, 0.28);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  color: #1f1938;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.museum-search:focus {
+  border-color: #7c56d6;
+  box-shadow: 0 0 0 3px rgba(124, 86, 214, 0.16);
+}
+
+.museum-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.museum-filters button {
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #574d75;
+  background: rgba(145, 118, 198, 0.1);
+  transition: background 0.15s, color 0.15s;
+}
+
+.museum-filters button.is-selected {
+  background: linear-gradient(135deg, #8660d8, #633eb5);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.museum-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px 28px;
+}
+
+.museum-group {
+  margin-bottom: 18px;
+}
+
+.museum-group__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 4px 6px 8px;
+}
+
+.museum-group__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+.museum-group__head h2 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #211a3b;
+}
+
+.museum-group__head small {
+  display: block;
+  font-size: 11px;
+  color: #70658f;
+  margin-top: 1px;
+}
+
+.museum-group__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.museum-item {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(145, 118, 198, 0.16);
+  transition: background 0.16s, border-color 0.16s, box-shadow 0.16s;
+}
+
+.museum-item:hover {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(124, 86, 214, 0.34);
+}
+
+.museum-item.is-selected {
+  background: #ffffff;
+  border-color: #7c56d6;
+  box-shadow: 0 8px 20px -6px rgba(90, 56, 168, 0.22);
+}
+
+.museum-item__num {
+  flex-shrink: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5b37b3;
+  background: rgba(124, 86, 214, 0.12);
+  padding: 3px 7px;
+  border-radius: 8px;
+}
+
+.museum-item.is-selected .museum-item__num {
+  background: linear-gradient(135deg, #8660d8, #633eb5);
+  color: #ffffff;
+}
+
+.museum-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.museum-item__name {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #211a3b;
+}
+
+.museum-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.museum-era {
+  font-size: 10.5px;
+  font-weight: 650;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(124, 86, 214, 0.12);
+  color: #5532a6;
+}
+
+.museum-era--bracket-winner,
+.museum-era--active {
+  background: rgba(32, 168, 128, 0.15);
+  color: #167a5c;
+}
+
+.museum-era--contender-a,
+.museum-era--contender-b {
+  background: rgba(59, 110, 232, 0.14);
+  color: #2651b8;
+}
+
+.museum-era--season-2 {
+  background: rgba(217, 70, 150, 0.14);
+  color: #a6266b;
+}
+
+.museum-era--season-3 {
+  background: rgba(124, 58, 237, 0.14);
+  color: #5b21b6;
+}
+
+.museum-badge,
+.museum-badge-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.museum-badge {
+  font-size: 10px;
+  padding: 2px 6.5px;
+  letter-spacing: 0.01em;
+}
+
+.museum-badge-lg {
+  font-size: 11px;
+  padding: 3px 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.museum-badge--active {
+  background: rgba(16, 163, 114, 0.17);
+  color: #0f7050;
+  border: 1px solid rgba(16, 163, 114, 0.32);
+}
+
+.museum-badge--user {
+  background: rgba(225, 29, 116, 0.14);
+  color: #b4175c;
+  border: 1px solid rgba(225, 29, 116, 0.28);
+}
+
+.museum-badge--ai {
+  background: rgba(217, 134, 16, 0.16);
+  color: #9a5804;
+  border: 1px solid rgba(217, 134, 16, 0.34);
+}
+
+.museum-era--past-v1,
+.museum-era--past-v2,
+.museum-era--past-v4,
+.museum-era--previous {
+  background: rgba(120, 108, 148, 0.14);
+  color: #5f547a;
+}
+
+.museum-score {
+  font-size: 10.5px;
+  color: #6b6088;
+}
+
+/* Right 3D Stage */
+.museum-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.museum-stage__toolbar {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  right: 22px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.museum-stage__badge,
+.museum-view-switch {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(185%);
+  box-shadow: 0 10px 26px -8px rgba(64, 38, 118, 0.14);
+  font-size: 13px;
+}
+
+.museum-code-pill {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8660d8, #633eb5);
+  color: #ffffff;
+}
+
+.museum-sep {
+  color: #9e93ba;
+}
+
+.museum-view-switch {
+  padding: 4px;
+  gap: 3px;
+}
+
+.museum-view-switch button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 550;
+  color: #5b5178;
+}
+
+.museum-view-switch button.is-selected {
+  background: linear-gradient(135deg, #8660d8, #633eb5);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.museum-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.museum-plinth-labels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 138px;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  padding: 0 8%;
+}
+
+.museum-plinth-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #6a5a94;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(145, 118, 198, 0.2);
+}
+
+.museum-plinth-label--large {
+  transform: translateX(-18%);
+}
+
+.museum-plinth-label--small {
+  transform: translateX(18%);
+}
+
+.museum-inspector {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 18px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 16px 36px -10px rgba(64, 38, 118, 0.16);
+}
+
+.museum-inspector__info {
+  min-width: 0;
+  flex: 1;
+}
+
+.museum-inspector__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.museum-era-lg {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(124, 86, 214, 0.14);
+  color: #5733ab;
+}
+
+.museum-score-lg {
+  font-size: 12px;
+  font-weight: 650;
+  color: #217a5e;
+}
+
+.museum-inspector__notes {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #2d2547;
+  line-height: 1.4;
+}
+
+.museum-inspector__blind {
+  margin: 0;
+  font-size: 12px;
+  color: #5d527a;
+}
+
+.museum-inspector__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.museum-nav-btn {
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(124, 86, 214, 0.1);
+  color: #4f2ea1;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.museum-nav-btn:hover {
+  background: rgba(124, 86, 214, 0.18);
+}
+
+.museum-copy-btn {
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8660d8, #633eb5);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -4px rgba(99, 62, 181, 0.45);
+}
+
+@media (max-width: 900px) {
+  .museum-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 46vh 54vh;
+  }
+  .museum-sidebar {
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgba(145, 118, 198, 0.22);
+  }
+  .museum-stage {
+    height: auto;
+  }
+}
