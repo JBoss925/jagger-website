@@ -29,7 +29,7 @@ export const views = [
   {
     title: "Interactive 3D",
     detail: "Spatial storytelling",
-    href: "/views/interactive-3d",
+    href: "https://interactive3d.jaggerbrulato.com",
     mark: "◇",
   },
   {

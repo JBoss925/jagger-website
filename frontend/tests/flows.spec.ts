@@ -156,7 +156,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     // External new-tab link still exists on every card
     await expect(
       page.getByRole("link", { name: "Open Interactive 3D in new tab" }),
-    ).toHaveAttribute("href", "/views/interactive-3d");
+    ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
     await expect(
       page.getByRole("link", { name: "Open Design in new tab" }),
     ).toHaveAttribute("href", "https://design.jaggerbrulato.com");
@@ -167,10 +167,10 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     const viewFrame = page.locator(
       'iframe[title="Interactive 3D portfolio view"]',
     );
-    await expect(viewFrame).toHaveAttribute("src", "/views/interactive-3d?embed=1");
+    await expect(viewFrame).toHaveAttribute("src", "https://interactive3d.jaggerbrulato.com");
     await expect(
       page.getByRole("link", { name: /Open full page/ }),
-    ).toHaveAttribute("href", "/views/interactive-3d");
+    ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
 
     // Switch live inside theater to Design -> Editor -> Finance
     await page.getByRole("button", { name: "Design", exact: true }).click();

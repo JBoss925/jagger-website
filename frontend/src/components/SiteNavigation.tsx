@@ -15,8 +15,8 @@ type SiteNavigationProps = {
   showActions?: boolean;
 };
 
-function sectionHref(pathname: string, sectionId: string) {
-  return pathname === "/views/interactive-3d" ? `/views/interactive-3d#${sectionId}` : `/#${sectionId}`;
+function sectionHref(sectionId: string) {
+  return `/#${sectionId}`;
 }
 
 function SiteNavigation({
@@ -39,7 +39,7 @@ function SiteNavigation({
     sections.map((section) => ({
       id: section.id,
       label: section.label,
-      href: sectionHref(location.pathname, section.id)
+      href: sectionHref(section.id)
     }));
 
   useEffect(() => {
@@ -58,7 +58,7 @@ function SiteNavigation({
     event: MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
-    if (!onSectionNavigate || location.pathname !== "/views/interactive-3d") {
+    if (!onSectionNavigate || location.pathname !== "/") {
       return;
     }
 
@@ -80,12 +80,11 @@ function SiteNavigation({
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setIsMenuOpen(false);
 
-    if (location.pathname !== brandHref || brandHref !== "/views/interactive-3d") {
+    if (location.pathname !== brandHref || brandHref !== "/") {
       return;
     }
 
     event.preventDefault();
-    window.history.replaceState(null, "", "/views/interactive-3d#hero");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -148,7 +147,7 @@ function SiteNavigation({
             {resolvedNavLinks.map((item) => {
               const isSectionLink = !navLinks;
               const isActive = isSectionLink
-                ? activeSectionId === item.id && location.pathname === "/views/interactive-3d"
+                ? activeSectionId === item.id && location.pathname === "/"
                 : location.pathname === item.href ||
                   (!!item.matchPrefix && location.pathname.startsWith(item.matchPrefix));
 

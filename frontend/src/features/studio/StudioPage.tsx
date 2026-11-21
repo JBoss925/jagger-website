@@ -262,7 +262,7 @@ export default function StudioPage() {
     document.title = selected
       ? `${selected.title} — Jagger Brulato`
       : section === "experience"
-        ? "Jagger Brulato — Spatial Portfolio"
+        ? "Jagger Brulato"
         : `${sectionConfig.label} — Jagger Brulato`;
   }, [selected, section, sectionConfig.label]);
 

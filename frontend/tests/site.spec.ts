@@ -100,7 +100,7 @@ test("all five sections unify in the shared spatial stage", async ({ page }) => 
   await page.locator('[data-dock-item="portfolio-views"]').click();
   await expect(
     page.getByRole("link", { name: /Interactive 3D/ }),
-  ).toHaveAttribute("href", "/views/interactive-3d");
+  ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
 });
 
 test("demos and library open in slim full-viewport theater without redundant headers", async ({
@@ -172,13 +172,13 @@ test("mobile editorial fallback starts on Experience and opens full-width bottom
   expect(box?.width).toBeCloseTo(390, 0);
   await expect(
     page.getByRole("link", { name: /Interactive 3D/ }),
-  ).toHaveAttribute("href", "/views/interactive-3d");
+  ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
 
   await page.getByRole("button", { name: "Close detail sheet" }).click();
   await expect(drawer).toHaveCount(0);
 });
 
-test("legacy deep links, standalone library, and original interactive 3D view remain available", async ({
+test("legacy deep links and standalone library remain available", async ({
   page,
 }) => {
   await page.goto("/#projects/jaggerscript");
@@ -197,11 +197,6 @@ test("legacy deep links, standalone library, and original interactive 3D view re
 
   await page.goto("/library");
   await expect(page.locator(".library-grid article")).toHaveCount(13);
-
-  await page.goto("/views/interactive-3d");
-  await expect(
-    page.getByRole("heading", { name: "Jagger Brulato", exact: true }),
-  ).toBeVisible();
 });
 
 test("papers and docs share the lavender dark accent theme", async ({

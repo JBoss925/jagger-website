@@ -2,6 +2,7 @@ import type { ProjectEntry } from "../types/content";
 import CardDisclosure from "./CardDisclosure";
 import { getLinkToneClass, inferChipTone, sortChipLabels } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
+import { resolveSiteHref } from "../utils/siteUrls";
 import {
   DomesIcon,
   GeneticIcon,
@@ -113,7 +114,11 @@ function ProjectCard({ project, id }: ProjectCardProps) {
         {project.relatedLinks ? (
           <div className="project-card__related-links">
             {project.relatedLinks.map((link) => (
-              <a key={link.href} href={link.href} className={getRelatedLinkClass(link.label)}>
+              <a
+                key={link.href}
+                href={resolveSiteHref(link.href)}
+                className={getRelatedLinkClass(link.label)}
+              >
                 <strong>{link.label}</strong>
                 <span>{link.description}</span>
               </a>
@@ -131,21 +136,24 @@ function ProjectCard({ project, id }: ProjectCardProps) {
           </div>
         </CardDisclosure>
         <div className="project-card__links">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={`project-card__link ${getLinkToneClass(
-                link.label === "Docs" ? "Source" : link.label,
-                link.href,
-                link.label === "Docs" ? false : isPrimaryLink(link.label, link.href)
-              )}`}
-              target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
-            >
-              {link.label}
-            </a>
-          ))}
+          {links.map((link) => {
+            const resolvedHref = resolveSiteHref(link.href);
+            return (
+              <a
+                key={link.href}
+                href={resolvedHref}
+                className={`project-card__link ${getLinkToneClass(
+                  link.label === "Docs" ? "Source" : link.label,
+                  link.href,
+                  link.label === "Docs" ? false : isPrimaryLink(link.label, link.href)
+                )}`}
+                target={resolvedHref.startsWith("http") ? "_blank" : undefined}
+                rel="noreferrer"
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </div>
       </div>
     </article>

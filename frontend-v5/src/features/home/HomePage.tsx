@@ -14,6 +14,7 @@ import { useSectionSpy } from "../../hooks/useSectionSpy";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import ProfileLinkIcon from "./ProfileLinkIcon";
 import SceneBackdrop from "./SceneBackdrop";
+import { mainSiteHref, resolveSiteHref } from "../../utils/siteUrls";
 import {
   getExperienceCardElementId,
   getProjectCardElementId,
@@ -68,7 +69,7 @@ function HomePage() {
   const isPageReady = usePageReveal();
   const hasSyncedSectionUrl = useRef(false);
   const initialHashPending = useRef(
-    location.pathname === "/views/interactive-3d" && Boolean(location.hash || window.location.hash)
+    location.pathname === "/" && Boolean(location.hash || window.location.hash)
   );
   const activeSectionIndex = sectionOrder.indexOf(activeSectionId);
   const nextSectionId =
@@ -88,7 +89,7 @@ function HomePage() {
 
   function scrollToSection(targetId: string) {
     if (targetId === "hero") {
-      window.history.replaceState(null, "", "/views/interactive-3d#hero");
+      window.history.replaceState(null, "", "/#hero");
       window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
       return;
     }
@@ -98,7 +99,7 @@ function HomePage() {
       return;
     }
 
-    window.history.replaceState(null, "", `/views/interactive-3d#${targetId}`);
+    window.history.replaceState(null, "", `/#${targetId}`);
 
     const top = Math.max(
       0,
@@ -152,13 +153,13 @@ function HomePage() {
   }
 
   useLayoutEffect(() => {
-    if (location.pathname === "/views/interactive-3d" && !location.hash) {
+    if (location.pathname === "/" && !location.hash) {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [location.pathname, location.hash]);
 
   useLayoutEffect(() => {
-    if (location.pathname !== "/views/interactive-3d") {
+    if (location.pathname !== "/") {
       initialHashPending.current = false;
       return;
     }
@@ -179,7 +180,7 @@ function HomePage() {
   }, [isPageReady, location.hash, location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
-    if (location.pathname !== "/views/interactive-3d") {
+    if (location.pathname !== "/") {
       return;
     }
 
@@ -196,7 +197,7 @@ function HomePage() {
   }, [location.pathname, prefersReducedMotion]);
 
   useEffect(() => {
-    if (location.pathname !== "/views/interactive-3d") {
+    if (location.pathname !== "/") {
       hasSyncedSectionUrl.current = false;
       return;
     }
@@ -206,7 +207,7 @@ function HomePage() {
       return;
     }
 
-    window.history.replaceState(null, "", `/views/interactive-3d#${activeSectionId}`);
+    window.history.replaceState(null, "", `/#${activeSectionId}`);
   }, [activeSectionId, location.pathname]);
 
   return (
@@ -216,7 +217,7 @@ function HomePage() {
         activeSectionId={activeSectionId}
         useStaticScene={useStaticScene}
       />
-      <SiteNavigation brandHref="/views/interactive-3d"
+      <SiteNavigation brandHref="/"
         sections={profileContent.sceneSections}
         activeSectionId={activeSectionId}
         onSectionNavigate={scrollToSection}
@@ -236,7 +237,7 @@ function HomePage() {
                 ))}
               </ul>
               <div className="hero-panel__view-links" aria-label="Alternate portfolio views">
-                <a className="hero-panel__quick-link hero-panel__view-link" href="/">Main portfolio ↗</a>
+                <a className="hero-panel__quick-link hero-panel__view-link" href={mainSiteHref("/")}>Main portfolio ↗</a>
                 <a
                   className="hero-panel__quick-link hero-panel__view-link hero-panel__view-link--editor"
                   href={editorSiteHref()}
@@ -283,18 +284,21 @@ function HomePage() {
                 </a>
               </div>
               <div className="hero-panel__quick-links" aria-label="Profile links">
-                {heroQuickLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    className="hero-panel__quick-link"
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                  >
-                    <ProfileLinkIcon label={link.label} />
-                    <span>{link.label}</span>
-                  </a>
-                ))}
+                {heroQuickLinks.map((link) => {
+                  const resolved = resolveSiteHref(link.href);
+                  return (
+                    <a
+                      key={link.href}
+                      className="hero-panel__quick-link"
+                      href={resolved}
+                      target={resolved.startsWith("http") ? "_blank" : undefined}
+                      rel={resolved.startsWith("http") ? "noreferrer" : undefined}
+                    >
+                      <ProfileLinkIcon label={link.label} />
+                      <span>{link.label}</span>
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -306,7 +310,7 @@ function HomePage() {
             <div className="metric-grid">
               {profileContent.metrics.map((metric) => (
                 metric.label === "Start Here" ? (
-                  <a key={metric.label} className="glass-card metric-card metric-card--interactive" href="/ojaml">
+                  <a key={metric.label} className="glass-card metric-card metric-card--interactive" href={mainSiteHref("/ojaml")}>
                     <span>{metric.label}</span>
                     <strong className="metric-card__link-value">
                       {metric.value}
@@ -489,18 +493,21 @@ function HomePage() {
                 </a>
                 {profileContent.links
                   .filter((link) => !link.href.startsWith("mailto:"))
-                  .map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      className="contact-card__action"
-                      target={link.href.startsWith("http") ? "_blank" : undefined}
-                      rel="noreferrer"
-                    >
-                      <ProfileLinkIcon label={link.label} />
-                      <span>{link.label}</span>
-                    </a>
-                  ))}
+                  .map((link) => {
+                    const resolved = resolveSiteHref(link.href);
+                    return (
+                      <a
+                        key={link.href}
+                        href={resolved}
+                        className="contact-card__action"
+                        target={resolved.startsWith("http") ? "_blank" : undefined}
+                        rel="noreferrer"
+                      >
+                        <ProfileLinkIcon label={link.label} />
+                        <span>{link.label}</span>
+                      </a>
+                    );
+                  })}
               </div>
             </div>
           </div>

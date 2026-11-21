@@ -19,7 +19,7 @@ describe("Unified library", () => {
     );
     expect(
       screen.getByRole("link", { name: /Interactive 3D view/ }),
-    ).toHaveAttribute("href", "/views/interactive-3d");
+    ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
     expect(
       document.querySelector(
         'a[href="https://github.com/JBoss925/jagger-website"]',

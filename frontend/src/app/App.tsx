@@ -1,5 +1,6 @@
 import { useEffect, Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import StudioPage from "../features/studio/StudioPage";
 import GamesPage from "../features/games/GamesPage";
 import DomesPage from "../features/games/DomesPage";
 import JordlePage from "../features/games/JordlePage";
@@ -8,10 +9,8 @@ import JinxPage from "../features/games/JinxPage";
 import JudokuPage from "../features/games/JudokuPage";
 import JigsawPage from "../features/games/JigsawPage";
 
-const StudioPage = lazy(() => import("../features/studio/StudioPage"));
 const MuseumPage = lazy(() => import("../features/studio/MuseumPage"));
 const LibraryPage = lazy(() => import("../features/studio/LibraryPage"));
-const HomePage = lazy(() => import("../features/home/HomePage"));
 const JaggerScriptPage = lazy(
   () => import("../features/jaggerscript/JaggerScriptPage")
 );
@@ -24,14 +23,6 @@ const PapersPage = lazy(() => import("../features/papers/PapersPage"));
 const PaperPage = lazy(() => import("../features/papers/PaperPage"));
 
 const DocsPage = lazy(() => import("../features/docs/DocsPage"));
-
-function RouteLoading() {
-  return (
-    <div className="route-loading" role="status" aria-live="polite" aria-label="Loading">
-      <div className="route-loading__spinner" aria-hidden="true" />
-    </div>
-  );
-}
 
 function App() {
   useEffect(() => {
@@ -48,12 +39,11 @@ function App() {
   }, []);
 
   return (
-    <Suspense fallback={<RouteLoading />}>
+    <Suspense fallback={null}>
       <Routes>
         <Route path="/" element={<StudioPage />} />
         <Route path="/museum" element={<MuseumPage />} />
         <Route path="/library" element={<LibraryPage />} />
-        <Route path="/views/interactive-3d" element={<HomePage />} />
         <Route path="/jaggerscript" element={<JaggerScriptPage />} />
         <Route path="/ojaml" element={<OJamlRoute />} />
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />
