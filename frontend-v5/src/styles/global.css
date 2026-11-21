@@ -65,17 +65,17 @@ a {
   min-height: 100svh;
   display: grid;
   place-items: center;
-  background: #f9f9f7;
+  background: #000000;
 }
 
 .route-loading__spinner {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  border: 2px solid rgba(49, 86, 66, 0.16);
+  border: 2px solid rgba(143, 201, 163, 0.22);
   border-top-color: var(--accent);
   border-right-color: rgba(255, 255, 255, 0.66);
-  box-shadow: 0 0 0 1px rgba(49, 86, 66, 0.08), inset 0 0 28px rgba(49, 86, 66, 0.08);
+  box-shadow: 0 0 0 1px rgba(143, 201, 163, 0.14), inset 0 0 28px rgba(49, 86, 66, 0.22);
   animation: route-spin 0.95s linear infinite;
 }
 

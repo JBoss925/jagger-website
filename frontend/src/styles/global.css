@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --bg: #000000;
   --bg-soft: rgba(8, 8, 10, 0.88);
   --panel: rgba(12, 12, 14, 0.9);
@@ -37,8 +37,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
+  background-color: #fdfbff;
+  background: radial-gradient(circle at 20% 14%, #fdfbff 0%, #f0e7fc 48%, #e5dbf7 100%);
+  color: #1b1328;
   font-family: "Google Sans Flex", "Google Sans", "Manrope", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -83,6 +84,9 @@ a {
   position: relative;
   min-height: 100vh;
   overflow: clip;
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: dark;
 }
 
 .page-shell::before {
