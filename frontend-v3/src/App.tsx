@@ -224,7 +224,7 @@ function App() {
       <footer className="site-footer">
         <span>© {new Date().getFullYear()} Jagger Brulato</span>
         <div className="footer-links">{profileContent.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div>
-        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={mainSiteHref("/games")}>Games</a><a href={mainSiteHref("/papers")}>Papers</a><a href="#top">Back to top ↑</a></div>
+        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href="https://games.jaggerbrulato.com/">Games</a><a href="https://papers.jaggerbrulato.com/">Papers</a><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );

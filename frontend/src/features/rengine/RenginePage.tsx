@@ -473,8 +473,8 @@ function RenginePage() {
     <div
       className={
         isPageReady
-          ? "page-shell page-shell--ready ide-page"
-          : "page-shell page-shell--entering ide-page"
+          ? "page-shell page-shell--ready ide-page studio-theme-light rengine-page"
+          : "page-shell page-shell--entering ide-page studio-theme-light rengine-page"
       }
     >
       <div className="scene-static" aria-hidden="true">

@@ -10,7 +10,7 @@ import redVenturesLogo from "../../frontend/src/assets/company-logos/red-venture
 import velocitorLogo from "../../frontend/src/assets/company-logos/velocitor.png";
 import compressorPreview from "../../frontend/src/assets/compressor-preview.svg";
 import geneticPreview from "../../frontend/src/assets/genetic-preview.jpg";
-import hearthPreview from "../../frontend/src/assets/papers/hearth/hearth-1-0-ui.jpg";
+import hearthPreview from "../../frontend/src/assets/hearth-preview.jpg";
 import jaggerscriptPreview from "../../frontend/src/assets/jaggerscript-preview.jpg";
 import jaggerGamesPreview from "../../frontend/src/assets/jagger-games-preview.jpg";
 import jetstreamPreview from "../../frontend/src/assets/jetstream-preview.jpg";
@@ -792,7 +792,7 @@ export const profileContent: ProfileContent = {
       icon: "ojaml",
       links: [
         { label: "Open Editor", href: "/ojaml" },
-        { label: "Open Paper", href: "/papers/ojaml" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/ojaml" },
         { label: "Source", href: "https://github.com/JBoss925/OJaml" }
       ]
     },
@@ -871,7 +871,7 @@ export const profileContent: ProfileContent = {
       ],
       image: liveboardPreview,
       links: [
-        { label: "Open Paper", href: "/papers/liveboard" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/liveboard" },
         { label: "Source", href: "https://github.com/JBoss925/LiveBoard" }
       ]
     },
@@ -904,7 +904,7 @@ export const profileContent: ProfileContent = {
           label: "Download Hearth 1.0",
           href: "https://github.com/JBoss925/Hearth/releases/download/v1.0/Hearth.1.0.amxd"
         },
-        { label: "Open Paper", href: "/papers/hearth" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/hearth" },
         { label: "Source", href: "https://github.com/JBoss925/Hearth" }
       ]
     },
@@ -934,7 +934,7 @@ export const profileContent: ProfileContent = {
       icon: "jaggerscript",
       links: [
         { label: "Open Editor", href: "/jaggerscript" },
-        { label: "Open Paper", href: "/papers/jaggerscript" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/jaggerscript" },
         { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
       ]
     },
@@ -965,7 +965,7 @@ export const profileContent: ProfileContent = {
       ],
       image: compressorPreview,
       links: [
-        { label: "Open Paper", href: "/papers/aixc-compressor" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/aixc-compressor" },
         { label: "Source", href: "https://github.com/JBoss925/aixc-compressor" }
       ]
     },
@@ -998,7 +998,7 @@ export const profileContent: ProfileContent = {
           label: "Open Demo",
           href: "/genetic-ts"
         },
-        { label: "Open Paper", href: "/papers/genetic-ts" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/genetic-ts" },
         { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
@@ -1033,40 +1033,40 @@ export const profileContent: ProfileContent = {
       relatedLinks: [
         {
           label: "Jordle",
-          href: "/games/jordle",
+          href: "https://games.jaggerbrulato.com/jordle",
           description: "Six-letter word puzzle with daily boards and archives."
         },
         {
           label: "Jolor",
-          href: "/games/jolor",
+          href: "https://games.jaggerbrulato.com/jolor",
           description: "Color-name guessing game where you dial in the target swatch."
         },
         {
           label: "Jinx",
-          href: "/games/jinx",
+          href: "https://games.jaggerbrulato.com/jinx",
           description: "Minefield logic puzzle built around reveals, flags, and hints."
         },
         {
           label: "Judoku",
-          href: "/games/judoku",
+          href: "https://games.jaggerbrulato.com/judoku",
           description: "Compact 6x6 sudoku with notes mode and quick daily solves."
         },
         {
           label: "Jigsaw",
-          href: "/games/jigsaw",
+          href: "https://games.jaggerbrulato.com/jigsaw",
           description: "Tile-swap picture puzzle with a new scrambled image each day."
         },
         {
           label: "Domes",
-          href: "/games/domes",
+          href: "https://games.jaggerbrulato.com/domes",
           description: "Two-player strategy game about movement, tempo, and board control."
         }
       ],
       links: [
-        { label: "Open Games", href: "/games" },
+        { label: "Open Games", href: "https://games.jaggerbrulato.com/" },
         {
           label: "Source",
-          href: "https://github.com/JBoss925/jagger-website/tree/main/frontend/src/features/games"
+          href: "https://github.com/JBoss925/jagger-games"
         }
       ]
     },
@@ -1124,7 +1124,7 @@ export const profileContent: ProfileContent = {
       icon: "rengine",
       links: [
         { label: "Open Demo", href: "/rengine" },
-        { label: "Open Paper", href: "/papers/rengine" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/rengine" },
         { label: "Source", href: "https://github.com/JBoss925/Rengine" }
       ]
     },
@@ -1221,7 +1221,7 @@ export const profileContent: ProfileContent = {
       image: tsxlightRendererPreview,
       icon: "tsxlight",
       links: [
-        { label: "Open Paper", href: "/papers/tsxlight-renderer" },
+        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/tsxlight-renderer" },
         { label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }
       ]
     },

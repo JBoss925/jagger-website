@@ -1,1 +1,9 @@
+/games/jeardle https://games.jaggerbrulato.com/jolor 301!
+/games https://games.jaggerbrulato.com/ 301!
+/games/* https://games.jaggerbrulato.com/:splat 301!
+/docs https://docs.jaggerbrulato.com/ 301!
+/docs/* https://docs.jaggerbrulato.com/:splat 301!
+/jagger-papers https://papers.jaggerbrulato.com/ 301!
+/papers https://papers.jaggerbrulato.com/ 301!
+/papers/* https://papers.jaggerbrulato.com/:splat 301!
 /* /index.html 200

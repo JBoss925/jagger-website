@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { papers } from "../../content/papers";
+import { libraryCatalog } from "@jagger-ui/content/libraryCatalog";
+import { SITE_URLS, docsUrl, papersUrl } from "@jagger-ui/urls";
 import { StudioHeader, StudioFooter } from "./StudioShell";
 import { clean, projects, summaries, views } from "./content";
 import "./studio.css";
@@ -14,7 +15,7 @@ export default function LibraryPage() {
     window.scrollTo(0, 0);
   }, []);
   const shown = projects.filter((p) => {
-    const hasPaper = papers.some((paper) => paper.slug === p.slug);
+    const hasPaper = libraryCatalog.some((paper) => paper.slug === p.slug);
     const hasDemo = p.links.some(
       (l) => !/source|paper|reference/i.test(l.label),
     );
@@ -73,7 +74,7 @@ export default function LibraryPage() {
         </p>
         <div className="library-grid">
           {shown.map((p) => {
-            const paper = papers.find((paper) => paper.slug === p.slug);
+            const paper = libraryCatalog.find((paper) => paper.slug === p.slug);
             return (
               <article key={p.slug}>
                 <span className="studio-eyebrow">
@@ -86,12 +87,12 @@ export default function LibraryPage() {
                 <div className="library-project-links">
                   {paper && (
                     <>
-                      <Link to={`/papers/${p.slug}`}>
+                      <a href={papersUrl(`/${p.slug}`)}>
                         Read paper <span>↗</span>
-                      </Link>
-                      <Link to={`/docs/${p.slug}`}>
+                      </a>
+                      <a href={docsUrl(`/${p.slug}`)}>
                         Documentation <span>↗</span>
-                      </Link>
+                      </a>
                     </>
                   )}
                   {p.slug === "portfolio-site" ? (
@@ -111,7 +112,11 @@ export default function LibraryPage() {
                     </>
                   ) : (
                     p.links
-                      .filter((l) => !l.href.startsWith("/papers/"))
+                      .filter(
+                        (l) =>
+                          !l.href.startsWith("/papers/") &&
+                          !l.href.startsWith(SITE_URLS.papers),
+                      )
                       .map((l) => (
                         <a href={l.href} key={l.href}>
                           {l.label.replace("Open ", "")} <span>↗</span>

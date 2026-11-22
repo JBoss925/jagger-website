@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { libraryCatalog } from "@jagger-ui/content/libraryCatalog";
+import { docsUrl, gamesUrl, papersUrl } from "@jagger-ui/urls";
 import { profileContent } from "../../content/profile";
-import { papers } from "../../content/papers";
 import LibraryPage from "./LibraryPage";
 
 describe("Unified library", () => {
@@ -25,12 +26,12 @@ describe("Unified library", () => {
         'a[href="https://github.com/JBoss925/jagger-website"]',
       ),
     ).toBeInTheDocument();
-    for (const paper of papers) {
+    for (const paper of libraryCatalog) {
       expect(
-        document.querySelector(`a[href="/papers/${paper.slug}"]`),
+        document.querySelector(`a[href="${papersUrl(`/${paper.slug}`)}"]`),
       ).toBeInTheDocument();
       expect(
-        document.querySelector(`a[href="/docs/${paper.slug}"]`),
+        document.querySelector(`a[href="${docsUrl(`/${paper.slug}`)}"]`),
       ).toBeInTheDocument();
     }
     for (const path of [
@@ -38,12 +39,12 @@ describe("Unified library", () => {
       "/jaggerscript",
       "/genetic-ts",
       "/rengine",
-      "/games/jordle",
-      "/games/jolor",
-      "/games/jinx",
-      "/games/judoku",
-      "/games/jigsaw",
-      "/games/domes",
+      gamesUrl("/jordle"),
+      gamesUrl("/jolor"),
+      gamesUrl("/jinx"),
+      gamesUrl("/judoku"),
+      gamesUrl("/jigsaw"),
+      gamesUrl("/domes"),
     ]) {
       expect(document.querySelector(`a[href="${path}"]`)).toBeInTheDocument();
     }
@@ -63,7 +64,7 @@ describe("Unified library", () => {
     });
     expect(document.querySelectorAll(".library-grid article")).toHaveLength(1);
     expect(
-      document.querySelector('a[href="/papers/genetic-ts"]'),
+      document.querySelector(`a[href="${papersUrl("/genetic-ts")}"]`),
     ).toBeInTheDocument();
   });
   it("restores URL filters and offers recovery from an empty search", () => {

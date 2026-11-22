@@ -1,5 +1,9 @@
+import {
+  libraryCatalog,
+  type LibraryEntry,
+} from "@jagger-ui/content/libraryCatalog";
+import { SITE_URLS, normalizeUrlKey } from "@jagger-ui/urls";
 import { profileContent } from "../../content/profile";
-import { papers } from "../../content/papers";
 import type {
   ExperienceEntry,
   ProjectEntry,
@@ -101,7 +105,7 @@ export type SpatialItemPayload =
   | { kind: "project"; project: ProjectEntry }
   | { kind: "experience"; experience: ExperienceEntry }
   | { kind: "demo"; project: ProjectEntry; demoHref: string; isInternal: boolean }
-  | { kind: "library"; project: ProjectEntry; paper: (typeof papers)[number] }
+  | { kind: "library"; project: ProjectEntry; paper: LibraryEntry }
   | { kind: "about"; about: AboutCardPayload };
 
 export type SpatialItem = {
@@ -183,13 +187,26 @@ export const INTERNAL_DEMOS = new Set([
   "/jaggerscript",
   "/genetic-ts",
   "/rengine",
-  "/games",
 ]);
 
 export const EMBEDDABLE_DEMOS = new Set([
   ...INTERNAL_DEMOS,
-  "https://risk.jaggerbrulato.com/",
+  SITE_URLS.games,
+  `${SITE_URLS.games}/`,
+  SITE_URLS.risk,
+  `${SITE_URLS.risk}/`,
+  SITE_URLS.arena,
+  `${SITE_URLS.arena}/`,
+  SITE_URLS.jetstream,
+  `${SITE_URLS.jetstream}/`,
 ]);
+
+export function isEmbeddableDemo(href: string | undefined): boolean {
+  if (!href) return false;
+  return (
+    EMBEDDABLE_DEMOS.has(href) || EMBEDDABLE_DEMOS.has(normalizeUrlKey(href))
+  );
+}
 
 const PROJECT_FORMATION: Record<string, FormationKind> = {
   ojaml: "ojaml-compiler",
@@ -343,7 +360,7 @@ export function getItemsForSection(
     const filtered = filterProjects(query, category);
     return filtered.map((project) => {
       const hasDemo = Boolean(getDemoHref(project));
-      const hasPaper = papers.some((p) => p.slug === project.slug);
+      const hasPaper = libraryCatalog.some((p) => p.slug === project.slug);
       const badges: string[] = [];
       if (hasDemo) badges.push("Live Demo");
       if (hasPaper) badges.push("Paper + Docs");
@@ -409,7 +426,7 @@ export function getItemsForSection(
       .map((project) => {
         const demoHref = getDemoHref(project);
         if (!demoHref) return null;
-        const isInternal = EMBEDDABLE_DEMOS.has(demoHref);
+        const isInternal = isEmbeddableDemo(demoHref);
         return {
           uid: `demos:${project.slug}`,
           slug: project.slug,
@@ -435,7 +452,7 @@ export function getItemsForSection(
   if (section === "library") {
     return filterProjects(query, "all")
       .map((project) => {
-        const paper = papers.find((p) => p.slug === project.slug);
+        const paper = libraryCatalog.find((p) => p.slug === project.slug);
         if (!paper) return null;
         return {
           uid: `library:${project.slug}`,

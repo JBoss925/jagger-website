@@ -10,3 +10,6 @@
 [submodule "ojaml"]
 	path = ojaml
 	url = https://github.com/JBoss925/OJaml
+[submodule "packages/jagger-ui"]
+	path = packages/jagger-ui
+	url = https://github.com/JBoss925/jagger-ui.git

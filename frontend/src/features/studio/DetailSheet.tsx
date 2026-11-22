@@ -6,13 +6,14 @@ import {
   type KeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { papers } from "../../content/papers";
+import { useSearchParams } from "react-router-dom";
+import { libraryCatalog } from "@jagger-ui/content/libraryCatalog";
+import { SITE_URLS, docsUrl, papersUrl } from "@jagger-ui/urls";
 import { headshotAsset } from "../../content/profile";
 import type { ProjectEntry, SkillEvidenceLink } from "../../types/content";
 import { clean, summaries, views } from "./content";
 import {
-  EMBEDDABLE_DEMOS,
+  isEmbeddableDemo,
   displayProjectTitle,
   getDemoHref,
   type SpatialItem,
@@ -161,10 +162,10 @@ export default function DetailSheet({
       : null;
 
   const paper = project
-    ? papers.find((p) => p.slug === project.slug) ?? null
+    ? libraryCatalog.find((p) => p.slug === project.slug) ?? null
     : null;
   const demoHref = project ? getDemoHref(project) : undefined;
-  const isInternalDemo = demoHref ? EMBEDDABLE_DEMOS.has(demoHref) : false;
+  const isInternalDemo = isEmbeddableDemo(demoHref);
 
   const defaultTab: SheetTab =
     item.section === "demos" && demoHref
@@ -271,7 +272,11 @@ export default function DetailSheet({
   );
 
   const embedUrl = (href: string) => {
-    if (!href.startsWith("/")) return href;
+    const wantsEmbedParam =
+      href.startsWith("/") ||
+      href.startsWith(SITE_URLS.docs) ||
+      href.startsWith(SITE_URLS.papers);
+    if (!wantsEmbedParam) return href;
     return href.includes("?") ? `${href}&embed=1` : `${href}?embed=1`;
   };
 
@@ -286,9 +291,9 @@ export default function DetailSheet({
       : activeTab === "demo" && demoHref
         ? demoHref
         : inlineReader === "docs" && paper
-          ? `/docs/${paper.slug}`
+          ? docsUrl(`/${paper.slug}`)
           : paper
-            ? `/papers/${paper.slug}`
+            ? papersUrl(`/${paper.slug}`)
             : demoHref ?? "/";
     const iframeTitle = activeViewMeta
       ? `${activeViewMeta.title} portfolio view`
@@ -583,7 +588,8 @@ export default function DetailSheet({
                     .filter(
                       (l) =>
                         l.href !== demoHref &&
-                        !l.href.startsWith("/papers/"),
+                        !l.href.startsWith("/papers/") &&
+                        !l.href.startsWith(SITE_URLS.papers),
                     )
                     .map((link) => (
                       <a
@@ -655,6 +661,8 @@ export default function DetailSheet({
                         <a
                           key={rl.href}
                           href={rl.href}
+                          target={rl.href.startsWith("http") ? "_blank" : undefined}
+                          rel={rl.href.startsWith("http") ? "noreferrer" : undefined}
                           className="sheet-related-card"
                         >
                           <strong>
@@ -811,19 +819,29 @@ export default function DetailSheet({
                   >
                     {inlineReader === "docs" ? "Close docs" : "Browse docs"}
                   </button>
-                  <Link
+                  <a
                     className="sheet-ghost-link"
-                    to={`/${inlineReader === "docs" ? "docs" : "papers"}/${paper.slug}`}
+                    href={
+                      inlineReader === "docs"
+                        ? docsUrl(`/${paper.slug}`)
+                        : papersUrl(`/${paper.slug}`)
+                    }
+                    target="_blank"
+                    rel="noreferrer"
                   >
                     Open full page ↗
-                  </Link>
+                  </a>
                 </div>
 
                 {inlineReader && (
                   <div className="sheet-iframe-frame">
                     <iframe
                       title={`${project.title} ${inlineReader === "paper" ? "paper" : "documentation"}`}
-                      src={`/${inlineReader === "paper" ? "papers" : "docs"}/${paper.slug}`}
+                      src={embedUrl(
+                        inlineReader === "paper"
+                          ? papersUrl(`/${paper.slug}`)
+                          : docsUrl(`/${paper.slug}`),
+                      )}
                     />
                   </div>
                 )}
@@ -843,8 +861,12 @@ export default function DetailSheet({
                       </ul>
                     </section>
                     <div className="sheet-reading-links">
-                      <Link to={`/papers/${paper.slug}`}>Standalone paper ↗</Link>
-                      <Link to={`/docs/${paper.slug}`}>Standalone docs ↗</Link>
+                      <a href={papersUrl(`/${paper.slug}`)} target="_blank" rel="noreferrer">
+                        Standalone paper ↗
+                      </a>
+                      <a href={docsUrl(`/${paper.slug}`)} target="_blank" rel="noreferrer">
+                        Standalone docs ↗
+                      </a>
                     </div>
                   </>
                 )}

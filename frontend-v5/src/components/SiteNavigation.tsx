@@ -183,21 +183,21 @@ function SiteNavigation({
               </a>
               <a
                 className="site-nav__button"
-                href={mainSiteHref("/games")}
+                href="https://games.jaggerbrulato.com/"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Games
               </a>
               <a
                 className="site-nav__button"
-                href={mainSiteHref("/papers")}
+                href="https://papers.jaggerbrulato.com/"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Papers
               </a>
               <a
                 className="site-nav__button"
-                href={mainSiteHref("/docs")}
+                href="https://docs.jaggerbrulato.com/"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Docs

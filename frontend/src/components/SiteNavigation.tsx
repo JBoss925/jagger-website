@@ -1,3 +1,4 @@
+import { docsUrl, gamesUrl, papersUrl } from "@jagger-ui/urls";
 import { useEffect, useId, useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { NavLinkItem, SceneSection } from "../types/content";
@@ -179,15 +180,15 @@ function SiteNavigation({
               >
                 Resume
               </a>
-              <Link className="site-nav__button" to="/games" onClick={() => setIsMenuOpen(false)}>
+              <a className="site-nav__button" href={gamesUrl()} onClick={() => setIsMenuOpen(false)}>
                 Go to Games
-              </Link>
-              <Link className="site-nav__button" to="/papers" onClick={() => setIsMenuOpen(false)}>
+              </a>
+              <a className="site-nav__button" href={papersUrl()} onClick={() => setIsMenuOpen(false)}>
                 Go to Papers
-              </Link>
-              <Link className="site-nav__button" to="/docs" onClick={() => setIsMenuOpen(false)}>
+              </a>
+              <a className="site-nav__button" href={docsUrl()} onClick={() => setIsMenuOpen(false)}>
                 Docs
-              </Link>
+              </a>
             </div>
           ) : null}
         </div>

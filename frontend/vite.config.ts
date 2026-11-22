@@ -33,6 +33,7 @@ export default defineConfig({
       { find: /^monaco-editor$/, replacement: monacoEditorEntry },
       { find: /^matter-js$/, replacement: matterJsEntry },
       { find: /^wabt$/, replacement: wabtEntry },
+      { find: "@jagger-ui", replacement: path.resolve(workspaceRoot, "packages/jagger-ui/src") },
       { find: "@genetic-ts", replacement: path.resolve(workspaceRoot, "genetic_ts/src") },
       { find: "@jaggerscript", replacement: path.resolve(workspaceRoot, "jaggerscript/src") },
       { find: "@ojaml", replacement: path.resolve(workspaceRoot, "ojaml/src") },

@@ -1,13 +1,7 @@
 import { useEffect, Suspense, lazy } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
+import { docsUrl, gamesUrl, papersUrl } from "@jagger-ui/urls";
 import StudioPage from "../features/studio/StudioPage";
-import GamesPage from "../features/games/GamesPage";
-import DomesPage from "../features/games/DomesPage";
-import JordlePage from "../features/games/JordlePage";
-import JolorPage from "../features/games/JolorPage";
-import JinxPage from "../features/games/JinxPage";
-import JudokuPage from "../features/games/JudokuPage";
-import JigsawPage from "../features/games/JigsawPage";
 
 const MuseumPage = lazy(() => import("../features/studio/MuseumPage"));
 const LibraryPage = lazy(() => import("../features/studio/LibraryPage"));
@@ -19,10 +13,18 @@ const GeneticTsRoute = lazy(
 );
 const OJamlRoute = lazy(() => import("../features/ojaml/OJamlRoute"));
 const RenginePage = lazy(() => import("../features/rengine/RenginePage"));
-const PapersPage = lazy(() => import("../features/papers/PapersPage"));
-const PaperPage = lazy(() => import("../features/papers/PaperPage"));
 
-const DocsPage = lazy(() => import("../features/docs/DocsPage"));
+function ExternalRedirect({
+  buildUrl,
+}: {
+  buildUrl: (rest: string) => string;
+}) {
+  const { "*": rest = "" } = useParams();
+  useEffect(() => {
+    window.location.replace(buildUrl(rest));
+  }, [buildUrl, rest]);
+  return null;
+}
 
 function App() {
   useEffect(() => {
@@ -48,21 +50,38 @@ function App() {
         <Route path="/ojaml" element={<OJamlRoute />} />
         <Route path="/genetic-ts" element={<GeneticTsRoute />} />
         <Route path="/rengine" element={<RenginePage />} />
-        <Route path="/docs" element={<DocsPage />} />
-        <Route path="/docs/:slug" element={<DocsPage />} />
-        <Route path="/docs/:slug/:mode" element={<DocsPage />} />
-        <Route path="/docs/:slug/:mode/:pageId" element={<DocsPage />} />
-        <Route path="/papers" element={<PapersPage />} />
-        <Route path="/papers/:slug" element={<PaperPage />} />
-        <Route path="/jagger-papers" element={<Navigate to="/papers" replace />} />
-        <Route path="/games" element={<GamesPage />} />
-        <Route path="/games/domes" element={<DomesPage />} />
-        <Route path="/games/jordle" element={<JordlePage />} />
-        <Route path="/games/jolor" element={<JolorPage />} />
-        <Route path="/games/jinx" element={<JinxPage />} />
-        <Route path="/games/judoku" element={<JudokuPage />} />
-        <Route path="/games/jigsaw" element={<JigsawPage />} />
-        <Route path="/games/jeardle" element={<Navigate to="/games/jolor" replace />} />
+        <Route
+          path="/docs/*"
+          element={<ExternalRedirect buildUrl={(rest) => docsUrl(rest)} />}
+        />
+        <Route
+          path="/docs"
+          element={<ExternalRedirect buildUrl={() => docsUrl()} />}
+        />
+        <Route
+          path="/papers/*"
+          element={<ExternalRedirect buildUrl={(rest) => papersUrl(rest)} />}
+        />
+        <Route
+          path="/papers"
+          element={<ExternalRedirect buildUrl={() => papersUrl()} />}
+        />
+        <Route
+          path="/jagger-papers"
+          element={<ExternalRedirect buildUrl={() => papersUrl()} />}
+        />
+        <Route
+          path="/games/jeardle"
+          element={<ExternalRedirect buildUrl={() => gamesUrl("/jolor")} />}
+        />
+        <Route
+          path="/games/*"
+          element={<ExternalRedirect buildUrl={(rest) => gamesUrl(rest)} />}
+        />
+        <Route
+          path="/games"
+          element={<ExternalRedirect buildUrl={() => gamesUrl()} />}
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

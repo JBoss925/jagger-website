@@ -16,6 +16,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "paths": {
+      "@jagger-ui/*": ["../packages/jagger-ui/src/*"]
+    },
     "types": ["vite/client", "node", "vitest/globals"]
   },
   "include": ["src"],

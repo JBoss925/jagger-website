@@ -1,3 +1,4 @@
+import { docsUrl, papersUrl } from "@jagger-ui/urls";
 import type { ProjectEntry } from "../../types/content";
 import { clean, projects, views } from "./content";
 
@@ -48,10 +49,12 @@ export function categoryFor(project: ProjectEntry): ProjectCategory {
 
 // Read paper slugs from the lightweight shared project metadata. Importing the
 // full manuscripts here would put every essay in the explorer's initial bundle.
+const paperHrefPattern =
+  /^(?:https:\/\/papers\.jaggerbrulato\.com|\/papers)\/([^/?#]+)\/?$/;
 const paperSlugs = new Set(
   projects.flatMap((project) =>
     project.links.flatMap((link) => {
-      const match = /^\/papers\/([^/?#]+)\/?$/.exec(link.href);
+      const match = paperHrefPattern.exec(link.href);
       return match ? [match[1]] : [];
     }),
   ),
@@ -62,7 +65,6 @@ const browserRoutes = new Set([
   "/jaggerscript",
   "/genetic-ts",
   "/rengine",
-  "/games",
 ]);
 const browserAction = /^Open (?:Editor|Demo|Games|App|Arena)$/i;
 
@@ -96,12 +98,12 @@ export function getProjectResources(project: ProjectEntry): ProjectResource[] {
   }
   if (paperSlugs.has(project.slug)) {
     resources.push(
-      { kind: "paper", label: "Read paper", href: `/papers/${project.slug}` },
-      { kind: "docs", label: "Documentation", href: `/docs/${project.slug}` },
+      { kind: "paper", label: "Read paper", href: papersUrl(`/${project.slug}`) },
+      { kind: "docs", label: "Documentation", href: docsUrl(`/${project.slug}`) },
     );
   }
   for (const link of project.links) {
-    if (link.href === demoHref || /^\/papers\//.test(link.href)) continue;
+    if (link.href === demoHref || paperHrefPattern.test(link.href)) continue;
     const kind: ProjectResource["kind"] = /^source$/i.test(link.label)
       ? "source"
       : /^download\b/i.test(link.label)

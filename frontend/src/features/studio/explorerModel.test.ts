@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { papers } from "../../content/papers";
+import { libraryCatalog } from "@jagger-ui/content/libraryCatalog";
+import { docsUrl, gamesUrl, papersUrl } from "@jagger-ui/urls";
 import type { ProjectEntry } from "../../types/content";
 import { projects, views } from "./content";
 import {
@@ -9,6 +10,7 @@ import {
   getDemoHref,
   getProjectResources,
 } from "./explorerModel";
+import { isEmbeddableDemo } from "./spatialModel";
 
 const project = (slug: string) => projects.find((item) => item.slug === slug)!;
 
@@ -42,18 +44,19 @@ describe("spatial explorer content model", () => {
     expect(filterProjects("unfindable-92731", "all")).toEqual([]);
   });
 
-  it("offers browser destinations without confusing papers, source, or downloads with demos", () => {
+  it("offers browser destinations and embeds Arena, JetStream, Risk, and Games in-app", () => {
     for (const [slug, href] of Object.entries({
       ojaml: "/ojaml",
       risk: "https://risk.jaggerbrulato.com/",
       jaggerscript: "/jaggerscript",
       "genetic-ts": "/genetic-ts",
       rengine: "/rengine",
-      "jagger-games": "/games",
+      "jagger-games": `${gamesUrl()}/`,
       jetstream: "https://jetstream.jaggerbrulato.com/",
       "random-arena": "https://arena.jaggerbrulato.com/",
     })) {
       expect(getDemoHref(project(slug))).toBe(href);
+      expect(isEmbeddableDemo(href)).toBe(true);
     }
     for (const slug of [
       "hearth",
@@ -76,8 +79,8 @@ describe("spatial explorer content model", () => {
     expect(getDemoHref(misleading)).toBeUndefined();
   });
 
-  it("pairs all eight real papers with documentation and never invents reading destinations", () => {
-    const paperSlugs = new Set(papers.map((paper) => paper.slug));
+  it("pairs all eight real papers with documentation on their dedicated subdomains", () => {
+    const paperSlugs = new Set(libraryCatalog.map((paper) => paper.slug));
     for (const item of projects) {
       const resources = getProjectResources(item);
       expect(
@@ -90,12 +93,12 @@ describe("spatial explorer content model", () => {
               {
                 kind: "paper",
                 label: "Read paper",
-                href: `/papers/${item.slug}`,
+                href: papersUrl(`/${item.slug}`),
               },
               {
                 kind: "docs",
                 label: "Documentation",
-                href: `/docs/${item.slug}`,
+                href: docsUrl(`/${item.slug}`),
               },
             ]
           : [],
