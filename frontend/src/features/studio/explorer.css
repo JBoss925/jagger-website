@@ -1392,6 +1392,14 @@
   transition: background 0.18s, color 0.18s;
 }
 
+.glass-sheet__stepper button:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.glass-sheet__stepper button:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
 .glass-sheet__stepper button:hover {
   background: #ffffff;
   color: var(--ink);
@@ -1679,6 +1687,7 @@
 .sheet-view-card {
   display: flex;
   align-items: stretch;
+  padding: calc(1 * var(--su));
   border-radius: calc(16 * var(--su));
   background: rgba(255, 255, 255, 0.78);
   border: 0;
@@ -1699,12 +1708,13 @@
   flex: 1;
   min-width: 0;
   border: 0;
+  border-radius: calc(15 * var(--su)) 0 0 calc(15 * var(--su));
   background: transparent;
   text-align: left;
   display: flex;
   align-items: center;
   gap: calc(11 * var(--su));
-  padding: calc(12 * var(--su)) calc(10 * var(--su)) calc(12 * var(--su)) calc(13 * var(--su));
+  padding: calc(11 * var(--su)) calc(10 * var(--su)) calc(11 * var(--su)) calc(12 * var(--su));
 }
 
 .sheet-view-card__ext {
@@ -1713,6 +1723,7 @@
   width: calc(36 * var(--su));
   flex-shrink: 0;
   border-left: 0;
+  border-radius: 0 calc(15 * var(--su)) calc(15 * var(--su)) 0;
   box-shadow: inset calc(1 * var(--su)) 0 0 rgba(145, 118, 198, 0.14);
   color: var(--ink-muted);
   font-size: calc(13 * var(--su));
