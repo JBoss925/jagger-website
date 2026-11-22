@@ -138,6 +138,23 @@ export default function MobilePortfolio({
     window.addEventListener("pointercancel", onUp);
   };
 
+  const handleBodyPullStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleBodyPullMove = (dy: number) => {
+    setDragY(dy > 0 ? dy : 0);
+  };
+
+  const handleBodyPullEnd = (dy: number, velocity: number) => {
+    setIsDragging(false);
+    if (dy > 95 || (dy > 38 && velocity > 0.38)) {
+      dismissDrawerAnimated();
+    } else {
+      setDragY(0);
+    }
+  };
+
   const eyebrowCount =
     section === "projects" && category !== "all"
       ? `${String(items.length).padStart(2, "0")} OF ${profileContent.projects.length} ARTIFACTS`
@@ -444,6 +461,9 @@ export default function MobilePortfolio({
               onNavigateTarget={onNavigateTarget}
               titleId="mobile-drawer-title"
               onDragHandlePointerDown={handleDragStart}
+              onBodyPullStart={handleBodyPullStart}
+              onBodyPullMove={handleBodyPullMove}
+              onBodyPullEnd={handleBodyPullEnd}
             />
           </div>
         </div>

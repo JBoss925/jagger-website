@@ -261,6 +261,7 @@ function LivingCubeSwarm({
   const wasBootHoldingRef = useRef(bootHolding);
   const bootSplitActiveRef = useRef(false);
   const bootHoverMixRef = useRef(0);
+  const lastSizeRef = useRef({ w: size.width, h: size.height });
   const cameraTargetPos = useMemo(() => new Vector3(0, 0.2, 13.6), []);
 
   // Initialize cubes: if bootHolding is active, start poised cleanly in the floating 5×5×5 hero cube!
@@ -397,8 +398,9 @@ function LivingCubeSwarm({
     }
   }, [transitionKey, bootHolding, reduced]);
 
+  const stageAspect = size.width / Math.max(1, size.height);
   const heroCenterX =
-    size.width > 1280 ? -2.05 : size.width > 1024 ? -1.72 : -1.3;
+    stageAspect >= 1.48 ? -2.05 : stageAspect >= 1.18 ? -1.72 : -1.3;
   const sectionConfig = getSectionConfig(section);
 
   useFrame(({ pointer }, rawDelta) => {
@@ -410,10 +412,10 @@ function LivingCubeSwarm({
     // Use real wall-clock elapsed time so wave choreography & labels stay crisp at any framerate
     const elapsed = Math.max(0, (performance.now() - transitionStartWallRef.current) / 1000);
 
-    // Smooth, aspect-aware camera choreography
+    // Smooth, resolution-independent aspect-aware camera choreography (identical framing at 720p / 1080p / 1440p / 4K)
     const [cx, cy, cz] = sectionConfig.cameraPosition;
     const aspect = size.width / Math.max(1, size.height);
-    const isCompactDesktop = size.width < 1180;
+    const isCompactDesktop = aspect < 1.28;
     const minOverviewZ =
       5.65 / (Math.tan((40 * Math.PI) / 360) * Math.max(0.75, aspect));
     const targetZ = bootHolding
@@ -421,13 +423,24 @@ function LivingCubeSwarm({
       : selected
         ? 11.4
         : Math.max(cz, Math.min(20.5, minOverviewZ));
+    const resizedThisFrame =
+      lastSizeRef.current.w !== size.width || lastSizeRef.current.h !== size.height;
+    if (resizedThisFrame) {
+      lastSizeRef.current.w = size.width;
+      lastSizeRef.current.h = size.height;
+    }
+
     cameraTargetPos.set(
       (bootHolding ? 0 : selected ? cx : 0) + (reduced ? 0 : pointer.x * 0.36),
       (bootHolding ? 0.16 : cy + (selected ? 0 : isCompactDesktop ? 0.42 : 0)) +
         (reduced ? 0 : pointer.y * 0.2),
       targetZ,
     );
-    camera.position.lerp(cameraTargetPos, reduced ? 1 : 1 - Math.exp(-delta * 4.2));
+    if (reduced || resizedThisFrame) {
+      camera.position.copy(cameraTargetPos);
+    } else {
+      camera.position.lerp(cameraTargetPos, 1 - Math.exp(-delta * 4.2));
+    }
     camera.lookAt(
       bootHolding ? 0 : selected ? heroCenterX * 0.1 : 0,
       bootHolding ? 0.12 : selected ? 0.02 : isCompactDesktop ? 0.36 : -0.12,
@@ -636,8 +649,9 @@ function LivingCubeSwarm({
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
 
-    // Project 100% of Overview cluster anchors directly to crisp 2D screen-space HUD pills!
-    // Zero label dropouts, zero z-index bugs, zero low-opacity ghosting.
+    // Project 100% of Overview cluster anchors directly to zoom-invariant viewport percentages!
+    // Because NDC [-1, 1] -> [0%, 100%] does not depend on R3F's async resize size.width/height,
+    // floating pills stay locked to their 3D sculptures with ZERO multi-frame jump on browser zoom.
     if (!selected && rigRef.current) {
       rigRef.current.updateMatrixWorld();
 
@@ -651,10 +665,19 @@ function LivingCubeSwarm({
         projVec.applyMatrix4(rigRef.current.matrixWorld);
         projVec.project(camera);
 
-        const px = (projVec.x * 0.5 + 0.5) * size.width;
-        const py = (-projVec.y * 0.5 + 0.5) * size.height;
-        el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%)`;
-        el.style.visibility = "visible";
+        const pctX = (projVec.x * 0.5 + 0.5) * 100;
+        const pctY = (-projVec.y * 0.5 + 0.5) * 100;
+        const prevX = Number(el.dataset.px ?? -999);
+        const prevY = Number(el.dataset.py ?? -999);
+        if (Math.abs(pctX - prevX) > 0.015 || Math.abs(pctY - prevY) > 0.015) {
+          el.dataset.px = pctX.toFixed(3);
+          el.dataset.py = pctY.toFixed(3);
+          el.style.left = `${pctX.toFixed(3)}%`;
+          el.style.top = `${pctY.toFixed(3)}%`;
+        }
+        if (el.style.visibility !== "visible") {
+          el.style.visibility = "visible";
+        }
       }
     }
   });
@@ -827,6 +850,14 @@ export default function SpatialStage({
 }: SpatialStageProps) {
   const prefersReduced = usePrefersReducedMotion();
   const [pageVisible, setPageVisible] = useState(true);
+  // Lock initial DPR so browser zoom steps never reallocate/clear the WebGL backbuffer mid-frame
+  const lockedDpr = useMemo(
+    () =>
+      typeof window !== "undefined"
+        ? Math.min(1.75, Math.max(1, window.devicePixelRatio || 1))
+        : 1.5,
+    [],
+  );
 
   useEffect(() => {
     const onVisibility = () => setPageVisible(!document.hidden);
@@ -840,7 +871,8 @@ export default function SpatialStage({
   return (
     <StageErrorBoundary>
       <Canvas
-        dpr={[1, 1.75]}
+        dpr={lockedDpr}
+        resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={{ position: [0, 0.2, 13.6], fov: 40 }}
         gl={{
           alpha: true,

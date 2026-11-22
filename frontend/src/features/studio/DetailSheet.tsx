@@ -32,6 +32,9 @@ type DetailSheetProps = {
   onNavigateTarget?: (target: SkillEvidenceLink["target"]) => void;
   titleId?: string;
   onDragHandlePointerDown?: (e: ReactPointerEvent<HTMLDivElement>) => void;
+  onBodyPullStart?: () => void;
+  onBodyPullMove?: (dy: number) => void;
+  onBodyPullEnd?: (dy: number, velocity: number) => void;
 };
 
 type SheetTab = "overview" | "demo" | "writing";
@@ -49,6 +52,9 @@ export default function DetailSheet({
   onNavigateTarget,
   titleId,
   onDragHandlePointerDown,
+  onBodyPullStart,
+  onBodyPullMove,
+  onBodyPullEnd,
 }: DetailSheetProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [inlineReader, setInlineReader] = useState<"paper" | "docs" | null>(
@@ -60,7 +66,91 @@ export default function DetailSheet({
   const panelRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const pullCallbacksRef = useRef({ onBodyPullStart, onBodyPullMove, onBodyPullEnd });
+  pullCallbacksRef.current = { onBodyPullStart, onBodyPullMove, onBodyPullEnd };
   const uid = useId();
+
+  // Implicit mobile pull-to-dismiss: when scrolled all the way to the top of the drawer body,
+  // continuing to swipe down smoothly drags and dismisses the drawer without needing the grab handle.
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!isMobile || !el || theaterOpen) return;
+
+    let startX = 0;
+    let startY = 0;
+    let pullOriginY = 0;
+    let pullStartTime = 0;
+    let lastDy = 0;
+    let pulling = false;
+    let lockedToScroll = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      pullOriginY = t.clientY;
+      pullStartTime = performance.now();
+      lastDy = 0;
+      pulling = false;
+      lockedToScroll = el.scrollTop > 2;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+
+      if (!pulling) {
+        if (lockedToScroll) {
+          // If the user scrolled back to the very top mid-gesture, don't abruptly yank — wait for next downward pull
+          return;
+        }
+        if (Math.abs(dx) > Math.abs(dy) * 1.15 && Math.abs(dx) > 6) {
+          lockedToScroll = true;
+          return;
+        }
+        if (dy < -4) {
+          lockedToScroll = true;
+          return;
+        }
+        if (el.scrollTop <= 1 && dy > 6) {
+          pulling = true;
+          pullOriginY = t.clientY;
+          pullStartTime = performance.now();
+          lastDy = 0;
+          pullCallbacksRef.current.onBodyPullStart?.();
+        }
+      }
+
+      if (pulling) {
+        if (e.cancelable) e.preventDefault();
+        lastDy = Math.max(0, t.clientY - pullOriginY);
+        pullCallbacksRef.current.onBodyPullMove?.(lastDy);
+      }
+    };
+
+    const finishPull = () => {
+      if (!pulling) return;
+      pulling = false;
+      const dt = Math.max(1, performance.now() - pullStartTime);
+      const velocity = lastDy / dt;
+      pullCallbacksRef.current.onBodyPullEnd?.(lastDy, velocity);
+      lastDy = 0;
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", finishPull, { passive: true });
+    el.addEventListener("touchcancel", finishPull, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", finishPull);
+      el.removeEventListener("touchcancel", finishPull);
+    };
+  }, [isMobile, theaterOpen, item.uid]);
   const resolvedTitleId = titleId ?? `${uid}-title`;
 
   const project: ProjectEntry | null =
@@ -377,7 +467,10 @@ export default function DetailSheet({
       </div>
 
       {/* Title & single-row tabs */}
-      <header className="glass-sheet__header">
+      <header
+        className="glass-sheet__header"
+        onPointerDown={isMobile ? onDragHandlePointerDown : undefined}
+      >
         <h2 ref={headingRef} id={resolvedTitleId} tabIndex={-1}>
           {item.title}
         </h2>
@@ -388,6 +481,7 @@ export default function DetailSheet({
             className="glass-sheet__tabs"
             role="tablist"
             aria-label="Artifact views"
+            onPointerDown={(e) => e.stopPropagation()}
           >
             {tabs.map((t, i) => (
               <button

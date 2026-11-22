@@ -9,10 +9,11 @@
 }
 
 .museum-shell {
+  --su: clamp(0.5px, min(calc(100vw / 1920), calc(100svh / 1000)), 2.5px);
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-columns: 390px 1fr;
+  grid-template-columns: calc(390 * var(--su)) 1fr;
   background: radial-gradient(circle at 60% 35%, #f9f6ff 0%, #f0e8fd 55%, #e8defa 100%);
   color: #1f1938;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
@@ -40,12 +41,12 @@
   backdrop-filter: blur(28px) saturate(185%);
   -webkit-backdrop-filter: blur(28px) saturate(185%);
   border-right: 1px solid rgba(145, 118, 198, 0.22);
-  box-shadow: 8px 0 32px -12px rgba(64, 38, 118, 0.1);
+  box-shadow: calc(8 * var(--su)) 0 calc(32 * var(--su)) calc(-12 * var(--su)) rgba(64, 38, 118, 0.1);
   z-index: 2;
 }
 
 .museum-sidebar__head {
-  padding: 18px 18px 12px;
+  padding: calc(18 * var(--su)) calc(18 * var(--su)) calc(12 * var(--su));
   border-bottom: 1px solid rgba(145, 118, 198, 0.16);
 }
 
@@ -53,15 +54,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 * var(--su));
 }
 
 .museum-back {
-  font-size: 12.5px;
+  font-size: calc(12.5 * var(--su));
   font-weight: 600;
   color: #6742b8;
   text-decoration: none;
-  padding: 5px 10px;
+  padding: calc(5 * var(--su)) calc(10 * var(--su));
   border-radius: 999px;
   background: rgba(114, 78, 194, 0.1);
 }
@@ -71,30 +72,30 @@
 }
 
 .museum-count {
-  font-size: 11.5px;
+  font-size: calc(11.5 * var(--su));
   font-weight: 600;
   color: #6b6188;
 }
 
 .museum-sidebar__head h1 {
-  margin: 0 0 4px;
-  font-size: 22px;
+  margin: 0 0 calc(4 * var(--su));
+  font-size: calc(22 * var(--su));
   font-weight: 650;
   letter-spacing: -0.025em;
 }
 
 .museum-sidebar__head p {
-  margin: 0 0 12px;
-  font-size: 12.5px;
+  margin: 0 0 calc(12 * var(--su));
+  font-size: calc(12.5 * var(--su));
   line-height: 1.45;
   color: #5b5178;
 }
 
 .museum-sidebar__head kbd {
   display: inline-block;
-  padding: 1px 5px;
-  border-radius: 5px;
-  font-size: 11px;
+  padding: 1px calc(5 * var(--su));
+  border-radius: calc(5 * var(--su));
+  font-size: calc(11 * var(--su));
   background: rgba(114, 78, 194, 0.12);
   color: #5532a6;
   font-weight: 600;
@@ -103,31 +104,31 @@
 .museum-search {
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: calc(8 * var(--su)) calc(12 * var(--su));
+  border-radius: calc(12 * var(--su));
   border: 1px solid rgba(145, 118, 198, 0.28);
   background: rgba(255, 255, 255, 0.85);
-  font-size: 13px;
+  font-size: calc(13 * var(--su));
   color: #1f1938;
   outline: none;
-  margin-bottom: 10px;
+  margin-bottom: calc(10 * var(--su));
 }
 
 .museum-search:focus {
   border-color: #7c56d6;
-  box-shadow: 0 0 0 3px rgba(124, 86, 214, 0.16);
+  box-shadow: 0 0 0 calc(3 * var(--su)) rgba(124, 86, 214, 0.16);
 }
 
 .museum-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: calc(5 * var(--su));
 }
 
 .museum-filters button {
-  padding: 5px 9px;
+  padding: calc(5 * var(--su)) calc(9 * var(--su));
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: calc(11.5 * var(--su));
   font-weight: 500;
   color: #574d75;
   background: rgba(145, 118, 198, 0.1);
@@ -143,39 +144,39 @@
 .museum-list {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 14px 28px;
+  padding: calc(12 * var(--su)) calc(14 * var(--su)) calc(28 * var(--su));
 }
 
 .museum-group {
-  margin-bottom: 18px;
+  margin-bottom: calc(18 * var(--su));
 }
 
 .museum-group__head {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
-  padding: 4px 6px 8px;
+  gap: calc(9 * var(--su));
+  padding: calc(4 * var(--su)) calc(6 * var(--su)) calc(8 * var(--su));
 }
 
 .museum-group__dot {
-  width: 9px;
-  height: 9px;
+  width: calc(9 * var(--su));
+  height: calc(9 * var(--su));
   border-radius: 50%;
-  margin-top: 5px;
+  margin-top: calc(5 * var(--su));
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 calc(3 * var(--su)) rgba(255, 255, 255, 0.85);
 }
 
 .museum-group__head h2 {
   margin: 0;
-  font-size: 13.5px;
+  font-size: calc(13.5 * var(--su));
   font-weight: 650;
   color: #211a3b;
 }
 
 .museum-group__head small {
   display: block;
-  font-size: 11px;
+  font-size: calc(11 * var(--su));
   color: #70658f;
   margin-top: 1px;
 }
@@ -186,7 +187,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: calc(5 * var(--su));
 }
 
 .museum-item {
@@ -194,9 +195,9 @@
   text-align: left;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: 14px;
+  gap: calc(10 * var(--su));
+  padding: calc(9 * var(--su)) calc(10 * var(--su));
+  border-radius: calc(14 * var(--su));
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid rgba(145, 118, 198, 0.16);
   transition: background 0.16s, border-color 0.16s, box-shadow 0.16s;
@@ -210,18 +211,18 @@
 .museum-item.is-selected {
   background: #ffffff;
   border-color: #7c56d6;
-  box-shadow: 0 8px 20px -6px rgba(90, 56, 168, 0.22);
+  box-shadow: 0 calc(8 * var(--su)) calc(20 * var(--su)) calc(-6 * var(--su)) rgba(90, 56, 168, 0.22);
 }
 
 .museum-item__num {
   flex-shrink: 0;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12px;
+  font-size: calc(12 * var(--su));
   font-weight: 700;
   color: #5b37b3;
   background: rgba(124, 86, 214, 0.12);
-  padding: 3px 7px;
-  border-radius: 8px;
+  padding: calc(3 * var(--su)) calc(7 * var(--su));
+  border-radius: calc(8 * var(--su));
 }
 
 .museum-item.is-selected .museum-item__num {
@@ -232,12 +233,12 @@
 .museum-item__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 * var(--su));
   min-width: 0;
 }
 
 .museum-item__name {
-  font-size: 12.5px;
+  font-size: calc(12.5 * var(--su));
   font-weight: 600;
   line-height: 1.3;
   color: #211a3b;
@@ -246,14 +247,14 @@
 .museum-item__meta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 * var(--su));
   flex-wrap: wrap;
 }
 
 .museum-era {
-  font-size: 10.5px;
+  font-size: calc(10.5 * var(--su));
   font-weight: 650;
-  padding: 2px 7px;
+  padding: calc(2 * var(--su)) calc(7 * var(--su));
   border-radius: 999px;
   background: rgba(124, 86, 214, 0.12);
   color: #5532a6;
@@ -285,21 +286,21 @@
 .museum-badge-lg {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: calc(3 * var(--su));
   font-weight: 700;
   border-radius: 999px;
   white-space: nowrap;
 }
 
 .museum-badge {
-  font-size: 10px;
-  padding: 2px 6.5px;
+  font-size: calc(10 * var(--su));
+  padding: calc(2 * var(--su)) calc(6.5 * var(--su));
   letter-spacing: 0.01em;
 }
 
 .museum-badge-lg {
-  font-size: 11px;
-  padding: 3px 9px;
+  font-size: calc(11 * var(--su));
+  padding: calc(3 * var(--su)) calc(9 * var(--su));
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -331,7 +332,7 @@
 }
 
 .museum-score {
-  font-size: 10.5px;
+  font-size: calc(10.5 * var(--su));
   color: #6b6088;
 }
 
@@ -346,14 +347,14 @@
 
 .museum-stage__toolbar {
   position: absolute;
-  top: 18px;
-  left: 22px;
-  right: 22px;
+  top: calc(18 * var(--su));
+  left: calc(22 * var(--su));
+  right: calc(22 * var(--su));
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: calc(14 * var(--su));
   pointer-events: none;
 }
 
@@ -362,21 +363,21 @@
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
+  gap: calc(8 * var(--su));
+  padding: calc(7 * var(--su)) calc(14 * var(--su));
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(24px) saturate(185%);
-  box-shadow: 0 10px 26px -8px rgba(64, 38, 118, 0.14);
-  font-size: 13px;
+  box-shadow: 0 calc(10 * var(--su)) calc(26 * var(--su)) calc(-8 * var(--su)) rgba(64, 38, 118, 0.14);
+  font-size: calc(13 * var(--su));
 }
 
 .museum-code-pill {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 700;
-  font-size: 12.5px;
-  padding: 3px 8px;
+  font-size: calc(12.5 * var(--su));
+  padding: calc(3 * var(--su)) calc(8 * var(--su));
   border-radius: 999px;
   background: linear-gradient(135deg, #8660d8, #633eb5);
   color: #ffffff;
@@ -387,14 +388,14 @@
 }
 
 .museum-view-switch {
-  padding: 4px;
-  gap: 3px;
+  padding: calc(4 * var(--su));
+  gap: calc(3 * var(--su));
 }
 
 .museum-view-switch button {
-  padding: 6px 12px;
+  padding: calc(6 * var(--su)) calc(12 * var(--su));
   border-radius: 999px;
-  font-size: 12px;
+  font-size: calc(12 * var(--su));
   font-weight: 550;
   color: #5b5178;
 }
@@ -415,7 +416,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 138px;
+  bottom: calc(138 * var(--su));
   display: flex;
   justify-content: space-around;
   pointer-events: none;
@@ -423,11 +424,11 @@
 }
 
 .museum-plinth-label {
-  font-size: 11px;
+  font-size: calc(11 * var(--su));
   font-weight: 700;
   letter-spacing: 0.1em;
   color: #6a5a94;
-  padding: 4px 10px;
+  padding: calc(4 * var(--su)) calc(10 * var(--su));
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid rgba(145, 118, 198, 0.2);
@@ -443,20 +444,20 @@
 
 .museum-inspector {
   position: absolute;
-  left: 22px;
-  right: 22px;
-  bottom: 18px;
+  left: calc(22 * var(--su));
+  right: calc(22 * var(--su));
+  bottom: calc(18 * var(--su));
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 14px 18px;
-  border-radius: 22px;
+  gap: calc(20 * var(--su));
+  padding: calc(14 * var(--su)) calc(18 * var(--su));
+  border-radius: calc(22 * var(--su));
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(28px) saturate(190%);
-  box-shadow: 0 16px 36px -10px rgba(64, 38, 118, 0.16);
+  box-shadow: 0 calc(16 * var(--su)) calc(36 * var(--su)) calc(-10 * var(--su)) rgba(64, 38, 118, 0.16);
 }
 
 .museum-inspector__info {
@@ -468,53 +469,53 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 5px;
+  gap: calc(7 * var(--su));
+  margin-bottom: calc(5 * var(--su));
 }
 
 .museum-era-lg {
-  font-size: 11px;
+  font-size: calc(11 * var(--su));
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 3px 9px;
+  padding: calc(3 * var(--su)) calc(9 * var(--su));
   border-radius: 999px;
   background: rgba(124, 86, 214, 0.14);
   color: #5733ab;
 }
 
 .museum-score-lg {
-  font-size: 12px;
+  font-size: calc(12 * var(--su));
   font-weight: 650;
   color: #217a5e;
 }
 
 .museum-inspector__notes {
-  margin: 0 0 4px;
-  font-size: 13px;
+  margin: 0 0 calc(4 * var(--su));
+  font-size: calc(13 * var(--su));
   color: #2d2547;
   line-height: 1.4;
 }
 
 .museum-inspector__blind {
   margin: 0;
-  font-size: 12px;
+  font-size: calc(12 * var(--su));
   color: #5d527a;
 }
 
 .museum-inspector__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 * var(--su));
   flex-shrink: 0;
 }
 
 .museum-nav-btn {
-  padding: 9px 13px;
+  padding: calc(9 * var(--su)) calc(13 * var(--su));
   border-radius: 999px;
   background: rgba(124, 86, 214, 0.1);
   color: #4f2ea1;
-  font-size: 12.5px;
+  font-size: calc(12.5 * var(--su));
   font-weight: 600;
 }
 
@@ -523,17 +524,18 @@
 }
 
 .museum-copy-btn {
-  padding: 9px 15px;
+  padding: calc(9 * var(--su)) calc(15 * var(--su));
   border-radius: 999px;
   background: linear-gradient(135deg, #8660d8, #633eb5);
   color: #ffffff;
-  font-size: 12.5px;
+  font-size: calc(12.5 * var(--su));
   font-weight: 600;
-  box-shadow: 0 6px 16px -4px rgba(99, 62, 181, 0.45);
+  box-shadow: 0 calc(6 * var(--su)) calc(16 * var(--su)) calc(-4 * var(--su)) rgba(99, 62, 181, 0.45);
 }
 
 @media (max-width: 900px) {
   .museum-shell {
+    --su: 1px;
     grid-template-columns: 1fr;
     grid-template-rows: 46vh 54vh;
   }

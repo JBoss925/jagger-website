@@ -109,12 +109,13 @@ export default function StudioPage() {
   const labelRefs = useRef<ProjectedLabelMap>({});
   const lastFocusedTriggerRef = useRef<HTMLElement | null>(null);
 
-  // Sliding Liquid Glass pill indicator measurement for top navigation bar
+  // Sliding Liquid Glass pill indicator measurement for top navigation bar (zoom-invariant %)
   const navRef = useRef<HTMLElement>(null);
   const navBtnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const [pillStyle, setPillStyle] = useState<{ left: number; width: number }>({
-    left: 0,
-    width: 0,
+  const appRef = useRef<HTMLDivElement>(null);
+  const [pillStyle, setPillStyle] = useState<{ leftPct: number; widthPct: number }>({
+    leftPct: 0,
+    widthPct: 0,
   });
 
   // Bottom dock scroll overflow detection & smooth navigation
@@ -125,12 +126,16 @@ export default function StudioPage() {
     const btn = navBtnRefs.current[section];
     const nav = navRef.current;
     if (!btn || !nav) return;
-    const navRect = nav.getBoundingClientRect();
-    const btnRect = btn.getBoundingClientRect();
-    setPillStyle({
-      left: btnRect.left - navRect.left,
-      width: btnRect.width,
-    });
+    const navW = nav.offsetWidth;
+    if (navW <= 0) return;
+    const nextLeftPct = (btn.offsetLeft / navW) * 100;
+    const nextWidthPct = (btn.offsetWidth / navW) * 100;
+    setPillStyle((prev) =>
+      Math.abs(prev.leftPct - nextLeftPct) < 0.08 &&
+      Math.abs(prev.widthPct - nextWidthPct) < 0.08
+        ? prev
+        : { leftPct: nextLeftPct, widthPct: nextWidthPct },
+    );
   }, [section]);
 
   const measureDockOverflow = useCallback(() => {
@@ -148,12 +153,36 @@ export default function StudioPage() {
   }, [measureNavPill, measureDockOverflow, isMobile, items.length, hasEntered]);
 
   useEffect(() => {
+    let resizeTimer: number | null = null;
+    const markResizing = () => {
+      const root = appRef.current;
+      if (root) root.classList.add("is-resizing");
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        appRef.current?.classList.remove("is-resizing");
+        resizeTimer = null;
+      }, 140);
+    };
     const onResize = () => {
+      markResizing();
       measureNavPill();
       measureDockOverflow();
     };
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        measureNavPill();
+        measureDockOverflow();
+      });
+      if (navRef.current) ro.observe(navRef.current);
+      if (dockScrollRef.current) ro.observe(dockScrollRef.current);
+    }
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      ro?.disconnect();
+    };
   }, [measureNavPill, measureDockOverflow]);
 
   // Reset dock scroll to the start when switching sections/categories (so item #1 is always visible first!)
@@ -478,6 +507,7 @@ export default function StudioPage() {
 
   return (
     <div
+      ref={appRef}
       className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${anyTheaterOpen ? "is-theater" : ""} ${showBootOverlay ? "is-boot-holding" : ""} ${bootRevealing ? "is-boot-revealing" : ""}`}
     >
       <a className="spatial-skip" href="#explorer-content">
@@ -594,9 +624,9 @@ export default function StudioPage() {
           <span
             className="spatial-nav__indicator"
             style={{
-              transform: `translateX(${pillStyle.left}px)`,
-              width: `${pillStyle.width}px`,
-              opacity: pillStyle.width > 0 ? 1 : 0,
+              left: `${pillStyle.leftPct.toFixed(3)}%`,
+              width: `${pillStyle.widthPct.toFixed(3)}%`,
+              opacity: pillStyle.widthPct > 0 ? 1 : 0,
             }}
             aria-hidden="true"
           />
