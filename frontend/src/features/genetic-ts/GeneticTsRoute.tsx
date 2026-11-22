@@ -1,5 +1,4 @@
-import SiteNavigation from "../../components/SiteNavigation";
-import { profileContent } from "../../content/profile";
+import DemoBrandBar from "../../components/DemoBrandBar";
 import { usePageReveal } from "../../hooks/usePageReveal";
 import { GeneticTsPage } from "@genetic-ts";
 
@@ -18,7 +17,7 @@ function GeneticTsRoute() {
         <div className="scene-static__gradient" />
         <div className="scene-static__grid" />
       </div>
-      <SiteNavigation sections={profileContent.sceneSections} />
+      <DemoBrandBar />
 
       <main className="content-shell ide-shell">
         <GeneticTsPage />

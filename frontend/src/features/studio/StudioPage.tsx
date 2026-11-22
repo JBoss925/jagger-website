@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import { useStudioViewport } from "../../utils/scaleUnit";
 import DetailSheet from "./DetailSheet";
 import MobilePortfolio from "./MobilePortfolio";
 import SpatialStage, { type ProjectedLabelMap } from "./SpatialStage";
@@ -43,7 +43,7 @@ function resolveSection(params: URLSearchParams): SectionId {
 export default function StudioPage() {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
-  const isMobile = useMediaQuery("(max-width: 820px)");
+  const { isMobile, isCompactHeader, isCompactAudio } = useStudioViewport();
   const prefersReducedMotion = usePrefersReducedMotion();
 
   const section = resolveSection(params);
@@ -67,10 +67,7 @@ export default function StudioPage() {
     const reduced =
       typeof window !== "undefined" &&
       Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
-    const narrowMobile =
-      typeof window !== "undefined" &&
-      Boolean(window.matchMedia?.("(max-width: 820px)").matches);
-    return reduced || narrowMobile;
+    return reduced || isMobile;
   });
   const [bootExiting, setBootExiting] = useState(false);
   const [bootRevealing, setBootRevealing] = useState(false);
@@ -508,7 +505,7 @@ export default function StudioPage() {
   return (
     <div
       ref={appRef}
-      className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${anyTheaterOpen ? "is-theater" : ""} ${showBootOverlay ? "is-boot-holding" : ""} ${bootRevealing ? "is-boot-revealing" : ""}`}
+      className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${anyTheaterOpen ? "is-theater" : ""} ${showBootOverlay ? "is-boot-holding" : ""} ${bootRevealing ? "is-boot-revealing" : ""} ${isCompactHeader ? "is-compact-header" : ""} ${isCompactAudio ? "is-compact-audio" : ""}`}
     >
       <a className="spatial-skip" href="#explorer-content">
         Skip to content

@@ -2,8 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./app/App";
+import { initScaleInvariantUnit } from "./utils/scaleUnit";
 import "./styles/global.css";
 import "@jagger-ui/styles/liquid-glass.css";
+
+initScaleInvariantUnit();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

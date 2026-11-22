@@ -37,8 +37,7 @@
     inset 0 -1px 0 rgba(154, 122, 218, 0.18),
     0 0 0 0.5px rgba(132, 102, 196, 0.16);
   --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
-  /* 1080p reference density unit: 1px at 1920x1080, scales proportionally across all resolutions */
-  --su: clamp(0.5px, min(calc(100vw / 1920), calc(100svh / 1000)), 2.5px);
+  /* --su is set on :root by initScaleInvariantUnit() so it stays both zoom-invariant and window-size-invariant */
 
   position: relative;
   width: 100vw;
@@ -462,55 +461,14 @@
   transition: transform 0.25s var(--ease-apple), box-shadow 0.25s;
 }
 
-@media (max-aspect-ratio: 11/9) {
-  .spatial-header {
-    left: calc(16 * var(--su));
-    right: calc(16 * var(--su));
-    gap: calc(10 * var(--su));
-  }
-  .spatial-brand {
-    padding: calc(6 * var(--su)) calc(12 * var(--su)) calc(6 * var(--su)) calc(7 * var(--su));
-    gap: calc(8 * var(--su));
-  }
-  .spatial-nav button {
-    padding: calc(8 * var(--su)) calc(12 * var(--su));
-    font-size: calc(12.5 * var(--su));
-  }
-  .spatial-header__link {
-    padding: calc(8 * var(--su)) calc(12 * var(--su));
-    font-size: calc(12.5 * var(--su));
-  }
-  .spatial-header__cta {
-    padding: calc(8 * var(--su)) calc(14 * var(--su));
-    font-size: calc(12.5 * var(--su));
-  }
-  .spatial-hero {
-    top: calc(78 * var(--su));
-    left: calc(20 * var(--su));
-    max-width: calc(320 * var(--su));
-  }
-  .spatial-hero__eyebrow {
-    margin-bottom: calc(5 * var(--su));
-    font-size: calc(10.5 * var(--su));
-  }
-  .spatial-hero__title {
-    margin-bottom: calc(6 * var(--su));
-    font-size: calc(31 * var(--su));
-  }
-  .spatial-categories {
-    margin: calc(8 * var(--su)) 0 calc(8 * var(--su)) calc(-4 * var(--su));
-    padding: calc(3 * var(--su));
-  }
-  .spatial-categories button {
-    padding: calc(5 * var(--su)) calc(9 * var(--su));
-    font-size: calc(11.5 * var(--su));
-  }
-  .spatial-hero__desc {
-    font-size: calc(12.5 * var(--su));
-    line-height: 1.44;
-    max-width: calc(310 * var(--su));
-    min-height: calc(36 * var(--su));
-  }
+/* On narrower desktop windows (e.g. half-screen 1440p), keep every element at full scale
+   and let the 3 header groups distribute evenly instead of forcing symmetric 1fr side columns. */
+.spatial-app.is-compact-header .spatial-header {
+  grid-template-columns: auto auto auto;
+  justify-content: space-between;
+  left: calc(18 * var(--su));
+  right: calc(18 * var(--su));
+  gap: calc(10 * var(--su));
 }
 
 .spatial-header__cta:hover {
@@ -842,22 +800,20 @@
   }
 }
 
-@media (max-aspect-ratio: 11/9) {
-  .spatial-dock-wrap {
-    left: calc(112 * var(--su));
-    right: calc(112 * var(--su));
-  }
-  .spatial-audio-controls {
-    left: calc(16 * var(--su));
-  }
-  .spatial-audio-btn {
-    width: calc(34 * var(--su));
-    padding: 0;
-    justify-content: center;
-  }
-  .spatial-audio-btn__label {
-    display: none;
-  }
+.spatial-app.is-compact-audio .spatial-dock-wrap {
+  left: calc(112 * var(--su));
+  right: calc(112 * var(--su));
+}
+.spatial-app.is-compact-audio .spatial-audio-controls {
+  left: calc(16 * var(--su));
+}
+.spatial-app.is-compact-audio .spatial-audio-btn {
+  width: calc(34 * var(--su));
+  padding: 0;
+  justify-content: center;
+}
+.spatial-app.is-compact-audio .spatial-audio-btn__label {
+  display: none;
 }
 
 .spatial-audio-controls--mobile {
