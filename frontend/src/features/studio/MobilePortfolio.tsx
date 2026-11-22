@@ -1,8 +1,10 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type TouchEvent as ReactTouchEvent,
 } from "react";
 import { Link } from "react-router-dom";
 import { profileContent } from "../../content/profile";
@@ -70,25 +72,85 @@ export default function MobilePortfolio({
   const [isDragging, setIsDragging] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [audioState, setAudioState] = useState(() => soundEngine.getState());
+  const [viewportRect, setViewportRect] = useState<{ top: number; height: number } | null>(null);
   const dragStartY = useRef<number | null>(null);
   const dragStartTime = useRef(0);
+  const tabSwipeRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    lastX: number;
+    lastY: number;
+    startTime: number;
+    axis: "x" | "y" | null;
+  }>({
+    active: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    startTime: 0,
+    axis: null,
+  });
 
   useEffect(() => soundEngine.subscribe(setAudioState), []);
 
-  // Lock background scroll while bottom drawer or résumé viewer is open
-  useEffect(() => {
+  // Reset drag state immediately whenever the open drawer item changes or closes,
+  // and pin the drawer backdrop to window.visualViewport so iOS Safari fast-scroll
+  // layout-viewport lag or toolbar collapse never stops the drawer short of the top.
+  useLayoutEffect(() => {
+    dragStartY.current = null;
+    setDragY(0);
+    setIsDragging(false);
+    setIsClosing(false);
+
     if (!selected && !resumeOpen) {
-      setDragY(0);
-      setIsDragging(false);
-      setIsClosing(false);
+      setViewportRect(null);
       return;
     }
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
+
+    // Halt any ongoing iOS momentum scroll deceleration so layout & visual viewports lock cleanly
+    window.scrollTo(0, window.scrollY);
+
+    const syncViewport = () => {
+      const vv = window.visualViewport;
+      const nextTop = vv ? Math.max(0, Math.round(vv.offsetTop)) : 0;
+      const nextHeight = vv ? Math.round(vv.height) : window.innerHeight;
+      setViewportRect((prev) =>
+        prev && prev.top === nextTop && prev.height === nextHeight
+          ? prev
+          : { top: nextTop, height: nextHeight },
+      );
     };
-  }, [selected, resumeOpen]);
+
+    syncViewport();
+    const raf1 = window.requestAnimationFrame(syncViewport);
+    const timer1 = window.setTimeout(syncViewport, 60);
+    const timer2 = window.setTimeout(syncViewport, 220);
+
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", syncViewport);
+    vv?.addEventListener("scroll", syncViewport);
+    window.addEventListener("resize", syncViewport);
+    window.addEventListener("scroll", syncViewport, { passive: true });
+
+    const prevOverflow = document.body.style.overflow;
+    const prevOverscroll = document.body.style.overscrollBehaviorY;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehaviorY = "none";
+
+    return () => {
+      window.cancelAnimationFrame(raf1);
+      window.clearTimeout(timer1);
+      window.clearTimeout(timer2);
+      vv?.removeEventListener("resize", syncViewport);
+      vv?.removeEventListener("scroll", syncViewport);
+      window.removeEventListener("resize", syncViewport);
+      window.removeEventListener("scroll", syncViewport);
+      document.body.style.overflow = prevOverflow;
+      document.body.style.overscrollBehaviorY = prevOverscroll;
+    };
+  }, [selected?.uid, resumeOpen]);
 
   const dismissDrawerAnimated = () => {
     setIsClosing(true);
@@ -104,11 +166,16 @@ export default function MobilePortfolio({
     if (e.button !== 0 && e.pointerType === "mouse") return;
     dragStartY.current = e.clientY;
     dragStartTime.current = performance.now();
-    setIsDragging(true);
+    let draggingStarted = false;
 
     const onMove = (moveEvent: PointerEvent) => {
       if (dragStartY.current === null) return;
       const dy = moveEvent.clientY - dragStartY.current;
+      if (!draggingStarted) {
+        if (Math.abs(dy) < 5) return;
+        draggingStarted = true;
+        setIsDragging(true);
+      }
       // Allow downward pull freely; gentle rubber-band resistance upward
       setDragY(dy > 0 ? dy : dy * 0.14);
     };
@@ -126,7 +193,7 @@ export default function MobilePortfolio({
       dragStartY.current = null;
       setIsDragging(false);
 
-      if (dy > 110 || (dy > 45 && velocity > 0.45)) {
+      if (draggingStarted && (dy > 110 || (dy > 45 && velocity > 0.45))) {
         dismissDrawerAnimated();
       } else {
         setDragY(0);
@@ -155,6 +222,78 @@ export default function MobilePortfolio({
     }
   };
 
+  const handlePageTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (selected || resumeOpen || e.touches.length !== 1) {
+      tabSwipeRef.current.active = false;
+      return;
+    }
+    const target = e.target;
+    if (target instanceof Element) {
+      const scroller = target.closest(".mobile-filters, .mobile-nav");
+      if (scroller && scroller.scrollWidth > scroller.clientWidth + 4) {
+        tabSwipeRef.current.active = false;
+        return;
+      }
+    }
+    const t = e.touches[0];
+    tabSwipeRef.current = {
+      active: true,
+      startX: t.clientX,
+      startY: t.clientY,
+      lastX: t.clientX,
+      lastY: t.clientY,
+      startTime: performance.now(),
+      axis: null,
+    };
+  };
+
+  const handlePageTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    const st = tabSwipeRef.current;
+    if (!st.active || selected || resumeOpen || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    st.lastX = t.clientX;
+    st.lastY = t.clientY;
+    const dx = t.clientX - st.startX;
+    const dy = t.clientY - st.startY;
+    if (st.axis === null) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx) * 0.85) {
+        st.axis = "y";
+      } else if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+        st.axis = "x";
+      }
+    }
+  };
+
+  const handlePageTouchEnd = () => {
+    const st = tabSwipeRef.current;
+    if (!st.active || selected || resumeOpen) return;
+    st.active = false;
+    if (st.axis !== "x") return;
+
+    const dx = st.lastX - st.startX;
+    const dy = st.lastY - st.startY;
+    const dt = Math.max(1, performance.now() - st.startTime);
+    const vx = Math.abs(dx) / dt;
+
+    if (
+      Math.abs(dx) > Math.abs(dy) * 1.25 &&
+      (Math.abs(dx) >= 44 || (Math.abs(dx) >= 26 && vx >= 0.3))
+    ) {
+      const direction = dx < 0 ? 1 : -1;
+      const currIdx = SECTIONS.findIndex((s) => s.id === section);
+      const next =
+        SECTIONS[(currIdx + direction + SECTIONS.length) % SECTIONS.length];
+      if (next && next.id !== section) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        onSectionChange(next.id);
+      }
+    }
+  };
+
+  const handlePageTouchCancel = () => {
+    tabSwipeRef.current.active = false;
+  };
+
   const eyebrowCount =
     section === "projects" && category !== "all"
       ? `${String(items.length).padStart(2, "0")} OF ${profileContent.projects.length} ARTIFACTS`
@@ -168,8 +307,22 @@ export default function MobilePortfolio({
 
   const backdropAlpha = Math.max(0, 1 - dragY / 420);
 
+  const backdropStyle = viewportRect
+    ? {
+        top: `${viewportRect.top}px`,
+        height: `${viewportRect.height}px`,
+        bottom: "auto",
+      }
+    : undefined;
+
   return (
-    <div className="mobile-portfolio">
+    <div
+      className="mobile-portfolio"
+      onTouchStart={handlePageTouchStart}
+      onTouchMove={handlePageTouchMove}
+      onTouchEnd={handlePageTouchEnd}
+      onTouchCancel={handlePageTouchCancel}
+    >
       <header className="mobile-header">
         <div className="mobile-header__top">
           <Link
@@ -177,6 +330,7 @@ export default function MobilePortfolio({
             className="mobile-brand"
             onClick={(e) => {
               e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "instant" });
               onSectionChange("experience");
             }}
           >
@@ -199,7 +353,10 @@ export default function MobilePortfolio({
               key={s.id}
               type="button"
               aria-current={section === s.id ? "page" : undefined}
-              onClick={() => onSectionChange(s.id)}
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "instant" });
+                onSectionChange(s.id);
+              }}
             >
               {s.id === "experience" ? "Work" : s.label}
             </button>
@@ -382,7 +539,10 @@ export default function MobilePortfolio({
           role="dialog"
           aria-modal="true"
           aria-label="Résumé viewer"
-          style={{ backgroundColor: "rgba(31, 23, 44, 0.3)" }}
+          style={{
+            ...backdropStyle,
+            backgroundColor: "rgba(31, 23, 44, 0.3)",
+          }}
           onClick={(e) => {
             if (e.target === e.currentTarget) onCloseResume();
           }}
@@ -436,6 +596,7 @@ export default function MobilePortfolio({
           aria-modal="true"
           aria-labelledby="mobile-drawer-title"
           style={{
+            ...backdropStyle,
             backgroundColor: `rgba(31, 23, 44, ${(0.28 * backdropAlpha).toFixed(3)})`,
           }}
           onClick={(e) => {

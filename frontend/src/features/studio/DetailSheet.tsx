@@ -77,6 +77,8 @@ export default function DetailSheet({
     const el = panelRef.current;
     if (!isMobile || !el || theaterOpen) return;
 
+    const mountedAt = performance.now();
+    let hasTouchStart = false;
     let startX = 0;
     let startY = 0;
     let pullOriginY = 0;
@@ -87,7 +89,10 @@ export default function DetailSheet({
 
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
+      // Ignore residual touches during the initial drawer opening frames
+      if (performance.now() - mountedAt < 180) return;
       const t = e.touches[0];
+      hasTouchStart = true;
       startX = t.clientX;
       startY = t.clientY;
       pullOriginY = t.clientY;
@@ -98,7 +103,7 @@ export default function DetailSheet({
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length !== 1) return;
+      if (!hasTouchStart || e.touches.length !== 1) return;
       const t = e.touches[0];
       const dx = t.clientX - startX;
       const dy = t.clientY - startY;
@@ -133,6 +138,7 @@ export default function DetailSheet({
     };
 
     const finishPull = () => {
+      hasTouchStart = false;
       if (!pulling) return;
       pulling = false;
       const dt = Math.max(1, performance.now() - pullStartTime);
@@ -143,13 +149,13 @@ export default function DetailSheet({
 
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("touchend", finishPull, { passive: true });
-    el.addEventListener("touchcancel", finishPull, { passive: true });
+    window.addEventListener("touchend", finishPull, { passive: true });
+    window.addEventListener("touchcancel", finishPull, { passive: true });
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("touchend", finishPull);
-      el.removeEventListener("touchcancel", finishPull);
+      window.removeEventListener("touchend", finishPull);
+      window.removeEventListener("touchcancel", finishPull);
     };
   }, [isMobile, theaterOpen, item.uid]);
   const resolvedTitleId = titleId ?? `${uid}-title`;
@@ -203,8 +209,10 @@ export default function DetailSheet({
     setActiveViewHref(null);
     onTheaterChange(false);
     panelRef.current?.scrollTo?.({ top: 0 });
-    headingRef.current?.focus({ preventScroll: true });
-  }, [item.uid]);
+    if (!isMobile) {
+      headingRef.current?.focus({ preventScroll: true });
+    }
+  }, [item.uid, isMobile]);
 
   useEffect(() => {
     // When theater is closed externally (e.g., via Escape key), reset inner states cleanly

@@ -26,7 +26,7 @@ const SPARKLE_POOLS: number[][] = [
 
 const MUSIC_MUTE_KEY = "jagger:music-muted";
 const SFX_MUTE_KEY = "jagger:sfx-muted";
-const MASTER_TARGET_GAIN = 0.28;
+const MASTER_TARGET_GAIN = 0.36;
 
 export type AudioStateSnapshot = {
   musicMuted: boolean;
@@ -219,7 +219,7 @@ class SpatialSoundEngine {
         master.gain.value = MASTER_TARGET_GAIN;
 
         const sfxBus = ctx.createGain();
-        sfxBus.gain.value = this.sfxMuted ? 0.0001 : 1.25;
+        sfxBus.gain.value = this.sfxMuted ? 0.0001 : 1.6;
 
         const ambientBus = ctx.createGain();
         ambientBus.gain.value = 0.0001;
@@ -229,7 +229,7 @@ class SpatialSoundEngine {
             ? ctx.createDynamicsCompressor()
             : null;
         if (compressor) {
-          compressor.threshold.value = -15;
+          compressor.threshold.value = -10;
           compressor.knee.value = 20;
           compressor.ratio.value = 3.0;
           compressor.attack.value = 0.01;
@@ -246,7 +246,7 @@ class SpatialSoundEngine {
           reverb.buffer = this.buildHallImpulse(ctx);
 
           sfxReverbSend = ctx.createGain();
-          sfxReverbSend.gain.value = 0.42;
+          sfxReverbSend.gain.value = 0.54;
           sfxReverbSend.connect(reverb);
 
           ambientReverbSend = ctx.createGain();
@@ -312,13 +312,12 @@ class SpatialSoundEngine {
     const tabHidden = typeof document !== "undefined" && document.hidden;
 
     if (this.ambientBus) {
-      // Tucked softly into the background (~45% of previous level) so UI blips pop clearly above it!
       const musicTarget =
         this.musicMuted || tabHidden
           ? 0.0001
           : this.theaterDucked
-            ? 0.04
-            : 0.16;
+            ? 0.052
+            : 0.21;
       this.ambientBus.gain.cancelScheduledValues(now);
       this.ambientBus.gain.setTargetAtTime(
         musicTarget,
@@ -328,12 +327,12 @@ class SpatialSoundEngine {
     }
 
     if (this.sfxBus) {
-      const sfxTarget = this.sfxMuted ? 0.0001 : 1.25;
+      const sfxTarget = this.sfxMuted ? 0.0001 : 1.6;
       this.sfxBus.gain.cancelScheduledValues(now);
       this.sfxBus.gain.setTargetAtTime(sfxTarget, now, 0.03);
     }
     if (this.sfxReverbSend) {
-      const wetTarget = this.sfxMuted ? 0.0001 : 0.42;
+      const wetTarget = this.sfxMuted ? 0.0001 : 0.54;
       this.sfxReverbSend.gain.cancelScheduledValues(now);
       this.sfxReverbSend.gain.setTargetAtTime(wetTarget, now, 0.03);
     }
