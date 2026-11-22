@@ -123,7 +123,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     await expect(
       page.getByRole("button", { name: "Close detail sheet" }),
     ).toHaveCount(0);
-    await expect(fullLink).toHaveAttribute("href", "/papers/ojaml");
+    await expect(fullLink).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5176\/ojaml$/);
 
     // Clicking already-active Paper tab must NOT accidentally close theater
     await paperBtn.click();
@@ -131,7 +131,7 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
 
     // Switch to Docs and verify URL + iframe update
     await docsBtn.click();
-    await expect(fullLink).toHaveAttribute("href", "/docs/ojaml");
+    await expect(fullLink).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5175\/ojaml$/);
     await expect(
       page.locator('iframe[title="OJaml documentation"]'),
     ).toBeVisible();
@@ -156,10 +156,10 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     // External new-tab link still exists on every card
     await expect(
       page.getByRole("link", { name: "Open Interactive 3D in new tab" }),
-    ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
+    ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5185$/);
     await expect(
       page.getByRole("link", { name: "Open Design in new tab" }),
-    ).toHaveAttribute("href", "https://design.jaggerbrulato.com");
+    ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5183$/);
 
     // Clicking the card opens Interactive 3D inside the in-app theater!
     await page.getByRole("button", { name: /Interactive 3D/ }).click();
@@ -167,29 +167,29 @@ test.describe("Comprehensive user flows & overlay hit-testing", () => {
     const viewFrame = page.locator(
       'iframe[title="Interactive 3D portfolio view"]',
     );
-    await expect(viewFrame).toHaveAttribute("src", "https://interactive3d.jaggerbrulato.com");
+    await expect(viewFrame).toHaveAttribute("src", /^http:\/\/(localhost|127\.0\.0\.1):5185$/);
     await expect(
       page.getByRole("link", { name: /Open full page/ }),
-    ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
+    ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5185$/);
 
     // Switch live inside theater to Design -> Editor -> Finance
     await page.getByRole("button", { name: "Design", exact: true }).click();
     await expect(
       page.locator('iframe[title="Design portfolio view"]'),
-    ).toHaveAttribute("src", "https://design.jaggerbrulato.com");
+    ).toHaveAttribute("src", /^http:\/\/(localhost|127\.0\.0\.1):5183$/);
     await expect(
       page.getByRole("link", { name: /Open full page/ }),
-    ).toHaveAttribute("href", "https://design.jaggerbrulato.com");
+    ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5183$/);
 
     await page.getByRole("button", { name: "Editor", exact: true }).click();
     await expect(
       page.locator('iframe[title="Editor portfolio view"]'),
-    ).toHaveAttribute("src", "https://editor.jaggerbrulato.com");
+    ).toHaveAttribute("src", /^http:\/\/(localhost|127\.0\.0\.1):5182$/);
 
     await page.getByRole("button", { name: "Finance", exact: true }).click();
     await expect(
       page.locator('iframe[title="Finance portfolio view"]'),
-    ).toHaveAttribute("src", "https://finance.jaggerbrulato.com");
+    ).toHaveAttribute("src", /^http:\/\/(localhost|127\.0\.0\.1):5184$/);
 
     // Return to sculpture stays right on About -> Portfolio Views
     const returnBtn = page.getByRole("button", { name: /Return to sculpture/ });

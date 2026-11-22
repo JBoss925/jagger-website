@@ -2,7 +2,7 @@ import type { ProjectEntry } from "../types/content";
 import CardDisclosure from "./CardDisclosure";
 import { getLinkToneClass, inferChipTone, sortChipLabels } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
-import { resolveSiteHref } from "../utils/siteUrls";
+import { resolveSiteHref, subdomainHref } from "../utils/siteUrls";
 import {
   DomesIcon,
   GeneticIcon,
@@ -43,7 +43,7 @@ function ProjectCard({ project, id }: ProjectCardProps) {
 
   const links = project.links.flatMap((link) =>
     link.label.toLowerCase() === "source" && documentedProjects.has(project.slug)
-      ? [link, { label: "Docs", href: `${(import.meta.env.VITE_DOCS_URL || "https://docs.jaggerbrulato.com").replace(/\/+$/, "")}/${project.slug}` }]
+      ? [link, { label: "Docs", href: subdomainHref(import.meta.env.VITE_DOCS_URL, 5175, "https://docs.jaggerbrulato.com", `/${project.slug}`) }]
       : [link]
   );
 

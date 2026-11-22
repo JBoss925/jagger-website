@@ -50,10 +50,19 @@ const projectCodes: Record<string, string> = {
   "tsxlight-renderer": "TSXL"
 };
 
+function isLocalHost(): boolean {
+  if (import.meta.env.MODE === "test") return false;
+  if (typeof window !== "undefined" && window.location) {
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "[::1]" || h === "0.0.0.0" || h.endsWith(".localhost");
+  }
+  return Boolean(import.meta.env.DEV);
+}
+
 function mainSiteHref(path = "") {
   const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) return `${configured}${path}`;
-  if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
+  if (isLocalHost() || import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
 }
 

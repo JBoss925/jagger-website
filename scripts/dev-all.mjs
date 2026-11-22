@@ -7,8 +7,6 @@
  * the alternate portfolio editions (frontend-v2..v5), injecting VITE_*_URL env
  * vars so every cross-subdomain link, iframe, and deep link resolves locally.
  *
- * Missing sibling repos gracefully fall back to their live production URLs.
- *
  * Usage:
  *   npm run dev          # Start everything (main + all subdomains + v2..v5 editions)
  *   npm run dev:core     # Start main + Games, Docs, Papers, Arena, JetStream, Risk
@@ -16,7 +14,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,6 +43,14 @@ const RESET = "\x1b[0m";
 const DIM = "\x1b[2m";
 const BOLD = "\x1b[1m";
 
+function viteCmd(cwd, port) {
+  const localVite = path.join(cwd, "node_modules", ".bin", "vite");
+  if (fs.existsSync(localVite)) {
+    return [localVite, "--host", "0.0.0.0", "--port", String(port), "--strictPort"];
+  }
+  return ["npx", "vite", "--host", "0.0.0.0", "--port", String(port), "--strictPort"];
+}
+
 const SERVICES = [
   {
     id: "portfolio",
@@ -53,7 +59,6 @@ const SERVICES = [
     port: 5173,
     prodUrl: "https://jaggerbrulato.com",
     cwd: path.join(repoRoot, "frontend"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5173", "--strictPort"],
     core: true,
   },
   {
@@ -63,7 +68,6 @@ const SERVICES = [
     port: 5174,
     prodUrl: "https://games.jaggerbrulato.com",
     cwd: path.join(workspaceRoot, "jagger-games"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5174", "--strictPort"],
     core: true,
   },
   {
@@ -73,7 +77,6 @@ const SERVICES = [
     port: 5175,
     prodUrl: "https://docs.jaggerbrulato.com",
     cwd: path.join(workspaceRoot, "jagger-docs"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5175", "--strictPort"],
     core: true,
   },
   {
@@ -83,7 +86,6 @@ const SERVICES = [
     port: 5176,
     prodUrl: "https://papers.jaggerbrulato.com",
     cwd: path.join(workspaceRoot, "jagger-papers"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5176", "--strictPort"],
     core: true,
   },
   {
@@ -93,7 +95,6 @@ const SERVICES = [
     port: 5177,
     prodUrl: "https://arena.jaggerbrulato.com",
     cwd: path.join(workspaceRoot, "RandomArena"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5177", "--strictPort"],
     core: true,
   },
   {
@@ -103,7 +104,6 @@ const SERVICES = [
     port: 5178,
     prodUrl: "https://jetstream.jaggerbrulato.com",
     cwd: path.join(workspaceRoot, "JetStream", "apps", "web"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5178", "--strictPort"],
     extraEnv: { VITE_WEATHER_DATA_SOURCE: "direct" },
     core: true,
   },
@@ -125,7 +125,6 @@ const SERVICES = [
     port: 5182,
     prodUrl: "https://editor.jaggerbrulato.com",
     cwd: path.join(repoRoot, "frontend-v2"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5182", "--strictPort"],
     core: false,
   },
   {
@@ -135,7 +134,6 @@ const SERVICES = [
     port: 5183,
     prodUrl: "https://design.jaggerbrulato.com",
     cwd: path.join(repoRoot, "frontend-v3"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5183", "--strictPort"],
     core: false,
   },
   {
@@ -145,7 +143,6 @@ const SERVICES = [
     port: 5184,
     prodUrl: "https://finance.jaggerbrulato.com",
     cwd: path.join(repoRoot, "frontend-v4"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5184", "--strictPort"],
     core: false,
   },
   {
@@ -155,7 +152,6 @@ const SERVICES = [
     port: 5185,
     prodUrl: "https://interactive3d.jaggerbrulato.com",
     cwd: path.join(repoRoot, "frontend-v5"),
-    command: ["npx", "vite", "--host", "0.0.0.0", "--port", "5185", "--strictPort"],
     core: false,
   },
 ];
@@ -172,8 +168,15 @@ for (const svc of selected) {
   }
 }
 
-// Build shared VITE_*_URL env map for every locally running service.
-// Any skipped/missing repo stays unset so apps gracefully fall back to production URLs.
+// Cleanly release any stale listeners on our target ports before spawning
+for (const svc of available) {
+  try {
+    execSync(`fuser -k ${svc.port}/tcp 2>/dev/null || true`, { stdio: "ignore" });
+  } catch {
+    // ignore
+  }
+}
+
 const sharedEnv = { ...process.env };
 for (const svc of available) {
   sharedEnv[svc.envKey] = `http://localhost:${svc.port}`;
@@ -193,14 +196,14 @@ if (skipped.length > 0) {
 }
 console.log(`\n${DIM}Press Ctrl+C to stop all servers cleanly.${RESET}\n`);
 
-const children = [];
+const children = new Map();
 let shuttingDown = false;
 
 function shutdown(signal = "SIGTERM") {
   if (shuttingDown) return;
   shuttingDown = true;
-  console.log(`\n${DIM}Stopping ${children.length} dev servers...${RESET}`);
-  for (const child of children) {
+  console.log(`\n${DIM}Stopping ${children.size} dev servers...${RESET}`);
+  for (const child of children.values()) {
     if (!child.killed) {
       try {
         process.kill(-child.pid, signal);
@@ -227,7 +230,6 @@ function streamLines(stream, prefix, isErr = false) {
     buffer = lines.pop() ?? "";
     for (const line of lines) {
       if (!line.trim()) continue;
-      // Filter noisy empty Vite ANSI clear screens
       const clean = line.replace(/\x1b\[2J|\x1b\[3J|\x1b\[H|\x1b\[1;1H/g, "");
       if (!clean.trim()) continue;
       (isErr ? process.stderr : process.stdout).write(`${prefix} ${clean}\n`);
@@ -235,10 +237,10 @@ function streamLines(stream, prefix, isErr = false) {
   });
 }
 
-available.forEach((svc, idx) => {
+function startService(svc, idx) {
   const color = COLORS[idx % COLORS.length];
   const prefix = `${color}[${svc.id.padEnd(13)}]${RESET}`;
-  const [cmd, ...cmdArgs] = svc.command;
+  const [cmd, ...cmdArgs] = svc.command ?? viteCmd(svc.cwd, svc.port);
   const child = spawn(cmd, cmdArgs, {
     cwd: svc.cwd,
     env: { ...sharedEnv, ...(svc.extraEnv || {}) },
@@ -246,13 +248,18 @@ available.forEach((svc, idx) => {
     detached: true,
   });
 
-  children.push(child);
+  children.set(svc.id, child);
   streamLines(child.stdout, prefix, false);
   streamLines(child.stderr, prefix, true);
 
   child.on("exit", (code, signal) => {
     if (!shuttingDown) {
-      console.error(`${prefix} exited (code=${code ?? "null"}, signal=${signal ?? "null"})`);
+      console.error(`${prefix} exited unexpectedly (code=${code ?? "null"}, signal=${signal ?? "null"}), restarting in 1s...`);
+      setTimeout(() => {
+        if (!shuttingDown) startService(svc, idx);
+      }, 1000).unref();
     }
   });
-});
+}
+
+available.forEach((svc, idx) => startService(svc, idx));

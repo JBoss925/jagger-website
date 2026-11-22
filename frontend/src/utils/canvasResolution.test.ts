@@ -3,6 +3,7 @@ import {
   CANVAS_DIMENSION_LIMIT,
   CANVAS_PIXEL_BUDGET,
   computeCanvasPixelRatio,
+  installBoundedCanvasSizing,
 } from "./canvasResolution";
 
 const zoomLevels = [0.25, 1 / 3, 0.5, 1, 5];
@@ -79,5 +80,78 @@ describe("zoom-invariant canvas resolution", () => {
   it("handles temporarily unavailable viewport or display measurements", () => {
     expect(computeCanvasPixelRatio(0, Number.NaN, 0)).toBe(1.5);
     expect(computeCanvasPixelRatio(1920, 980, Number.NaN)).toBe(1.5);
+  });
+});
+
+describe("bounded renderer updates", () => {
+  function fakeRenderer() {
+    let ratio = 1;
+    const allocations: Array<{ width: number; height: number; ratio: number }> =
+      [];
+    const renderer = {
+      domElement: {
+        width: 300,
+        height: 150,
+        style: { width: "300px", height: "150px" },
+      },
+      getPixelRatio: () => ratio,
+      setPixelRatio: (value: number) => {},
+      setSize: (width: number, height: number, updateStyle = true) => {},
+      setDrawingBufferSize: (
+        width: number,
+        height: number,
+        nextRatio: number,
+      ) => {
+        ratio = nextRatio;
+        renderer.domElement.width = Math.floor(width * ratio);
+        renderer.domElement.height = Math.floor(height * ratio);
+        allocations.push({
+          width: width * ratio,
+          height: height * ratio,
+          ratio,
+        });
+      },
+    };
+    installBoundedCanvasSizing(renderer);
+    return { renderer, allocations };
+  }
+  it.each(["size-first", "ratio-first"] as const)(
+    "bounds every intermediate allocation when updates arrive %s",
+    (order) => {
+      const { renderer, allocations } = fakeRenderer();
+      for (const zoom of [1, 5, 1, 0.25, 5, 0.25, 1]) {
+        const width = 2560 / zoom,
+          height = 1340 / zoom,
+          ratio = computeCanvasPixelRatio(width, height, zoom);
+        if (order === "size-first") {
+          renderer.setSize(width, height);
+          renderer.setPixelRatio(ratio);
+        } else {
+          renderer.setPixelRatio(ratio);
+          renderer.setSize(width, height);
+        }
+        expect(renderer.domElement.width).toBeCloseTo(3840, 0);
+        expect(renderer.domElement.height).toBeCloseTo(2010, 0);
+      }
+      for (const allocation of allocations) {
+        expect(allocation.width * allocation.height).toBeLessThanOrEqual(
+          CANVAS_PIXEL_BUDGET + 0.001,
+        );
+        expect(
+          Math.max(allocation.width, allocation.height),
+        ).toBeLessThanOrEqual(CANVAS_DIMENSION_LIMIT + 0.001);
+      }
+    },
+  );
+  it("keeps the requested ratio after an intermediate clamp and honors CSS style suppression", () => {
+    const { renderer } = fakeRenderer();
+    renderer.setSize(2560, 1340);
+    renderer.setPixelRatio(7.5);
+    expect(renderer.getPixelRatio()).toBeLessThan(7.5);
+    renderer.setSize(512, 268, false);
+    expect(renderer.getPixelRatio()).toBe(7.5);
+    expect(renderer.domElement.style.width).toBe("2560px");
+    renderer.setSize(512, 268);
+    expect(renderer.domElement.style.width).toBe("512px");
   });
 });

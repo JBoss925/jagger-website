@@ -35,10 +35,19 @@ const wideProjectIndexes = profileContent.projects.flatMap((project, index) =>
   project.slug === "jagger-games" || project.slug === "portfolio-site" ? [index] : []
 );
 
+function isLocalHost(): boolean {
+  if (import.meta.env.MODE === "test") return false;
+  if (typeof window !== "undefined" && window.location) {
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "[::1]" || h === "0.0.0.0" || h.endsWith(".localhost");
+  }
+  return Boolean(import.meta.env.DEV);
+}
+
 function editorSiteHref() {
   const configured = (import.meta.env.VITE_EDITOR_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) return configured;
-  if (import.meta.env.DEV) {
+  if (isLocalHost() || import.meta.env.DEV) {
     return `${window.location.protocol}//${window.location.hostname}:5182`;
   }
 
@@ -48,7 +57,7 @@ function editorSiteHref() {
 function designSiteHref() {
   const configured = (import.meta.env.VITE_DESIGN_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) return configured;
-  if (import.meta.env.DEV) {
+  if (isLocalHost() || import.meta.env.DEV) {
     return `${window.location.protocol}//${window.location.hostname}:5183`;
   }
 
@@ -58,7 +67,7 @@ function designSiteHref() {
 function financeSiteHref() {
   const configured = (import.meta.env.VITE_FINANCE_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) return configured;
-  if (import.meta.env.DEV) {
+  if (isLocalHost() || import.meta.env.DEV) {
     return `${window.location.protocol}//${window.location.hostname}:5184`;
   }
 

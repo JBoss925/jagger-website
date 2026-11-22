@@ -20,11 +20,26 @@ const orbitDomains = [
 
 const plainText = (value: string) => value.replace(/\*\*(.*?)\*\*/g, "$1");
 
+function isLocalHost() {
+  return (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1")
+  );
+}
+
 function mainSiteHref(path = "") {
   const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) return `${configured}${path}`;
-  if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
+  if (import.meta.env.DEV || isLocalHost()) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
+}
+
+function subdomainSiteHref(envValue: string | undefined, port: number, prodUrl: string) {
+  const configured = envValue?.trim().replace(/\/+$/, "");
+  if (configured) return `${configured}/`;
+  if (import.meta.env.DEV || isLocalHost()) return `${window.location.protocol}//${window.location.hostname}:${port}/`;
+  return prodUrl;
 }
 
 const projectHref = (href: string) => href.startsWith("/") ? mainSiteHref(href) : href;
@@ -226,7 +241,7 @@ function App() {
       <footer className="site-footer">
         <span>© {new Date().getFullYear()} Jagger Brulato</span>
         <div className="footer-links">{profileContent.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div>
-        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={import.meta.env.VITE_GAMES_URL || "https://games.jaggerbrulato.com/"}>Games</a><a href={import.meta.env.VITE_PAPERS_URL || "https://papers.jaggerbrulato.com/"}>Papers</a><a href="#top">Back to top ↑</a></div>
+        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={subdomainSiteHref(import.meta.env.VITE_GAMES_URL, 5174, "https://games.jaggerbrulato.com/")}>Games</a><a href={subdomainSiteHref(import.meta.env.VITE_PAPERS_URL, 5176, "https://papers.jaggerbrulato.com/")}>Papers</a><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );

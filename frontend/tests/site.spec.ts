@@ -119,7 +119,7 @@ test("all five sections unify in the shared spatial stage", async ({ page }) => 
   await page.locator('[data-dock-item="portfolio-views"]').click();
   await expect(
     page.getByRole("link", { name: /Interactive 3D/ }),
-  ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
+  ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5185$/);
 });
 
 test("demos and library open in slim full-viewport theater without redundant headers", async ({
@@ -200,7 +200,7 @@ test("mobile editorial fallback uses compact Work tab without clipping even at 3
   expect(box?.width).toBeCloseTo(390, 0);
   await expect(
     page.getByRole("link", { name: /Interactive 3D/ }),
-  ).toHaveAttribute("href", "https://interactive3d.jaggerbrulato.com");
+  ).toHaveAttribute("href", /^http:\/\/(localhost|127\.0\.0\.1):5185$/);
 
   await page.getByRole("button", { name: "Close detail sheet" }).click();
   await expect(drawer).toHaveCount(0);

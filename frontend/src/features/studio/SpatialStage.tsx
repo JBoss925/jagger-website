@@ -17,11 +17,12 @@ import {
   Mesh,
   Object3D,
   Vector3,
+  WebGLRenderer,
 } from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { subscribeScaleUnit } from "../../utils/scaleUnit";
-import { computeCanvasPixelRatio } from "../../utils/canvasResolution";
+import { computeCanvasPixelRatio, installBoundedCanvasSizing } from "../../utils/canvasResolution";
 import {
   CUBE_COUNT,
   computeAllCubeTargets,
@@ -891,12 +892,17 @@ export default function SpatialStage({
         dpr={canvasDpr}
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={{ position: [0, 0.2, 13.6], fov: 40 }}
-        gl={{
-          alpha: true,
-          antialias: true,
-          toneMapping: ACESFilmicToneMapping,
-          toneMappingExposure: 1.04,
-          powerPreference: "high-performance",
+        gl={(defaults) => {
+          const renderer = new WebGLRenderer({
+            ...defaults,
+            alpha: true,
+            antialias: true,
+            powerPreference: "high-performance",
+          });
+          installBoundedCanvasSizing(renderer);
+          renderer.toneMapping = ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 1.04;
+          return renderer;
         }}
         frameloop={pageVisible && !suspended ? "always" : "never"}
       >

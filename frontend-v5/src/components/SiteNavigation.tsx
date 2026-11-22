@@ -183,21 +183,21 @@ function SiteNavigation({
               </a>
               <a
                 className="site-nav__button"
-                href={subdomainHref(import.meta.env.VITE_GAMES_URL, "https://games.jaggerbrulato.com")}
+                href={subdomainHref(import.meta.env.VITE_GAMES_URL, 5174, "https://games.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Games
               </a>
               <a
                 className="site-nav__button"
-                href={subdomainHref(import.meta.env.VITE_PAPERS_URL, "https://papers.jaggerbrulato.com")}
+                href={subdomainHref(import.meta.env.VITE_PAPERS_URL, 5176, "https://papers.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Papers
               </a>
               <a
                 className="site-nav__button"
-                href={subdomainHref(import.meta.env.VITE_DOCS_URL, "https://docs.jaggerbrulato.com")}
+                href={subdomainHref(import.meta.env.VITE_DOCS_URL, 5175, "https://docs.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Docs

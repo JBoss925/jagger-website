@@ -28,19 +28,52 @@ const _viteEnv: Record<string, string | undefined> =
   (typeof import.meta !== "undefined" &&
     (import.meta as unknown as { env?: Record<string, string | undefined> }).env) ||
   {};
-const _siteUrl = (key: string, fallback: string) =>
-  (_viteEnv[key]?.trim() || fallback).replace(/\/+$/, "");
 
-const PORTFOLIO_URL = _siteUrl("VITE_PORTFOLIO_URL", "https://jaggerbrulato.com");
-const GAMES_URL = _siteUrl("VITE_GAMES_URL", "https://games.jaggerbrulato.com");
-const PAPERS_URL = _siteUrl("VITE_PAPERS_URL", "https://papers.jaggerbrulato.com");
-const ARENA_URL = _siteUrl("VITE_ARENA_URL", "https://arena.jaggerbrulato.com");
-const JETSTREAM_URL = _siteUrl("VITE_JETSTREAM_URL", "https://jetstream.jaggerbrulato.com");
-const RISK_URL = _siteUrl("VITE_RISK_URL", "https://risk.jaggerbrulato.com");
-const INTERACTIVE3D_URL = _siteUrl("VITE_INTERACTIVE3D_URL", "https://interactive3d.jaggerbrulato.com");
-const DESIGN_URL = _siteUrl("VITE_DESIGN_URL", "https://design.jaggerbrulato.com");
-const EDITOR_URL = _siteUrl("VITE_EDITOR_URL", "https://editor.jaggerbrulato.com");
-const FINANCE_URL = _siteUrl("VITE_FINANCE_URL", "https://finance.jaggerbrulato.com");
+function _isLocalRuntime(): boolean {
+  if (_viteEnv.MODE === "test") return false;
+  if (_viteEnv.DEV || _viteEnv.MODE === "development") return true;
+  if (typeof window !== "undefined" && window.location) {
+    const h = window.location.hostname;
+    if (
+      h === "localhost" ||
+      h === "127.0.0.1" ||
+      h === "[::1]" ||
+      h === "0.0.0.0" ||
+      h.endsWith(".localhost")
+    ) {
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
+function _localOrigin(port: number): string {
+  if (typeof window !== "undefined" && window.location) {
+    const protocol = window.location.protocol || "http:";
+    const host = window.location.hostname || "localhost";
+    return `${protocol}//${host}:${port}`;
+  }
+  return `http://localhost:${port}`;
+}
+
+const _siteUrl = (key: string, localPort: number, prodFallback: string) => {
+  const raw = _viteEnv[key]?.trim();
+  if (raw) return raw.replace(/\/+$/, "");
+  if (_isLocalRuntime()) return _localOrigin(localPort);
+  return prodFallback.replace(/\/+$/, "");
+};
+
+const PORTFOLIO_URL = _siteUrl("VITE_PORTFOLIO_URL", 5173, "https://jaggerbrulato.com");
+const GAMES_URL = _siteUrl("VITE_GAMES_URL", 5174, "https://games.jaggerbrulato.com");
+const PAPERS_URL = _siteUrl("VITE_PAPERS_URL", 5176, "https://papers.jaggerbrulato.com");
+const ARENA_URL = _siteUrl("VITE_ARENA_URL", 5177, "https://arena.jaggerbrulato.com");
+const JETSTREAM_URL = _siteUrl("VITE_JETSTREAM_URL", 5178, "https://jetstream.jaggerbrulato.com");
+const RISK_URL = _siteUrl("VITE_RISK_URL", 5180, "https://risk.jaggerbrulato.com");
+const EDITOR_URL = _siteUrl("VITE_EDITOR_URL", 5182, "https://editor.jaggerbrulato.com");
+const DESIGN_URL = _siteUrl("VITE_DESIGN_URL", 5183, "https://design.jaggerbrulato.com");
+const FINANCE_URL = _siteUrl("VITE_FINANCE_URL", 5184, "https://finance.jaggerbrulato.com");
+const INTERACTIVE3D_URL = _siteUrl("VITE_INTERACTIVE3D_URL", 5185, "https://interactive3d.jaggerbrulato.com");
 
 export const headshotAsset = headshotImage;
 

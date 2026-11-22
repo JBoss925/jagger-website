@@ -18,12 +18,21 @@ const projectMeta: Record<string, { type: string; language: string; status: stri
 const roleExt = (job: ExperienceEntry) => job.company === "Google" ? "java" : job.company === "Red Ventures" ? "go" : job.company.includes("Incite") ? "py" : job.company.includes("Velocitor") ? "cs" : "ts";
 const metaFor = (project: ProjectEntry) => projectMeta[project.slug] ?? { type: project.icon ?? "project", language: project.stack[0] ?? "TypeScript", status: "stable", ext: "ts" };
 const clean = (value: string) => value.replace(/\*\*(.*?)\*\*/g, "$1");
+function isLocalHost(): boolean {
+  if (import.meta.env.MODE === "test") return false;
+  if (typeof window !== "undefined" && window.location) {
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "[::1]" || h === "0.0.0.0" || h.endsWith(".localhost");
+  }
+  return Boolean(import.meta.env.DEV);
+}
+
 function homeSiteHref(path = "") {
   const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
   if (configured) {
     return `${configured}${path}`;
   }
-  if (import.meta.env.DEV) {
+  if (isLocalHost() || import.meta.env.DEV) {
     return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   }
 

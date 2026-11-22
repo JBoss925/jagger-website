@@ -523,7 +523,11 @@ export default function DetailSheet({
             {activeTab === "overview" && (
               <>
                 {project.image && (
-                  <div className="sheet-media">
+                  <div
+                    className="sheet-media"
+                    onClick={isInternalDemo ? launchDemo : undefined}
+                    style={isInternalDemo ? { cursor: "pointer" } : undefined}
+                  >
                     <img
                       src={project.image}
                       alt={`${displayProjectTitle(project)} preview`}
@@ -758,6 +762,8 @@ export default function DetailSheet({
                             <a
                               key={rl.href}
                               href={rl.href}
+                              target={rl.href.startsWith("http") ? "_blank" : undefined}
+                              rel={rl.href.startsWith("http") ? "noreferrer" : undefined}
                               className="sheet-related-card"
                             >
                               <strong>
