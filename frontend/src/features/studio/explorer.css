@@ -2650,7 +2650,8 @@
 }
 
 .mobile-drawer-shell.is-closing {
-  transition: transform 0.26s cubic-bezier(0.4, 0, 1, 1);
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .mobile-drawer-shell .glass-sheet.is-mobile-drawer,

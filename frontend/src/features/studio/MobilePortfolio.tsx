@@ -75,7 +75,25 @@ export default function MobilePortfolio({
   const [viewportRect, setViewportRect] = useState<{ top: number; height: number } | null>(null);
   const dragStartY = useRef<number | null>(null);
   const dragStartTime = useRef(0);
+  const closeTimerRef = useRef<number | null>(null);
   const tabSwipeRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    lastX: number;
+    lastY: number;
+    startTime: number;
+    axis: "x" | "y" | null;
+  }>({
+    active: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    startTime: 0,
+    axis: null,
+  });
+  const drawerSwipeRef = useRef<{
     active: boolean;
     startX: number;
     startY: number;
@@ -99,6 +117,10 @@ export default function MobilePortfolio({
   // and pin the drawer backdrop to window.visualViewport so iOS Safari fast-scroll
   // layout-viewport lag or toolbar collapse never stops the drawer short of the top.
   useLayoutEffect(() => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
     dragStartY.current = null;
     setDragY(0);
     setIsDragging(false);
@@ -153,25 +175,40 @@ export default function MobilePortfolio({
   }, [selected?.uid, resumeOpen]);
 
   const dismissDrawerAnimated = () => {
+    if (isClosing) return;
+    setIsDragging(false);
     setIsClosing(true);
-    setDragY(window.innerHeight * 0.9);
-    window.setTimeout(() => {
-      setIsClosing(false);
-      setDragY(0);
+    const fullDrop = Math.max(window.innerHeight, viewportRect?.height ?? 0) + 40;
+    setDragY(fullDrop);
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+    // Do NOT reset dragY to 0 inside the timeout before onClose() unmounts the drawer!
+    // Resetting dragY to 0 while selected is still mounted for one render frame caused
+    // the drawer to flash back at the top right before disappearing. useLayoutEffect
+    // above resets dragY and isClosing cleanly once selected becomes null.
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
       onClose();
     }, 260);
   };
 
   const handleDragStart = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
+    const startX = e.clientX;
     dragStartY.current = e.clientY;
     dragStartTime.current = performance.now();
     let draggingStarted = false;
 
     const onMove = (moveEvent: PointerEvent) => {
       if (dragStartY.current === null) return;
+      const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - dragStartY.current;
       if (!draggingStarted) {
+        if (Math.abs(dx) > Math.abs(dy) * 1.15 && Math.abs(dx) > 6) {
+          dragStartY.current = null;
+          return;
+        }
         if (Math.abs(dy) < 5) return;
         draggingStarted = true;
         setIsDragging(true);
@@ -294,6 +331,74 @@ export default function MobilePortfolio({
     tabSwipeRef.current.active = false;
   };
 
+  const handleDrawerTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!selected || theaterOpen || isClosing || e.touches.length !== 1) {
+      drawerSwipeRef.current.active = false;
+      return;
+    }
+    const target = e.target;
+    if (target instanceof Element) {
+      const scroller = target.closest(".glass-sheet__tabs, .theater-mode-switch");
+      if (scroller && scroller.scrollWidth > scroller.clientWidth + 4) {
+        drawerSwipeRef.current.active = false;
+        return;
+      }
+    }
+    const t = e.touches[0];
+    drawerSwipeRef.current = {
+      active: true,
+      startX: t.clientX,
+      startY: t.clientY,
+      lastX: t.clientX,
+      lastY: t.clientY,
+      startTime: performance.now(),
+      axis: null,
+    };
+  };
+
+  const handleDrawerTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    const st = drawerSwipeRef.current;
+    if (!st.active || !selected || theaterOpen || isClosing || e.touches.length !== 1) {
+      return;
+    }
+    const t = e.touches[0];
+    st.lastX = t.clientX;
+    st.lastY = t.clientY;
+    const dx = t.clientX - st.startX;
+    const dy = t.clientY - st.startY;
+    if (st.axis === null) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx) * 0.85) {
+        st.axis = "y";
+      } else if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+        st.axis = "x";
+      }
+    }
+  };
+
+  const handleDrawerTouchEnd = () => {
+    const st = drawerSwipeRef.current;
+    if (!st.active || !selected || theaterOpen || isClosing) return;
+    st.active = false;
+    if (st.axis !== "x") return;
+
+    const dx = st.lastX - st.startX;
+    const dy = st.lastY - st.startY;
+    const dt = Math.max(1, performance.now() - st.startTime);
+    const vx = Math.abs(dx) / dt;
+
+    if (
+      Math.abs(dx) > Math.abs(dy) * 1.25 &&
+      (Math.abs(dx) >= 44 || (Math.abs(dx) >= 26 && vx >= 0.3))
+    ) {
+      // Swipe left (dx < 0) -> next item (+1); swipe right (dx > 0) -> previous item (-1)
+      onStep(dx < 0 ? 1 : -1);
+    }
+  };
+
+  const handleDrawerTouchCancel = () => {
+    drawerSwipeRef.current.active = false;
+  };
+
   const eyebrowCount =
     section === "projects" && category !== "all"
       ? `${String(items.length).padStart(2, "0")} OF ${profileContent.projects.length} ARTIFACTS`
@@ -305,7 +410,12 @@ export default function MobilePortfolio({
             ? `${String(items.length).padStart(2, "0")} LIVE APPS`
             : `${String(items.length).padStart(2, "0")} ITEMS`;
 
-  const backdropAlpha = Math.max(0, 1 - dragY / 420);
+  const fullDropHeight = Math.max(
+    typeof window !== "undefined" ? window.innerHeight : 900,
+    viewportRect?.height ?? 0,
+  ) + 48;
+  const renderedDragY = isClosing ? Math.max(dragY, fullDropHeight) : dragY;
+  const backdropAlpha = isClosing ? 0 : Math.max(0, 1 - renderedDragY / 420);
 
   const backdropStyle = viewportRect
     ? {
@@ -606,8 +716,12 @@ export default function MobilePortfolio({
           <div
             className={`mobile-drawer-shell ${theaterOpen ? "is-theater" : ""} ${isDragging ? "is-dragging" : ""} ${isClosing ? "is-closing" : ""}`}
             style={{
-              transform: `translate3d(0, ${dragY}px, 0)`,
+              transform: `translate3d(0, ${renderedDragY}px, 0)`,
             }}
+            onTouchStart={handleDrawerTouchStart}
+            onTouchMove={handleDrawerTouchMove}
+            onTouchEnd={handleDrawerTouchEnd}
+            onTouchCancel={handleDrawerTouchCancel}
           >
             <DetailSheet
               item={selected}
