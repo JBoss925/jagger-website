@@ -111,7 +111,7 @@ function computeScaleUnit(): number {
 function applyScaleUnit() {
   const next = computeScaleUnit();
   if (typeof document !== "undefined") {
-    document.documentElement.style.setProperty("--su", `${next.toFixed(4)}px`);
+    document.documentElement.style.setProperty("--su", `${next}px`);
   }
   if (Math.abs(next - currentSu) > 0.0005) {
     currentSu = next;

@@ -3654,6 +3654,9 @@ button:hover {
 }
 
 .demo-brand-pill {
+  /* Match the spatial HUD font instance while counter-scaling browser zoom. */
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 14;
   display: inline-flex;
   align-items: center;
   gap: calc(11 * var(--su, 1px));
@@ -3726,7 +3729,7 @@ button:hover {
   font-size: calc(11 * var(--su, 1px));
   font-weight: 400;
   color: #726488;
-  margin-top: 1px;
+  margin-top: calc(1 * var(--su, 1px));
   white-space: nowrap;
 }
 

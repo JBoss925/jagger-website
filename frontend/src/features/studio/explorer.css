@@ -50,6 +50,11 @@
   color: var(--ink);
   font-size: calc(16 * var(--su));
   font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  /* The HUD counter-scales browser zoom. Automatic optical sizing would
+     reshape this variable font as its CSS size shrinks, changing physical
+     text/pill widths (and making cached shaping depend on zoom history). */
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 14;
   letter-spacing: -0.015em;
   background: radial-gradient(circle at 20% 14%, #fdfbff 0%, #f0e7fc 48%, #e5dbf7 100%);
   user-select: none;
@@ -224,6 +229,7 @@
   color: #241936;
   font-size: calc(12 * var(--su));
   font-weight: 500;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   white-space: nowrap;
   visibility: hidden;
@@ -353,7 +359,7 @@
   display: block;
   font-size: calc(11 * var(--su));
   color: var(--ink-muted);
-  margin-top: 1px;
+  margin-top: calc(1 * var(--su));
   white-space: nowrap;
 }
 

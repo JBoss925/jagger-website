@@ -123,13 +123,17 @@ export default function StudioPage() {
     const btn = navBtnRefs.current[section];
     const nav = navRef.current;
     if (!btn || !nav) return;
-    const navW = nav.offsetWidth;
-    if (navW <= 0) return;
-    const nextLeftPct = (btn.offsetLeft / navW) * 100;
-    const nextWidthPct = (btn.offsetWidth / navW) * 100;
+    // Integer offset measurements amplify rounding at high browser zoom.
+    // Derive both percentages from the same fractional coordinate space so
+    // each zoom/resize converges to the same geometry, independent of history.
+    const navRect = nav.getBoundingClientRect();
+    const buttonRect = btn.getBoundingClientRect();
+    if (navRect.width <= 0) return;
+    const nextLeftPct = ((buttonRect.left - navRect.left) / navRect.width) * 100;
+    const nextWidthPct = (buttonRect.width / navRect.width) * 100;
     setPillStyle((prev) =>
-      Math.abs(prev.leftPct - nextLeftPct) < 0.08 &&
-      Math.abs(prev.widthPct - nextWidthPct) < 0.08
+      Math.abs(prev.leftPct - nextLeftPct) < 0.000001 &&
+      Math.abs(prev.widthPct - nextWidthPct) < 0.000001
         ? prev
         : { leftPct: nextLeftPct, widthPct: nextWidthPct },
     );
@@ -166,6 +170,7 @@ export default function StudioPage() {
       measureDockOverflow();
     };
     window.addEventListener("resize", onResize);
+    document.fonts?.addEventListener("loadingdone", onResize);
     let ro: ResizeObserver | null = null;
     if (typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver(() => {
@@ -173,14 +178,17 @@ export default function StudioPage() {
         measureDockOverflow();
       });
       if (navRef.current) ro.observe(navRef.current);
+      const activeButton = navBtnRefs.current[section];
+      if (activeButton) ro.observe(activeButton);
       if (dockScrollRef.current) ro.observe(dockScrollRef.current);
     }
     return () => {
       window.removeEventListener("resize", onResize);
+      document.fonts?.removeEventListener("loadingdone", onResize);
       if (resizeTimer !== null) window.clearTimeout(resizeTimer);
       ro?.disconnect();
     };
-  }, [measureNavPill, measureDockOverflow]);
+  }, [measureNavPill, measureDockOverflow, section]);
 
   // Reset dock scroll to the start when switching sections/categories (so item #1 is always visible first!)
   useEffect(() => {
@@ -621,8 +629,8 @@ export default function StudioPage() {
           <span
             className="spatial-nav__indicator"
             style={{
-              left: `${pillStyle.leftPct.toFixed(3)}%`,
-              width: `${pillStyle.widthPct.toFixed(3)}%`,
+              left: `${pillStyle.leftPct}%`,
+              width: `${pillStyle.widthPct}%`,
               opacity: pillStyle.widthPct > 0 ? 1 : 0,
             }}
             aria-hidden="true"
