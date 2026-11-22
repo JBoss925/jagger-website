@@ -100,12 +100,12 @@ function computeScaleUnit(): number {
   if (isFirefoxScaledScreen) {
     // Firefox already divided screen.width/height by browser zoom.
     const unzoomedSu = clamp(rawScreenSu * (dpr / (lockedOsDpr || 1)), MIN_DESKTOP_SU, MAX_DESKTOP_SU);
-    return clamp(unzoomedSu / (dpr / (lockedOsDpr || 1)), 0.25, 4);
+    return clamp(unzoomedSu / (dpr / (lockedOsDpr || 1)), 0.15, 5);
   }
 
   const baseSu = clamp(rawScreenSu, MIN_DESKTOP_SU, MAX_DESKTOP_SU);
   const browserZoom = Math.max(0.25, dpr / (lockedOsDpr || 1));
-  return clamp(baseSu / browserZoom, 0.25, 4);
+  return clamp(baseSu / browserZoom, 0.15, 5);
 }
 
 function applyScaleUnit() {

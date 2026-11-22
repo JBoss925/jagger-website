@@ -20,6 +20,7 @@ import {
 } from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import { subscribeScaleUnit } from "../../utils/scaleUnit";
 import {
   CUBE_COUNT,
   computeAllCubeTargets,
@@ -833,6 +834,19 @@ class StageErrorBoundary extends Component<
   }
 }
 
+function computeCanvasDpr(): number {
+  if (typeof window === "undefined") return 1.5;
+  // Render at the display's true physical resolution (and 1.5x supersampled on 1x 1080p displays).
+  // Browser zoom raises devicePixelRatio while shrinking the CSS viewport, so tracking it live
+  // keeps the backbuffer at native resolution (e.g. 2560x1340 at any zoom on a 1440p screen)
+  // instead of upscaling a small buffer. Capped at a 4K-sized budget so HiDPI displays stay smooth.
+  const rawDpr = Math.max(1, window.devicePixelRatio || 1);
+  const desiredDpr = Math.max(rawDpr, 1.5);
+  const area = Math.max(1, window.innerWidth * window.innerHeight);
+  const maxForBudget = Math.sqrt((3840 * 2160) / area);
+  return Math.max(1, Math.min(desiredDpr, maxForBudget));
+}
+
 export default function SpatialStage({
   items,
   section,
@@ -850,14 +864,20 @@ export default function SpatialStage({
 }: SpatialStageProps) {
   const prefersReduced = usePrefersReducedMotion();
   const [pageVisible, setPageVisible] = useState(true);
-  // Lock initial DPR so browser zoom steps never reallocate/clear the WebGL backbuffer mid-frame
-  const lockedDpr = useMemo(
-    () =>
-      typeof window !== "undefined"
-        ? Math.min(1.75, Math.max(1, window.devicePixelRatio || 1))
-        : 1.5,
-    [],
-  );
+  const [canvasDpr, setCanvasDpr] = useState<number>(() => computeCanvasDpr());
+
+  useEffect(() => {
+    const syncDpr = () => {
+      const next = computeCanvasDpr();
+      setCanvasDpr((prev) => (Math.abs(prev - next) > 0.02 ? next : prev));
+    };
+    const unsub = subscribeScaleUnit(syncDpr);
+    window.addEventListener("resize", syncDpr);
+    return () => {
+      unsub();
+      window.removeEventListener("resize", syncDpr);
+    };
+  }, []);
 
   useEffect(() => {
     const onVisibility = () => setPageVisible(!document.hidden);
@@ -871,7 +891,7 @@ export default function SpatialStage({
   return (
     <StageErrorBoundary>
       <Canvas
-        dpr={lockedDpr}
+        dpr={canvasDpr}
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={{ position: [0, 0.2, 13.6], fov: 40 }}
         gl={{
