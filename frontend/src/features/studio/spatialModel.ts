@@ -515,7 +515,7 @@ export function getItemsForSection(
       title: "Portfolio Views",
       shortLabel: "Portfolio Views",
       subtitle: "Five different portfolio frontends — including this one — built on one shared data model.",
-      eyebrow: "PORTFOLIO VIEWS · 05 FRONTENDS",
+      eyebrow: "INTERFACES",
       formation: "portfolio-viewports",
       palette: {
         primary: "#9a72dd",
