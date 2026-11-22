@@ -100,12 +100,14 @@ function computeScaleUnit(): number {
   if (isFirefoxScaledScreen) {
     // Firefox already divided screen.width/height by browser zoom.
     const unzoomedSu = clamp(rawScreenSu * (dpr / (lockedOsDpr || 1)), MIN_DESKTOP_SU, MAX_DESKTOP_SU);
-    return clamp(unzoomedSu / (dpr / (lockedOsDpr || 1)), 0.15, 5);
+    return unzoomedSu / Math.max(0.25, dpr / (lockedOsDpr || 1));
   }
 
   const baseSu = clamp(rawScreenSu, MIN_DESKTOP_SU, MAX_DESKTOP_SU);
   const browserZoom = Math.max(0.25, dpr / (lockedOsDpr || 1));
-  return clamp(baseSu / browserZoom, 0.15, 5);
+  // Clamp the design scale before compensating zoom, not the result. A 1440p
+  // display needs 1.333… / .25 = 5.333… CSS px at 25%; capping at 5 shrinks it.
+  return baseSu / browserZoom;
 }
 
 function applyScaleUnit() {

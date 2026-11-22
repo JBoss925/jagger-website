@@ -21,6 +21,7 @@ import {
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { subscribeScaleUnit } from "../../utils/scaleUnit";
+import { computeCanvasPixelRatio } from "../../utils/canvasResolution";
 import {
   CUBE_COUNT,
   computeAllCubeTargets,
@@ -836,15 +837,11 @@ class StageErrorBoundary extends Component<
 
 function computeCanvasDpr(): number {
   if (typeof window === "undefined") return 1.5;
-  // Render at the display's true physical resolution (and 1.5x supersampled on 1x 1080p displays).
-  // Browser zoom raises devicePixelRatio while shrinking the CSS viewport, so tracking it live
-  // keeps the backbuffer at native resolution (e.g. 2560x1340 at any zoom on a 1440p screen)
-  // instead of upscaling a small buffer. Capped at a 4K-sized budget so HiDPI displays stay smooth.
-  const rawDpr = Math.max(1, window.devicePixelRatio || 1);
-  const desiredDpr = Math.max(rawDpr, 1.5);
-  const area = Math.max(1, window.innerWidth * window.innerHeight);
-  const maxForBudget = Math.sqrt((3840 * 2160) / area);
-  return Math.max(1, Math.min(desiredDpr, maxForBudget));
+  return computeCanvasPixelRatio(
+    window.innerWidth,
+    window.innerHeight,
+    window.devicePixelRatio || 1,
+  );
 }
 
 export default function SpatialStage({
@@ -869,7 +866,7 @@ export default function SpatialStage({
   useEffect(() => {
     const syncDpr = () => {
       const next = computeCanvasDpr();
-      setCanvasDpr((prev) => (Math.abs(prev - next) > 0.02 ? next : prev));
+      setCanvasDpr((prev) => (Math.abs(prev - next) > 0.000001 ? next : prev));
     };
     const unsub = subscribeScaleUnit(syncDpr);
     window.addEventListener("resize", syncDpr);

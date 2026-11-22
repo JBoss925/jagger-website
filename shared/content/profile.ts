@@ -1090,32 +1090,35 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "jetstream",
-      title: "JetStream",
+      slug: "tsxlight-renderer",
+      title: "TSXLight Renderer",
       description:
-        "A production-oriented weather app that uses **Open-Meteo data**, a React/Vite dashboard, a NestJS backend-for-frontend, and an installable PWA shell.",
+        "A proof-of-concept TSX rendering engine for web and Electron apps, built around a **custom JSX factory**, server-managed component trees, and socket-triggered callbacks.",
       impact:
-        "The useful work is in the quality-of-life details: **saved preferences, live and deterministic test modes, direct or backend data paths, rich weather instruments, and service-worker caching** that make it feel like a real app.",
+        "This is the kind of lower-level experiment I enjoy because it forces me to think about **rendering, state persistence, per-user sessions, and page transitions** from first principles.",
       stack: [
         "TypeScript",
-        "React",
-        "Vite",
-        "NestJS",
-        "Node.js",
-        "Open-Meteo",
-        "REST APIs",
-        "Swagger",
-        "PWA",
-        "Service workers",
-        "LocalStorage",
-        "NPM workspaces",
-        "ESLint",
-        "Vitest"
+        "Custom JSX factory",
+        "TSX",
+        "SSR",
+        "Socket.io",
+        "Electron",
+        "Express",
+        "WebSocket",
+        "JSDOM",
+        "Firebase Admin",
+        "Material UI",
+        "State management",
+        "Page management",
+        "Callback registry",
+        "Rendering architecture",
+        "Realtime UI"
       ],
-      image: jetstreamPreview,
+      image: tsxlightRendererPreview,
+      icon: "tsxlight",
       links: [
-        { label: "Open App", href: `${JETSTREAM_URL}/` },
-        { label: "Source", href: "https://github.com/JBoss925/JetStream" }
+        { label: "Open Paper", href: `${PAPERS_URL}/tsxlight-renderer` },
+        { label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }
       ]
     },
     {
@@ -1213,35 +1216,32 @@ export const profileContent: ProfileContent = {
       ]
     },
     {
-      slug: "tsxlight-renderer",
-      title: "TSXLight Renderer",
+      slug: "jetstream",
+      title: "JetStream",
       description:
-        "A proof-of-concept TSX rendering engine for web and Electron apps, built around a **custom JSX factory**, server-managed component trees, and socket-triggered callbacks.",
+        "A production-oriented weather app that uses **Open-Meteo data**, a React/Vite dashboard, a NestJS backend-for-frontend, and an installable PWA shell.",
       impact:
-        "This is the kind of lower-level experiment I enjoy because it forces me to think about **rendering, state persistence, per-user sessions, and page transitions** from first principles.",
+        "The useful work is in the quality-of-life details: **saved preferences, live and deterministic test modes, direct or backend data paths, rich weather instruments, and service-worker caching** that make it feel like a real app.",
       stack: [
         "TypeScript",
-        "Custom JSX factory",
-        "TSX",
-        "SSR",
-        "Socket.io",
-        "Electron",
-        "Express",
-        "WebSocket",
-        "JSDOM",
-        "Firebase Admin",
-        "Material UI",
-        "State management",
-        "Page management",
-        "Callback registry",
-        "Rendering architecture",
-        "Realtime UI"
+        "React",
+        "Vite",
+        "NestJS",
+        "Node.js",
+        "Open-Meteo",
+        "REST APIs",
+        "Swagger",
+        "PWA",
+        "Service workers",
+        "LocalStorage",
+        "NPM workspaces",
+        "ESLint",
+        "Vitest"
       ],
-      image: tsxlightRendererPreview,
-      icon: "tsxlight",
+      image: jetstreamPreview,
       links: [
-        { label: "Open Paper", href: `${PAPERS_URL}/tsxlight-renderer` },
-        { label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }
+        { label: "Open App", href: `${JETSTREAM_URL}/` },
+        { label: "Source", href: "https://github.com/JBoss925/JetStream" }
       ]
     },
     {

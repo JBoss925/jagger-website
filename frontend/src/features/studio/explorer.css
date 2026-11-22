@@ -233,7 +233,9 @@
   letter-spacing: -0.01em;
   white-space: nowrap;
   visibility: hidden;
-  will-change: left, top;
+  /* Keep the label on one compositor layer before and after zoom. Promoting
+     it only after a resize can change how fractional-origin text is rasterized. */
+  will-change: transform;
   animation: pillReveal 0.34s var(--ease-apple);
   transition:
     background 0.22s var(--ease-apple),

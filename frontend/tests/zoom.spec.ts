@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { mkdir, writeFile } from "node:fs/promises";
 import {
   capturePhysical,
   comparePixels,
@@ -93,6 +94,16 @@ for (const display of [
                 );
         if (state !== "detail")
           await expect(page.locator(pillSelectors.at(-1)!)).toBeVisible();
+        await page.mouse.move(0, 0);
+        await page.evaluate(() => document.fonts.ready);
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) =>
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => resolve()),
+              ),
+            ),
+        );
         const selectors = [
           ...header,
           ...(state === "detail" ? sheet : headline),
@@ -144,6 +155,24 @@ for (const display of [
           body: Buffer.from(pixels.diff, "base64"),
           contentType: "image/png",
         });
+        await mkdir(testInfo.outputDir, { recursive: true });
+        await writeFile(
+          testInfo.outputPath(`${state}-before.png`),
+          imageBefore,
+        );
+        await writeFile(testInfo.outputPath(`${state}-after.png`), imageAfter);
+        await writeFile(
+          testInfo.outputPath(`${state}-diff.png`),
+          Buffer.from(pixels.diff, "base64"),
+        );
+        await writeFile(
+          testInfo.outputPath(`${state}-measurements.json`),
+          JSON.stringify(
+            { baseline, snapshots, pixels: { ...pixels, diff: undefined } },
+            null,
+            2,
+          ),
+        );
         expect(
           pixels.changed,
           `${state}: text/pills must not retain a different raster after returning to 100%`,
@@ -180,3 +209,85 @@ for (const display of [
     }
   });
 }
+
+test("25% zoom keeps the 3D drawing buffer, viewport, and labels aligned", async ({
+  baseURL,
+}, testInfo) => {
+  test.setTimeout(120_000);
+  const browser = await createZoomBrowser(2560, 1340, 1440);
+  const { page } = browser;
+  try {
+    await page.goto(`${baseURL}/?section=projects`);
+    await expect(page.locator(".spatial-pill").first()).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    const selectors = await page
+      .locator("[data-spatial-item]")
+      .evaluateAll((es) =>
+        es.map(
+          (e) => `[data-spatial-item="${e.getAttribute("data-spatial-item")}"]`,
+        ),
+      );
+    const baseline = await measurePhysical(page, selectors);
+    const states = [];
+    for (const zoom of [1, 0.75, 0.5, 0.33, 0.25, 1, 5, 1]) {
+      await browser.zoom(zoom);
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const canvas = document.querySelector("canvas")!;
+            const gl = canvas.getContext("webgl2")!;
+            return (
+              Math.abs(canvas.width - 3840) <= 2 &&
+              Math.abs(canvas.height - 2010) <= 2 &&
+              gl.drawingBufferWidth === canvas.width &&
+              gl.drawingBufferHeight === canvas.height
+            );
+          }),
+        )
+        .toBe(true);
+      const buffer = await page.evaluate(() => {
+        const c = document.querySelector("canvas")!,
+          gl = c.getContext("webgl2")!;
+        return {
+          zoom: devicePixelRatio,
+          cssViewport: [innerWidth, innerHeight],
+          scaleUnit: parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue("--su"),
+          ),
+          canvas: [c.width, c.height],
+          drawingBuffer: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+          viewport: Array.from(gl.getParameter(gl.VIEWPORT)),
+        };
+      });
+      expect(buffer.viewport).toEqual([0, 0, ...buffer.canvas]);
+      expect(buffer.canvas[0] * buffer.canvas[1]).toBeLessThanOrEqual(
+        3840 * 2160,
+      );
+      expect(buffer.scaleUnit * zoom).toBeCloseTo(4 / 3, 5);
+      const current = await measurePhysical(page, selectors);
+      for (const [selector, rect] of Object.entries(baseline))
+        for (const key of ["x", "y", "width", "height"] as const)
+          expect(
+            Math.abs(current[selector][key] - rect[key]),
+            `${selector} at${zoom * 100}%`,
+          ).toBeLessThan(0.35);
+      states.push(buffer);
+      if (zoom === 0.25 || states.length === 1)
+        await testInfo.attach(`scene-${zoom * 100}-percent.png`, {
+          body: await capturePhysical(page),
+          contentType: "image/png",
+        });
+    }
+    await mkdir(testInfo.outputDir, { recursive: true });
+    await writeFile(
+      testInfo.outputPath("scene-resolution.json"),
+      JSON.stringify(states, null, 2),
+    );
+    await testInfo.attach("scene-resolution.json", {
+      path: testInfo.outputPath("scene-resolution.json"),
+      contentType: "application/json",
+    });
+  } finally {
+    await browser.close();
+  }
+});

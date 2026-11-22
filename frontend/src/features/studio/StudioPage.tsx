@@ -186,6 +186,7 @@ export default function StudioPage() {
       window.removeEventListener("resize", onResize);
       document.fonts?.removeEventListener("loadingdone", onResize);
       if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      appRef.current?.classList.remove("is-resizing");
       ro?.disconnect();
     };
   }, [measureNavPill, measureDockOverflow, section]);

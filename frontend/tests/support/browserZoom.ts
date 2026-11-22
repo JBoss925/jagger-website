@@ -13,6 +13,7 @@ type ZoomApi = {
   tabs: {
     query: (query: { url: string }) => Promise<Array<{ id: number }>>;
     setZoom: (id: number, factor: number) => Promise<void>;
+    getZoom: (id: number) => Promise<number>;
   };
 };
 
@@ -56,6 +57,7 @@ export async function createZoomBrowser(
           `--disable-extensions-except=${extension}`,
           `--load-extension=${extension}`,
           "--enable-unsafe-swiftshader",
+          "--disable-ipc-flooding-protection",
         ],
       },
     );
@@ -71,17 +73,33 @@ export async function createZoomBrowser(
     page,
     context,
     async zoom(factor: number) {
-      await worker.evaluate(
+      await page.bringToFront();
+      const applied = await worker.evaluate(
         async ({ url, factor }) => {
           const api = (globalThis as unknown as { chrome: ZoomApi }).chrome;
           const tabs = await api.tabs.query({ url });
-          for (const tab of tabs) await api.tabs.setZoom(tab.id, factor);
+          if (tabs.length !== 1)
+            throw new Error(
+              `Expected one zoom target for ${url}, got ${tabs.length}`,
+            );
+          await api.tabs.setZoom(tabs[0].id, factor);
+          return { tab: tabs[0].id, zoom: await api.tabs.getZoom(tabs[0].id) };
         },
         { url: `${new URL(page.url()).origin}/*`, factor },
       );
-      await expect
-        .poll(() => page.evaluate(() => devicePixelRatio))
-        .toBeCloseTo(factor, 4);
+      expect(applied.zoom, `Chrome accepted tab zoom ${factor}`).toBeCloseTo(
+        factor,
+        4,
+      );
+      let observed: number | undefined;
+      try {
+        await expect.poll(async()=>{
+          observed=await page.evaluate(()=>devicePixelRatio);
+          return observed;
+        },{message:`Renderer follows tab ${applied.tab} zoom ${factor}`,timeout:15_000}).toBeCloseTo(factor,4);
+      } catch(error) {
+        throw new Error(`Renderer zoom mismatch: requested ${factor}, Chrome applied ${applied.zoom}, DPR observed ${observed}, URL ${page.url()}`,{cause:error});
+      }
       await expect(page.locator(".is-resizing")).toHaveCount(0);
       await page.evaluate(
         () =>

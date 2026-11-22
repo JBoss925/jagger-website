@@ -392,7 +392,7 @@ export function getItemsForSection(
         const duplicateCompany =
           profileContent.experience.filter((e) => e.company === exp.company)
             .length > 1;
-        const shortRole = exp.role
+        const shortRole = exp.slug === "cornell-dti-full-stack-developer" ? "Dev" : exp.role
           .replace("Software Development Engineer III", "SDE III")
           .replace("Staff Forward-Deployed Engineer", "Staff FDE")
           .replace("Technical Project Manager", "TPM")
