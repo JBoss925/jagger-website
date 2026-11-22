@@ -10,6 +10,8 @@
     "build:v3": "npm --prefix frontend-v3 install && npm --prefix frontend-v3 run build",
     "build:v4": "npm --prefix frontend-v4 install && npm --prefix frontend-v4 run build",
     "build:v5": "npm --prefix frontend-v5 install && npm --prefix frontend-v5 run build",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:core": "node scripts/dev-all.mjs --core",
     "dev:v1": "npm --prefix frontend run dev",
     "dev:v2": "npm --prefix frontend-v2 run dev",
     "dev:v3": "npm --prefix frontend-v3 run dev",

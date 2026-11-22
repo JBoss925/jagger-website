@@ -1,4 +1,4 @@
-import { docsUrl, papersUrl } from "@jagger-ui/urls";
+import { SITE_URLS, docsUrl, papersUrl } from "@jagger-ui/urls";
 import type { ProjectEntry } from "../../types/content";
 import { clean, projects, views } from "./content";
 
@@ -47,15 +47,26 @@ export function categoryFor(project: ProjectEntry): ProjectCategory {
   return projectCategories[project.slug] ?? "systems";
 }
 
+function extractPaperSlug(href: string): string | null {
+  const prefixes = [`${SITE_URLS.papers}/`, "https://papers.jaggerbrulato.com/", "/papers/"];
+  for (const prefix of prefixes) {
+    if (href.startsWith(prefix)) {
+      const rest = href.slice(prefix.length).replace(/\/+$/, "");
+      if (rest && !rest.includes("/") && !rest.includes("?") && !rest.includes("#")) {
+        return rest;
+      }
+    }
+  }
+  return null;
+}
+
 // Read paper slugs from the lightweight shared project metadata. Importing the
 // full manuscripts here would put every essay in the explorer's initial bundle.
-const paperHrefPattern =
-  /^(?:https:\/\/papers\.jaggerbrulato\.com|\/papers)\/([^/?#]+)\/?$/;
 const paperSlugs = new Set(
   projects.flatMap((project) =>
     project.links.flatMap((link) => {
-      const match = paperHrefPattern.exec(link.href);
-      return match ? [match[1]] : [];
+      const slug = extractPaperSlug(link.href);
+      return slug ? [slug] : [];
     }),
   ),
 );
@@ -75,13 +86,14 @@ export function getDemoHref(project: ProjectEntry): string | undefined {
     if (browserRoutes.has(link.href)) return true;
     try {
       const url = new URL(link.href);
-      return (
+      const isLocalDev =
+        (url.protocol === "http:" || url.protocol === "https:") &&
+        (url.hostname === "localhost" || url.hostname === "127.0.0.1");
+      const isProdSubdomain =
         url.protocol === "https:" &&
-        url.hostname.endsWith("jaggerbrulato.com") &&
         (url.hostname === "jaggerbrulato.com" ||
-          url.hostname.endsWith(".jaggerbrulato.com")) &&
-        !/\.[a-z0-9]{2,5}$/i.test(url.pathname)
-      );
+          url.hostname.endsWith(".jaggerbrulato.com"));
+      return (isProdSubdomain || isLocalDev) && !/\.[a-z0-9]{2,5}$/i.test(url.pathname);
     } catch {
       return false;
     }
@@ -103,7 +115,7 @@ export function getProjectResources(project: ProjectEntry): ProjectResource[] {
     );
   }
   for (const link of project.links) {
-    if (link.href === demoHref || paperHrefPattern.test(link.href)) continue;
+    if (link.href === demoHref || extractPaperSlug(link.href) !== null) continue;
     const kind: ProjectResource["kind"] = /^source$/i.test(link.label)
       ? "source"
       : /^download\b/i.test(link.label)

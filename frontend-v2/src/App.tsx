@@ -18,15 +18,19 @@ const projectMeta: Record<string, { type: string; language: string; status: stri
 const roleExt = (job: ExperienceEntry) => job.company === "Google" ? "java" : job.company === "Red Ventures" ? "go" : job.company.includes("Incite") ? "py" : job.company.includes("Velocitor") ? "cs" : "ts";
 const metaFor = (project: ProjectEntry) => projectMeta[project.slug] ?? { type: project.icon ?? "project", language: project.stack[0] ?? "TypeScript", status: "stable", ext: "ts" };
 const clean = (value: string) => value.replace(/\*\*(.*?)\*\*/g, "$1");
-const externalize = (href: string) => href.startsWith("/") ? `https://jaggerbrulato.com${href}` : href;
-
-function homeSiteHref() {
+function homeSiteHref(path = "") {
+  const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) {
+    return `${configured}${path}`;
+  }
   if (import.meta.env.DEV) {
-    return `${window.location.protocol}//${window.location.hostname}:5173`;
+    return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   }
 
-  return "https://jaggerbrulato.com";
+  return `https://jaggerbrulato.com${path}`;
 }
+
+const externalize = (href: string) => href.startsWith("/") ? homeSiteHref(href) : href;
 
 type EditorTab = { path: string; label: string; icon: string };
 
@@ -207,7 +211,7 @@ function Terminal({ close, onResizeStart }: { close: () => void; onResizeStart: 
     else if (command === "skills") { navigate("/reference/stack"); output = "opened stack.json"; kind = "success"; }
     else if (command === "map" || command === ":map") { navigate("/map"); output = "resolved system-map.graph"; kind = "success"; }
     else if (command === "contact") { navigate("/contact"); output = `opened contact.md · ${profileContent.email}`; kind = "success"; }
-    else if (command === "resume") { window.open("https://jaggerbrulato.com/files/resume.pdf", "_blank"); output = "opened resume.pdf"; kind = "success"; }
+    else if (command === "resume") { window.open(homeSiteHref("/files/resume.pdf"), "_blank"); output = "opened resume.pdf"; kind = "success"; }
     else if (command === "uname -a") { output = "jagger.dev 3.0.0 · TypeScript/React · x86_64"; kind = "output"; }
     else if (command === "git log") { output = profileContent.experience.slice(0, 5).map(j => `${j.timeframe.padEnd(13)} ${j.company}`).join("\n"); kind = "output"; }
     setLines((current) => [...current, { kind: "command", text: rawCommand }, { kind, text: output }]);
@@ -308,8 +312,8 @@ function App() {
   const shellRows = terminal ? `29px minmax(0, 1fr) ${terminalHeight}px 23px` : "29px minmax(0, 1fr) 23px";
 
   return <div className={`ide-shell${terminal ? " terminal-open" : ""}`} style={{ gridTemplateRows: shellRows }}><header className="menu-bar"><div className="site-id"><b>JB</b> jaggerbrulato.com</div><nav>
-      <div className="menu-item"><button onClick={() => setFileMenu((value) => !value)} aria-expanded={fileMenu}>FILE</button>{fileMenu && <div className="file-menu"><Link to="/">Open README.md</Link><a href="https://jaggerbrulato.com/files/resume.pdf">Open resume.pdf</a><button onClick={() => closeTab(location.pathname)}>Close active buffer</button></div>}</div>
-      <button onClick={() => setPalette(true)}>GO</button><button onClick={() => navigate("/map")}>VIEW</button><button onClick={() => navigate("/projects")}>PROJECTS</button><button onClick={() => setTerminal((value) => !value)}>TERMINAL</button><button className="contact-command" onClick={() => navigate("/contact")}>CONTACT</button><a className="resume-command" href="https://jaggerbrulato.com/files/resume.pdf" target="_blank" rel="noreferrer">RESUME</a><a className="home-command" href={homeSiteHref()}>BACK TO HOME</a>
+      <div className="menu-item"><button onClick={() => setFileMenu((value) => !value)} aria-expanded={fileMenu}>FILE</button>{fileMenu && <div className="file-menu"><Link to="/">Open README.md</Link><a href={homeSiteHref("/files/resume.pdf")}>Open resume.pdf</a><button onClick={() => closeTab(location.pathname)}>Close active buffer</button></div>}</div>
+      <button onClick={() => setPalette(true)}>GO</button><button onClick={() => navigate("/map")}>VIEW</button><button onClick={() => navigate("/projects")}>PROJECTS</button><button onClick={() => setTerminal((value) => !value)}>TERMINAL</button><button className="contact-command" onClick={() => navigate("/contact")}>CONTACT</button><a className="resume-command" href={homeSiteHref("/files/resume.pdf")} target="_blank" rel="noreferrer">RESUME</a><a className="home-command" href={homeSiteHref()}>BACK TO HOME</a>
     </nav><div className="online"><i /> ONLINE</div><a className="mobile-home-command" href={homeSiteHref()}>BACK TO HOME</a><button className="mobile-command" onClick={() => setDrawer(true)}>⌘</button></header>
     <div className="workspace" style={{ gridTemplateColumns: `${sidebarWidth}px 4px minmax(0, 1fr)` }}><Explorer /><div className="sidebar-resizer" onPointerDown={(event) => beginResize(event, "sidebar")} aria-label="Resize explorer" />{drawer && <div className="drawer-backdrop" onClick={() => setDrawer(false)}><div onClick={e => e.stopPropagation()}><Explorer close={() => setDrawer(false)} /></div></div>}
       <main className="editor"><div className="tab-bar">{tabs.map((tab) => <div key={tab.path} draggable className={`tab${location.pathname === tab.path ? " active" : ""}${draggedTabPath === tab.path ? " dragging" : ""}`} onDragStart={(event) => { setDraggedTabPath(tab.path); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", tab.path); }} onDragOver={(event) => { event.preventDefault(); event.dataTransfer.dropEffect = "move"; }} onDrop={(event) => { event.preventDefault(); reorderTab(tab.path); setDraggedTabPath(null); }} onDragEnd={() => setDraggedTabPath(null)} aria-grabbed={draggedTabPath === tab.path}><button className="tab-select" onClick={() => navigate(tab.path)} title={`${tab.label} — drag to reorder`}><span className={`file-icon ${tab.icon}`}>{tab.icon === "json" ? "{}" : tab.icon === "md" ? "M↓" : tab.icon.toUpperCase()}</span><span>{tab.label}</span></button><button className="tab-close" onClick={() => closeTab(tab.path)} aria-label={`Close ${tab.label}`}>×</button></div>)}</div><div className="breadcrumbs">jagger <span>›</span> {location.pathname.split("/").filter(Boolean).join(" › ") || "README.md"}</div><div className="buffer"><Routes><Route path="/" element={<Home />} /><Route path="/focus" element={<Principles />} /><Route path="/experience" element={<ExperienceIndex />} /><Route path="/experience/:slug" element={<ExperienceDetail />} /><Route path="/projects" element={<Projects />} /><Route path="/projects/:slug" element={<ProjectDetail />} /><Route path="/reference/stack" element={<Stack />} /><Route path="/reference/principles" element={<Principles />} /><Route path="/map" element={<SystemMap />} /><Route path="/contact" element={<Contact />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></div></main></div>

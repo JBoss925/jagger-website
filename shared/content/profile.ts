@@ -23,6 +23,25 @@ import riskPreview from "../../frontend/src/assets/risk-preview.jpg";
 import tsxlightRendererPreview from "../../frontend/src/assets/tsxlight-renderer-preview.jpg";
 import type { ProfileContent } from "../types/content";
 
+
+const _viteEnv: Record<string, string | undefined> =
+  (typeof import.meta !== "undefined" &&
+    (import.meta as unknown as { env?: Record<string, string | undefined> }).env) ||
+  {};
+const _siteUrl = (key: string, fallback: string) =>
+  (_viteEnv[key]?.trim() || fallback).replace(/\/+$/, "");
+
+const PORTFOLIO_URL = _siteUrl("VITE_PORTFOLIO_URL", "https://jaggerbrulato.com");
+const GAMES_URL = _siteUrl("VITE_GAMES_URL", "https://games.jaggerbrulato.com");
+const PAPERS_URL = _siteUrl("VITE_PAPERS_URL", "https://papers.jaggerbrulato.com");
+const ARENA_URL = _siteUrl("VITE_ARENA_URL", "https://arena.jaggerbrulato.com");
+const JETSTREAM_URL = _siteUrl("VITE_JETSTREAM_URL", "https://jetstream.jaggerbrulato.com");
+const RISK_URL = _siteUrl("VITE_RISK_URL", "https://risk.jaggerbrulato.com");
+const INTERACTIVE3D_URL = _siteUrl("VITE_INTERACTIVE3D_URL", "https://interactive3d.jaggerbrulato.com");
+const DESIGN_URL = _siteUrl("VITE_DESIGN_URL", "https://design.jaggerbrulato.com");
+const EDITOR_URL = _siteUrl("VITE_EDITOR_URL", "https://editor.jaggerbrulato.com");
+const FINANCE_URL = _siteUrl("VITE_FINANCE_URL", "https://finance.jaggerbrulato.com");
+
 export const headshotAsset = headshotImage;
 
 export const profileContent: ProfileContent = {
@@ -792,7 +811,7 @@ export const profileContent: ProfileContent = {
       icon: "ojaml",
       links: [
         { label: "Open Editor", href: "/ojaml" },
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/ojaml" },
+        { label: "Open Paper", href: `${PAPERS_URL}/ojaml` },
         { label: "Source", href: "https://github.com/JBoss925/OJaml" }
       ]
     },
@@ -825,7 +844,7 @@ export const profileContent: ProfileContent = {
       ],
       image: riskPreview,
       links: [
-        { label: "Open App", href: "https://risk.jaggerbrulato.com/" },
+        { label: "Open App", href: `${RISK_URL}/` },
         { label: "Source", href: "https://github.com/JBoss925/risk" }
       ]
     },
@@ -871,7 +890,7 @@ export const profileContent: ProfileContent = {
       ],
       image: liveboardPreview,
       links: [
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/liveboard" },
+        { label: "Open Paper", href: `${PAPERS_URL}/liveboard` },
         { label: "Source", href: "https://github.com/JBoss925/LiveBoard" }
       ]
     },
@@ -904,7 +923,7 @@ export const profileContent: ProfileContent = {
           label: "Download Hearth 1.0",
           href: "https://github.com/JBoss925/Hearth/releases/download/v1.0/Hearth.1.0.amxd"
         },
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/hearth" },
+        { label: "Open Paper", href: `${PAPERS_URL}/hearth` },
         { label: "Source", href: "https://github.com/JBoss925/Hearth" }
       ]
     },
@@ -934,7 +953,7 @@ export const profileContent: ProfileContent = {
       icon: "jaggerscript",
       links: [
         { label: "Open Editor", href: "/jaggerscript" },
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/jaggerscript" },
+        { label: "Open Paper", href: `${PAPERS_URL}/jaggerscript` },
         { label: "Source", href: "https://github.com/JBoss925/JaggerScript" }
       ]
     },
@@ -965,7 +984,7 @@ export const profileContent: ProfileContent = {
       ],
       image: compressorPreview,
       links: [
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/aixc-compressor" },
+        { label: "Open Paper", href: `${PAPERS_URL}/aixc-compressor` },
         { label: "Source", href: "https://github.com/JBoss925/aixc-compressor" }
       ]
     },
@@ -998,7 +1017,7 @@ export const profileContent: ProfileContent = {
           label: "Open Demo",
           href: "/genetic-ts"
         },
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/genetic-ts" },
+        { label: "Open Paper", href: `${PAPERS_URL}/genetic-ts` },
         { label: "Source", href: "https://github.com/JBoss925/GeneticTS" }
       ]
     },
@@ -1033,37 +1052,37 @@ export const profileContent: ProfileContent = {
       relatedLinks: [
         {
           label: "Jordle",
-          href: "https://games.jaggerbrulato.com/jordle",
+          href: `${GAMES_URL}/jordle`,
           description: "Six-letter word puzzle with daily boards and archives."
         },
         {
           label: "Jolor",
-          href: "https://games.jaggerbrulato.com/jolor",
+          href: `${GAMES_URL}/jolor`,
           description: "Color-name guessing game where you dial in the target swatch."
         },
         {
           label: "Jinx",
-          href: "https://games.jaggerbrulato.com/jinx",
+          href: `${GAMES_URL}/jinx`,
           description: "Minefield logic puzzle built around reveals, flags, and hints."
         },
         {
           label: "Judoku",
-          href: "https://games.jaggerbrulato.com/judoku",
+          href: `${GAMES_URL}/judoku`,
           description: "Compact 6x6 sudoku with notes mode and quick daily solves."
         },
         {
           label: "Jigsaw",
-          href: "https://games.jaggerbrulato.com/jigsaw",
+          href: `${GAMES_URL}/jigsaw`,
           description: "Tile-swap picture puzzle with a new scrambled image each day."
         },
         {
           label: "Domes",
-          href: "https://games.jaggerbrulato.com/domes",
+          href: `${GAMES_URL}/domes`,
           description: "Two-player strategy game about movement, tempo, and board control."
         }
       ],
       links: [
-        { label: "Open Games", href: "https://games.jaggerbrulato.com/" },
+        { label: "Open Games", href: `${GAMES_URL}/` },
         {
           label: "Source",
           href: "https://github.com/JBoss925/jagger-games"
@@ -1095,7 +1114,7 @@ export const profileContent: ProfileContent = {
       ],
       image: jetstreamPreview,
       links: [
-        { label: "Open App", href: "https://jetstream.jaggerbrulato.com/" },
+        { label: "Open App", href: `${JETSTREAM_URL}/` },
         { label: "Source", href: "https://github.com/JBoss925/JetStream" }
       ]
     },
@@ -1124,7 +1143,7 @@ export const profileContent: ProfileContent = {
       icon: "rengine",
       links: [
         { label: "Open Demo", href: "/rengine" },
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/rengine" },
+        { label: "Open Paper", href: `${PAPERS_URL}/rengine` },
         { label: "Source", href: "https://github.com/JBoss925/Rengine" }
       ]
     },
@@ -1159,37 +1178,37 @@ export const profileContent: ProfileContent = {
       relatedLinks: [
         {
           label: "Main (Spatial Cubes)",
-          href: "https://jaggerbrulato.com/",
+          href: `${PORTFOLIO_URL}/`,
           description:
             "120-cube GameCube-inspired 3D showcase with spatial Web Audio, inline theaters, and embedded demos."
         },
         {
           label: "Interactive 3D",
-          href: "https://interactive3d.jaggerbrulato.com",
+          href: INTERACTIVE3D_URL,
           description:
             "Scroll-driven Three.js constellation backdrop with glass cards and direct section deep links."
         },
         {
           label: "Design",
-          href: "https://design.jaggerbrulato.com",
+          href: DESIGN_URL,
           description:
             "Editorial magazine layout focused on clean typography, grids, and reading flow."
         },
         {
           label: "Editor",
-          href: "https://editor.jaggerbrulato.com",
+          href: EDITOR_URL,
           description:
             "VS Code-inspired workspace with a file tree, command palette, and interactive terminal."
         },
         {
           label: "Finance",
-          href: "https://finance.jaggerbrulato.com",
+          href: FINANCE_URL,
           description:
             "Live market-terminal interpretation presenting projects and experience as research coverage."
         }
       ],
       links: [
-        { label: "Open Main Site", href: "https://jaggerbrulato.com/" },
+        { label: "Open Main Site", href: `${PORTFOLIO_URL}/` },
         { label: "Source", href: "https://github.com/JBoss925/jagger-website" }
       ]
     },
@@ -1221,7 +1240,7 @@ export const profileContent: ProfileContent = {
       image: tsxlightRendererPreview,
       icon: "tsxlight",
       links: [
-        { label: "Open Paper", href: "https://papers.jaggerbrulato.com/tsxlight-renderer" },
+        { label: "Open Paper", href: `${PAPERS_URL}/tsxlight-renderer` },
         { label: "Source", href: "https://github.com/JBoss925/tsxlight-renderer" }
       ]
     },
@@ -1251,7 +1270,7 @@ export const profileContent: ProfileContent = {
       ],
       image: arenaPreview,
       links: [
-        { label: "Open Arena", href: "https://arena.jaggerbrulato.com/" },
+        { label: "Open Arena", href: `${ARENA_URL}/` },
         { label: "Source", href: "https://github.com/JBoss925/RandomArena" }
       ]
     },

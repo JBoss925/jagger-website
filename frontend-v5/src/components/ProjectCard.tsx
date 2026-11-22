@@ -43,7 +43,7 @@ function ProjectCard({ project, id }: ProjectCardProps) {
 
   const links = project.links.flatMap((link) =>
     link.label.toLowerCase() === "source" && documentedProjects.has(project.slug)
-      ? [link, { label: "Docs", href: `https://docs.jaggerbrulato.com/${project.slug}` }]
+      ? [link, { label: "Docs", href: `${(import.meta.env.VITE_DOCS_URL || "https://docs.jaggerbrulato.com").replace(/\/+$/, "")}/${project.slug}` }]
       : [link]
   );
 

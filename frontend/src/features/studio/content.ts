@@ -1,3 +1,4 @@
+import { SITE_URLS } from "@jagger-ui/urls";
 import { profileContent } from "../../content/profile";
 export const projects = profileContent.projects;
 export const clean = (text: string) => text.replace(/\*\*/g, "");
@@ -31,25 +32,25 @@ export const views = [
   {
     title: "Interactive 3D",
     detail: "Spatial storytelling",
-    href: "https://interactive3d.jaggerbrulato.com",
+    href: SITE_URLS.interactive3d,
     mark: "◇",
   },
   {
     title: "Design",
     detail: "An editorial perspective",
-    href: "https://design.jaggerbrulato.com",
+    href: SITE_URLS.design,
     mark: "Aa",
   },
   {
     title: "Editor",
     detail: "Inside the workspace",
-    href: "https://editor.jaggerbrulato.com",
+    href: SITE_URLS.editor,
     mark: "</>",
   },
   {
     title: "Finance",
     detail: "A terminal for the work",
-    href: "https://finance.jaggerbrulato.com",
+    href: SITE_URLS.finance,
     mark: "↗",
   },
 ];

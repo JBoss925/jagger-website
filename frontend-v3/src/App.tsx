@@ -21,6 +21,8 @@ const orbitDomains = [
 const plainText = (value: string) => value.replace(/\*\*(.*?)\*\*/g, "$1");
 
 function mainSiteHref(path = "") {
+  const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) return `${configured}${path}`;
   if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
 }
@@ -224,7 +226,7 @@ function App() {
       <footer className="site-footer">
         <span>© {new Date().getFullYear()} Jagger Brulato</span>
         <div className="footer-links">{profileContent.links.map((link) => <a key={link.label} href={projectHref(link.href)}>{link.label} <Arrow /></a>)}</div>
-        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href="https://games.jaggerbrulato.com/">Games</a><a href="https://papers.jaggerbrulato.com/">Papers</a><a href="#top">Back to top ↑</a></div>
+        <div className="footer-views"><a href={mainSiteHref()}>Home view</a><a href={import.meta.env.VITE_GAMES_URL || "https://games.jaggerbrulato.com/"}>Games</a><a href={import.meta.env.VITE_PAPERS_URL || "https://papers.jaggerbrulato.com/"}>Papers</a><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );

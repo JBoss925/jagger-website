@@ -51,6 +51,8 @@ const projectCodes: Record<string, string> = {
 };
 
 function mainSiteHref(path = "") {
+  const configured = (import.meta.env.VITE_PORTFOLIO_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) return `${configured}${path}`;
   if (import.meta.env.DEV) return `${window.location.protocol}//${window.location.hostname}:5173${path}`;
   return `https://jaggerbrulato.com${path}`;
 }

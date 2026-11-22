@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import type { NavLinkItem, SceneSection } from "../types/content";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { headshotAsset } from "../content/profile";
-import { mainSiteHref } from "../utils/siteUrls";
+import { mainSiteHref, subdomainHref } from "../utils/siteUrls";
 
 type SiteNavigationProps = {
   sections?: SceneSection[];
@@ -183,21 +183,21 @@ function SiteNavigation({
               </a>
               <a
                 className="site-nav__button"
-                href="https://games.jaggerbrulato.com/"
+                href={subdomainHref(import.meta.env.VITE_GAMES_URL, "https://games.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Games
               </a>
               <a
                 className="site-nav__button"
-                href="https://papers.jaggerbrulato.com/"
+                href={subdomainHref(import.meta.env.VITE_PAPERS_URL, "https://papers.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Go to Papers
               </a>
               <a
                 className="site-nav__button"
-                href="https://docs.jaggerbrulato.com/"
+                href={subdomainHref(import.meta.env.VITE_DOCS_URL, "https://docs.jaggerbrulato.com")}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Docs

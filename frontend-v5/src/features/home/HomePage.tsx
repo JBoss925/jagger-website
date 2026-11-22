@@ -36,24 +36,30 @@ const wideProjectIndexes = profileContent.projects.flatMap((project, index) =>
 );
 
 function editorSiteHref() {
+  const configured = (import.meta.env.VITE_EDITOR_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) return configured;
   if (import.meta.env.DEV) {
-    return `${window.location.protocol}//${window.location.hostname}:5174`;
+    return `${window.location.protocol}//${window.location.hostname}:5182`;
   }
 
   return "https://editor.jaggerbrulato.com";
 }
 
 function designSiteHref() {
+  const configured = (import.meta.env.VITE_DESIGN_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) return configured;
   if (import.meta.env.DEV) {
-    return `${window.location.protocol}//${window.location.hostname}:5175`;
+    return `${window.location.protocol}//${window.location.hostname}:5183`;
   }
 
   return "https://design.jaggerbrulato.com";
 }
 
 function financeSiteHref() {
+  const configured = (import.meta.env.VITE_FINANCE_URL as string | undefined)?.trim().replace(/\/+$/, "");
+  if (configured) return configured;
   if (import.meta.env.DEV) {
-    return `${window.location.protocol}//${window.location.hostname}:5176`;
+    return `${window.location.protocol}//${window.location.hostname}:5184`;
   }
 
   return "https://finance.jaggerbrulato.com";
