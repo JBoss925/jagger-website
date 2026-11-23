@@ -9,6 +9,7 @@ import { VARIANTS_SEASON3_B } from "./sculptureVariantsSeason3B";
 import { VARIANTS_SEASON3_C } from "./sculptureVariantsSeason3C";
 import { VARIANTS_ABOUT_UNIQUE } from "./sculptureVariantsAboutUnique";
 import { VARIANTS_RISK } from "./sculptureVariantsRisk";
+import { VARIANTS_H2 } from "./sculptureVariantsH2";
 
 const CHAMPION_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_PART_A,
@@ -21,6 +22,7 @@ const CHAMPION_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_SEASON3_C,
   ...VARIANTS_ABOUT_UNIQUE,
   ...VARIANTS_RISK,
+  ...VARIANTS_H2,
 };
 
 /**
@@ -29,6 +31,7 @@ const CHAMPION_EVALUATORS: Record<string, VariantEvaluator> = {
  * for About Working with a Team and About Range with zero reuse from Cornell DTI).
  */
 export const ACTIVE_CHAMPION_VARIANT: Partial<Record<FormationKind, string>> = {
+  "exp-h2-construction": "h2-crane-pick-and-place",
   "risk-terminal": "risk-monitor-candles",
   "jetstream-weather": "js-sun-cloud",
   "liveboard-canvas": "lb-whiteboard-cursors",

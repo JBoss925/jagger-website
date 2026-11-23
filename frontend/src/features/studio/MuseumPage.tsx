@@ -191,13 +191,23 @@ function MuseumSwarm({
             st.scale = tgtScale;
           } else {
             const rate = 13;
-            st.x = MathUtils.damp(st.x, tgt.x, rate, delta);
-            st.y = MathUtils.damp(st.y, tgt.y, rate, delta);
-            st.z = MathUtils.damp(st.z, tgt.z, rate, delta);
-            st.rx = MathUtils.damp(st.rx, tgt.rx, rate, delta);
-            st.ry = MathUtils.damp(st.ry, tgt.ry, rate, delta);
-            st.rz = MathUtils.damp(st.rz, tgt.rz, rate, delta);
             st.scale = MathUtils.damp(st.scale, tgtScale, rate, delta);
+            if (tgtScale <= 0.001 && st.scale <= 0.012) {
+              st.x = tgt.x;
+              st.y = tgt.y;
+              st.z = tgt.z;
+              st.rx = tgt.rx;
+              st.ry = tgt.ry;
+              st.rz = tgt.rz;
+              st.scale = 0.0001;
+            } else {
+              st.x = MathUtils.damp(st.x, tgt.x, rate, delta);
+              st.y = MathUtils.damp(st.y, tgt.y, rate, delta);
+              st.z = MathUtils.damp(st.z, tgt.z, rate, delta);
+              st.rx = MathUtils.damp(st.rx, tgt.rx, rate, delta);
+              st.ry = MathUtils.damp(st.ry, tgt.ry, rate, delta);
+              st.rz = MathUtils.damp(st.rz, tgt.rz, rate, delta);
+            }
           }
         } else if (elapsed > st.delay) {
           const p = MathUtils.clamp((elapsed - st.delay) / duration, 0, 1);

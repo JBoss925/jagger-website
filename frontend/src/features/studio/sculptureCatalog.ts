@@ -20,6 +20,7 @@ import { VARIANTS_SEASON3_B } from "./sculptureVariantsSeason3B";
 import { VARIANTS_SEASON3_C } from "./sculptureVariantsSeason3C";
 import { VARIANTS_ABOUT_UNIQUE } from "./sculptureVariantsAboutUnique";
 import { VARIANTS_RISK } from "./sculptureVariantsRisk";
+import { VARIANTS_H2 } from "./sculptureVariantsH2";
 import { PAST_VARIANTS } from "./sculpturePastVariants";
 
 export type ExhibitEra =
@@ -77,6 +78,7 @@ const ALL_VARIANT_EVALUATORS: Record<string, VariantEvaluator> = {
   ...VARIANTS_SEASON3_C,
   ...VARIANTS_ABOUT_UNIQUE,
   ...VARIANTS_RISK,
+  ...VARIANTS_H2,
   ...PAST_VARIANTS,
 };
 
@@ -123,15 +125,61 @@ const RAW_GROUPS: RawGroupSpec[] = [
     itemSection: "experience",
     variants: [
       {
-        id: "h2-crane-v5",
-        name: "Separated Glass Building + Tall L-Shaped Tower Crane",
-        era: "Active",
+        id: "h2-crane-pick-and-place",
+        name: "Level 3 (Happy Medium): Ground Pickup → Hoist → Deep Building Drop-Off Loop",
+        era: "Bracket Winner",
         isActive: true,
         isUserFavorite: true,
         isAiFavorite: true,
+        blindGuess: "Yellow construction tower crane lifting a glass-and-concrete module from a ground staging pad and lowering it into a multi-story concrete and blue-glass building",
+        councilScore: "9.5/10 Read · 9.5/10 Craft",
+        notes: "User & Council Pick! Continuous 4-phase pick-and-place loop: yellow tower crane picks up a prefab module from the ground staging pad, hoists it high, traverses left, lowers it deep into the hollow building shaft, shrinks in place to zero, teleports unseen, and grows back in place on the ground pad.",
+        variantKey: "h2-crane-pick-and-place",
+      },
+      {
+        id: "h2-crane-recolored",
+        name: "Level 1 (Simplest): Recolored Yellow Crane + Concrete & Glass Building (De-Clipped)",
+        era: "Season 3",
+        blindGuess: "Yellow construction tower crane hoisting a glass block above a blue-glass and concrete building",
+        councilScore: "9.0/10 Read · 8.5/10 Craft",
+        notes: "Direct color & clearance overhaul of the classic sculpture: Caterpillar-yellow L-shaped crane + architectural concrete & cyan-glass building with zero roof clipping.",
+        variantKey: "h2-crane-recolored",
+      },
+      {
+        id: "h2-crane-slewing-jib",
+        name: "Level 2 (Medium-Simple): 3D Slewing Hammerhead Crane with Operator Cab & A-Frame Apex",
+        era: "Season 3",
+        blindGuess: "Hammerhead tower crane with operator cab and red apex hoisting a module over a stepped building",
+        councilScore: "8.8/10 Read · 8.7/10 Craft",
+        notes: "Adds a glass operator cab, A-frame suspension peak, and 3D rotational slewing (±14°) over a stepped concrete-and-glass tower.",
+        variantKey: "h2-crane-slewing-jib",
+      },
+      {
+        id: "h2-crane-floor-assembler",
+        name: "Level 4 (Medium-Complex): Progressive Dual-Bay Penthouse Floor Assembler",
+        era: "Season 3",
+        blindGuess: "Yellow tower crane sequentially assembling rooftop penthouse bays onto a concrete and glass building",
+        councilScore: "9.0/10 Read · 9.0/10 Craft",
+        notes: "Alternately fetches and installs the West and East penthouse bays onto the top floor from a ground material pallet while the sibling bay stays locked in place.",
+        variantKey: "h2-crane-floor-assembler",
+      },
+      {
+        id: "h2-crane-truck-delivery",
+        name: "Level 5 (Most Complex): Flatbed Delivery Truck + Yellow Tower Crane + Building Loop",
+        era: "Season 3",
+        blindGuess: "Red flatbed delivery truck bringing prefabricated modules to a yellow tower crane constructing a glass building",
+        councilScore: "9.2/10 Read · 9.2/10 Craft",
+        notes: "A safety-red flatbed semi-truck drives in carrying each prefab module, parks while the crane hoists it off the flatbed, then drives away as the crane installs it onto the building roof.",
+        variantKey: "h2-crane-truck-delivery",
+      },
+      {
+        id: "h2-crane-v5",
+        name: "Previous Monochromatic Purple: Separated Glass Building + Tower Crane",
+        era: "Previous",
         blindGuess: "Construction tower crane lifting a suspended building payload",
-        councilScore: "User Approved · 8.5/10",
-        notes: "Building cleanly separated on left, crane mast clear on right, hoisting glass roof module overhead.",
+        councilScore: "Previous Active · 8.5/10",
+        notes: "Original monochromatic purple crane & building prior to yellow/concrete/glass color overhaul and de-clipping.",
+        useLegacyFormation: true,
       },
       {
         id: "h2-blueprint-compass",

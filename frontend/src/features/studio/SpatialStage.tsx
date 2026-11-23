@@ -592,13 +592,23 @@ function LivingCubeSwarm({
             (st.flipAxis === 2 ? flip : 0);
         } else {
           const dampRate = 13;
-          st.x = MathUtils.damp(st.x, tgt.x, dampRate, delta);
-          st.y = MathUtils.damp(st.y, tgt.y, dampRate, delta);
-          st.z = MathUtils.damp(st.z, tgt.z, dampRate, delta);
-          st.rx = MathUtils.damp(st.rx, tgt.rx, dampRate, delta);
-          st.ry = MathUtils.damp(st.ry, tgt.ry, dampRate, delta);
-          st.rz = MathUtils.damp(st.rz, tgt.rz, dampRate, delta);
           st.scale = MathUtils.damp(st.scale, tgt.scale, dampRate, delta);
+          if (tgt.scale <= 0.001 && st.scale <= 0.012) {
+            st.x = tgt.x;
+            st.y = tgt.y;
+            st.z = tgt.z;
+            st.rx = tgt.rx;
+            st.ry = tgt.ry;
+            st.rz = tgt.rz;
+            st.scale = 0.0001;
+          } else {
+            st.x = MathUtils.damp(st.x, tgt.x, dampRate, delta);
+            st.y = MathUtils.damp(st.y, tgt.y, dampRate, delta);
+            st.z = MathUtils.damp(st.z, tgt.z, dampRate, delta);
+            st.rx = MathUtils.damp(st.rx, tgt.rx, dampRate, delta);
+            st.ry = MathUtils.damp(st.ry, tgt.ry, dampRate, delta);
+            st.rz = MathUtils.damp(st.rz, tgt.rz, dampRate, delta);
+          }
         }
       } else if (elapsed < st.delay) {
         // Anticipation beat: hold cleanly at start pose with subtle 6% pre-launch squeeze
@@ -639,7 +649,7 @@ function LivingCubeSwarm({
 
       dummy.position.set(st.x, st.y, st.z);
       dummy.rotation.set(st.rx, st.ry, st.rz);
-      dummy.scale.setScalar(Math.max(0.001, st.scale));
+      dummy.scale.setScalar(st.scale <= 0.003 ? 0.00001 : st.scale);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
 
