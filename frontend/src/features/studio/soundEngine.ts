@@ -316,8 +316,8 @@ class SpatialSoundEngine {
         this.musicMuted || tabHidden
           ? 0.0001
           : this.theaterDucked
-            ? 0.052
-            : 0.21;
+            ? 0.039
+            : 0.1575;
       this.ambientBus.gain.cancelScheduledValues(now);
       this.ambientBus.gain.setTargetAtTime(
         musicTarget,
